@@ -13,7 +13,6 @@ import java.util.List;
  * @date 2021/4/15
  */
 @Data
-@Builder
 public class PageResult<T> implements Serializable {
 
     /**

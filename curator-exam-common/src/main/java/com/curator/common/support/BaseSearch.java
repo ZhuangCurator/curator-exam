@@ -28,4 +28,9 @@ public class BaseSearch implements Serializable {
      */
     private Boolean superAdmin = Boolean.FALSE;
 
+    /**
+     * 创建账户ID
+     */
+    private String createAccountId;
+
 }

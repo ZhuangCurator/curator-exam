@@ -1,5 +1,6 @@
 package com.curator.common.util;
 
+import com.curator.common.support.ResultResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -11,6 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Json转换工具类
@@ -25,8 +34,32 @@ public class JsonUtil {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final String STANDARD_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    private static final String DATE_PATTERN = "yyyy-MM-dd";
+    private static final String TIME_PATTERN = "HH:mm:ss";
 
     static {
+
+        // // 初始化JavaTimeModule
+        // JavaTimeModule javaTimeModule = new JavaTimeModule();
+        //
+        // //处理LocalDateTime
+        // DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(STANDARD_PATTERN);
+        // javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
+        // javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
+        //
+        // //处理LocalDate
+        // DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
+        // javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(dateFormatter));
+        // javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(dateFormatter));
+        //
+        // //处理LocalTime
+        // DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(TIME_PATTERN);
+        // javaTimeModule.addSerializer(LocalTime.class, new LocalTimeSerializer(timeFormatter));
+        // javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
+        //
+        // //注册时间模块, 支持支持jsr310, 即新的时间类(java.time包下的时间类)
+        // objectMapper.registerModule(javaTimeModule);
+
         //对象的所有字段全部列入
         objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
         //取消默认转换timestamps形式
@@ -129,5 +162,13 @@ public class JsonUtil {
             log.warn("Parse String to Object error : {}" + e.getMessage());
             return null;
         }
+    }
+
+    public static void main(String[] args) {
+        Map<String,LocalDateTime> map = Collections.singletonMap("map", LocalDateTime.now());
+        List<Map<String,LocalDateTime>> list = Collections.singletonList(map);
+        ResultResponse<List<Map<String,LocalDateTime>>> res = ResultResponse.<List<Map<String,LocalDateTime>>>builder().success().message("xxxx").data(list).build();
+
+        System.out.println(JsonUtil.obj2String(res));
     }
 }
