@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.curator.backend.info.menu.mapper.InfoMenuMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.curator.backend.info.menu.entity.InfoMenu">
+        <id column="menu_id" property="menuId" />
+        <result column="menu_name" property="menuName" />
+        <result column="parent_id" property="parentId" />
+        <result column="menu_order" property="menuOrder" />
+        <result column="menu_type" property="menuType" />
+        <result column="menu_status" property="menuStatus" />
+        <result column="menu_path" property="menuPath" />
+        <result column="menu_component" property="menuComponent" />
+        <result column="menu_perms" property="menuPerms" />
+        <result column="menu_icon" property="menuIcon" />
+        <result column="menu_remark" property="menuRemark" />
+        <result column="create_account_id" property="createAccountId" />
+        <result column="is_deleted" property="deleted" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+</mapper>

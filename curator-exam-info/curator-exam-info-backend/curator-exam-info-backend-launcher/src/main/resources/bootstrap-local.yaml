@@ -1,0 +1,13 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        # Nacos 服务注册中心地址
+        server-addr: 127.0.0.1:8848
+        namespace: 16ff74b0-0839-451c-a8b7-a009cee44714
+        group: ${spring.profiles.active}-group
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yaml
+        group: curator-info-backend
+        namespace: 16ff74b0-0839-451c-a8b7-a009cee44714
