@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.curator.common.aspect.LogAspect,\
+  com.curator.common.configure.MinioAutoConfiguration,\
+  com.curator.common.util.RedissonUtil
+

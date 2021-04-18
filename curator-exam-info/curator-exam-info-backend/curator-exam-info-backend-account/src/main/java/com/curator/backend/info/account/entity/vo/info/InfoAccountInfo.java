@@ -35,11 +35,6 @@ public class InfoAccountInfo implements Serializable {
     private String accountPassword;
 
     /**
-     * 加密盐
-     */
-    private String salt;
-
-    /**
      * 手机号码
      */
     private String phone;

@@ -1,16 +1,18 @@
-package com.curator.backend.info;
+package com.curator.core.log;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
+ * 日志服务启动类
+ *
  * @author Jun
- * @date 2021/4/16
+ * @date 2021/4/17
  */
 @SpringBootApplication
-public class InfoApplication {
+public class LogCoreApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(InfoApplication.class, args);
+        SpringApplication.run(LogCoreApplication.class, args);
     }
 }

@@ -1,5 +1,6 @@
 package com.curator.backend.info.account.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -14,6 +15,7 @@ import com.curator.backend.info.account.service.InfoAccountService;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
+import com.curator.common.util.SecurityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,6 +85,20 @@ public class InfoAccountServiceImpl implements InfoAccountService {
     @Override
     public ResultResponse<InfoAccountDTO> saveInfoAccount(InfoAccountInfo info) {
         InfoAccount entity = convertInfo(info);
+        // 判断账户名是否重复
+        QueryWrapper<InfoAccount> wrapper = new QueryWrapper<>();
+        wrapper.eq("account_name", entity.getAccountName());
+        InfoAccount infoAccount = accountMapper.selectOne(wrapper);
+        if (Help.isNotEmpty(infoAccount)) {
+            // 数据库已存在该账户名
+            return ResultResponse.<InfoAccountDTO>builder().failure("该账户名已被使用!").build();
+        }
+        String salt = RandomUtil.randomString(RandomUtil.randomInt(10, 15));
+        String encryptPassword = SecurityUtil.encryptPassword(entity.getAccountPassword(), salt);
+        entity.setAccountPassword(encryptPassword);
+        entity.setSalt(salt);
+        // 新用户状态为正常
+        entity.setAccountStatus(InfoAccountStatusEnum.NORMAL.getStatus());
         accountMapper.insert(entity);
         return ResultResponse.<InfoAccountDTO>builder().success("账户添加成功").data(convertEntity(entity)).build();
     }
@@ -90,6 +106,15 @@ public class InfoAccountServiceImpl implements InfoAccountService {
     @Override
     public ResultResponse<InfoAccountDTO> putInfoAccount(InfoAccountInfo info) {
         InfoAccount entity = convertInfo(info);
+        // 判断账户名是否重复
+        QueryWrapper<InfoAccount> wrapper = new QueryWrapper<>();
+        wrapper.eq("account_name", entity.getAccountName())
+                .ne("account_id", entity.getAccountId());
+        InfoAccount infoAccount = accountMapper.selectOne(wrapper);
+        if (Help.isNotEmpty(infoAccount)) {
+            // 数据库已存在该账户名
+            return ResultResponse.<InfoAccountDTO>builder().failure("该账户名已被使用!").build();
+        }
         accountMapper.update(entity, new UpdateWrapper<InfoAccount>().eq("account_id", info.getAccountId()));
         return ResultResponse.<InfoAccountDTO>builder().success("账户更新成功").data(convertEntity(entity)).build();
     }
