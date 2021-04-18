@@ -32,16 +32,6 @@ public class InfoAccountDTO implements Serializable {
     private String accountName;
 
     /**
-     * 账户密码
-     */
-    private String accountPassword;
-
-    /**
-     * 加密盐
-     */
-    private String salt;
-
-    /**
      * 手机号码
      */
     private String phone;

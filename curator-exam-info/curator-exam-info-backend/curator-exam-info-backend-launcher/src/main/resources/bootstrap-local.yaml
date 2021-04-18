@@ -4,10 +4,27 @@ spring:
       discovery:
         # Nacos 服务注册中心地址
         server-addr: 127.0.0.1:8848
-        namespace: 16ff74b0-0839-451c-a8b7-a009cee44714
+        namespace: 55ba0dec-3601-4171-83d7-d5b3a70bebad
         group: ${spring.profiles.active}-group
       config:
         server-addr: 127.0.0.1:8848
         file-extension: yaml
-        group: curator-info-backend
-        namespace: 16ff74b0-0839-451c-a8b7-a009cee44714
+        group: curator-exam-info-backend
+        namespace: 55ba0dec-3601-4171-83d7-d5b3a70bebad
+  redis:
+    host: 139.196.12.144
+    port: 6379
+    password: LIUjun033453!
+
+# rocketmq 配置
+rocketmq:
+  logAspect: true
+  name-server: 139.196.12.144:9876
+  producer:
+    group: CuratorExamInfoGroup
+
+minio:
+  url: http://139.196.12.144:9000/
+  accessKey: minioadmin
+  secretKey: minioadmin
+  bucketName: log-bucket

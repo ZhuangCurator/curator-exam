@@ -89,13 +89,13 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <copy todir="../current">
                                     <fileset dir="./target">
                                         <include name="*.jar"/>
                                     </fileset>
                                 </copy>
-                            </tasks>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
