@@ -1,4 +1,4 @@
-package com.curator.api.info.enums;
+package com.curator.api.auth.enums;
 
 /**
  * 账户状态枚举
