@@ -1,9 +1,14 @@
 package com.curator.core.auth.controller;
 
+import com.curator.api.auth.pojo.vo.LoginAccountInfo;
+import com.curator.common.annotation.Log;
 import com.curator.common.support.ResultResponse;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.curator.core.auth.service.LoginService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * 登录控制器
@@ -14,8 +19,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LoginController {
 
+    @Autowired
+    private LoginService loginService;
+
+    /**
+     * 账户登录
+     *
+     * @param info 账户名、密码等
+     * @return 登录后的唯一标识
+     */
     @PostMapping("/login")
-   public ResultResponse<String> login() {
-       return null;
-   }
+    @Log(controllerName = "LoginController", remark = "账户登录")
+    public ResultResponse<Map<String, Object>> login(@RequestBody LoginAccountInfo info) {
+       return loginService.login(info);
+    }
+
+    /**
+     * 账户注销
+     *
+     * @param request 请求参数
+     * @return {@link ResultResponse}
+     */
+    @DeleteMapping("/logout")
+    @Log(controllerName = "LoginController", remark = "账户注销")
+    public ResultResponse<?> logout(HttpServletRequest request) {
+        return loginService.logout(request);
+    }
 }
