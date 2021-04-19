@@ -38,4 +38,14 @@ public class LoginAccountDTO implements Serializable {
      * 权限列表
      */
     private Set<String> perms;
+
+    /**
+     * 登录时间
+     */
+    private Long loginTime;
+
+    /**
+     * 过期时间
+     */
+    private Long expireTime;
 }
