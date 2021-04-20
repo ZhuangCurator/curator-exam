@@ -123,4 +123,16 @@ public class InfoAccountController {
     ResultResponse<String> removeInfoAccount(@PathVariable("infoAccountId") String infoAccountId) {
         return accountService.removeInfoAccount(infoAccountId);
     }
+
+    /**
+     * 添加超级管理员账户(仅供测试使用)
+     *
+     * @param info 账户信息
+     * @return {@link ResultResponse}
+     */
+    @PostMapping
+    @Log(controllerName = "InfoAccountController", remark = "添加超级管理员账户")
+    ResultResponse<InfoAccountDTO> saveInfoSuperAdminAccount() {
+        return accountService.saveInfoSuperAdminAccount();
+    }
 }

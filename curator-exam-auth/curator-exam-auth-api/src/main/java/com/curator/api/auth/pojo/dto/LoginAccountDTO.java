@@ -35,6 +35,11 @@ public class LoginAccountDTO implements Serializable {
     private String token;
 
     /**
+     * 角色名
+     */
+    private String roleName;
+
+    /**
      * 权限列表
      */
     private Set<String> perms;

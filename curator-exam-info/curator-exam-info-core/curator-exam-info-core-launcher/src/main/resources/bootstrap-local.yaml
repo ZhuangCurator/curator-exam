@@ -21,6 +21,10 @@ dubbo:
     port: -1
   registry:
     address: nacos://127.0.0.1:8848
+    group: ${spring.profiles.active}-registry
   application:
     name: ${spring.application.name}
-
+  provider:
+    # 提供服务分组
+    group: ${spring.profiles.active}
+    timeout: 5000

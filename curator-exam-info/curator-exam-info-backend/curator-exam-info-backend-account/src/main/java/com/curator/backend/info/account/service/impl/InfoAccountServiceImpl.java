@@ -125,6 +125,12 @@ public class InfoAccountServiceImpl implements InfoAccountService {
         return ResultResponse.<String>builder().success("账户删除成功").data(infoAccountId).build();
     }
 
+    @Override
+    public ResultResponse<InfoAccountDTO> saveInfoSuperAdminAccount() {
+
+        return null;
+    }
+
     /**
      * 将 {@link InfoAccount} 转为 {@link InfoAccountDTO}
      *

@@ -3,8 +3,11 @@ package com.curator.backend.info.account.service;
 import com.curator.backend.info.account.entity.dto.InfoAccountDTO;
 import com.curator.backend.info.account.entity.vo.info.InfoAccountInfo;
 import com.curator.backend.info.account.entity.vo.search.InfoAccountSearch;
+import com.curator.common.annotation.Log;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -65,4 +68,12 @@ public interface InfoAccountService {
      * @return {@link ResultResponse}
      */
     ResultResponse<String> removeInfoAccount(String infoAccountId);
+
+    /**
+     * 添加超级管理员账户(仅供测试使用)
+     *
+     * @param info 账户信息
+     * @return {@link ResultResponse}
+     */
+    ResultResponse<InfoAccountDTO> saveInfoSuperAdminAccount();
 }
