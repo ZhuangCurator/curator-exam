@@ -1,8 +1,8 @@
 package com.curator.common.aspect;
 
-import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.curator.common.annotation.Log;
+import com.curator.common.constant.CommonConstant;
 import com.curator.common.entity.LogResult;
 import com.curator.common.enums.LogStatusEnum;
 import com.curator.common.util.IpUtil;
@@ -75,11 +75,11 @@ public class LogAspect {
      * @param e 异常
      */
     @AfterThrowing(value = "logPointCut()",throwing = "e")
-    public void afterThrowing(JoinPoint joinPoint, Exception e){
+    public void afterThrowing(JoinPoint joinPoint, Throwable e){
         handleLog(joinPoint, e, null);
     }
 
-    private void handleLog(final JoinPoint joinPoint, final Exception e, Object jsonResult) {
+    private void handleLog(final JoinPoint joinPoint, final Throwable e, Object jsonResult) {
         try {
             Signature signature = joinPoint.getSignature();
             MethodSignature methodSignature = (MethodSignature) signature;
@@ -89,7 +89,12 @@ public class LogAspect {
 
             // 保存数据库日志
             LogResult logInfo = new LogResult();
+            logInfo.setCreateAccountName(ServletUtil.getParameter(CommonConstant.HTTP_HEADER_ACCOUNT_NAME));
+            logInfo.setCreateAccountId(ServletUtil.getParameter(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
+            logInfo.setParentAccountId(ServletUtil.getParameter(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
+            // 应用名
             logInfo.setApplicationName(environment.getProperty("spring.application.name"));
+            // 请求状态
             logInfo.setStatus(LogStatusEnum.NORMAL.getStatus());
             // 请求的地址
             String ip = IpUtil.getIpAddr(ServletUtil.getRequest());
@@ -98,11 +103,6 @@ public class LogAspect {
             logInfo.setResultResponse(JsonUtil.obj2String(jsonResult));
 
             logInfo.setRequestUrl(ServletUtil.getRequest().getRequestURI());
-//            HttpServletRequest request = ServletUtil.getRequest();
-//            String username = request.getHeader(CommonConstants.HTTP_HEADER_USERNAME);
-//            if (!StringUtils.isEmpty(username)) {
-//                operLog.setOperatorName(username);
-//            }
 
             if (e != null) {
                 logInfo.setStatus(LogStatusEnum.EXCEPTION.getStatus());

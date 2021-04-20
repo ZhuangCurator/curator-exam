@@ -1,11 +1,12 @@
 server:
-  port: 9030
+  port: 9040
 spring:
   profiles:
     active: local
   application:
     name: curator-exam-auth-core
-
+  main:
+    allow-bean-definition-overriding: true
 # 配置监控
 management:
   endpoints:

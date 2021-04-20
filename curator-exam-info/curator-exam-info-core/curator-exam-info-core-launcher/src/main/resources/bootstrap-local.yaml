@@ -24,7 +24,10 @@ dubbo:
     group: ${spring.profiles.active}-registry
   application:
     name: ${spring.application.name}
+    id: ${spring.application.name}
   provider:
     # 提供服务分组
     group: ${spring.profiles.active}
     timeout: 5000
+  cloud:
+    subscribed-services: ''

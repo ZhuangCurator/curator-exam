@@ -9,18 +9,19 @@ spring:
       config:
         server-addr: 127.0.0.1:8848
         file-extension: yaml
-        group: curator-exam-info-backend
+        group: curator-exam-gateway
         namespace: 55ba0dec-3601-4171-83d7-d5b3a70bebad
+  redis:
+    host: 139.196.12.144
+    port: 6379
+    password: LIUjun033453!
 
-# rocketmq 配置
-rocketmq:
-  logAspect: true
-  name-server: 139.196.12.144:9876
-  producer:
-    group: CuratorExamInfoGroup
-
-minio:
-  url: http://139.196.12.144:9000/
-  accessKey: minioadmin
-  secretKey: minioadmin
-  bucketName: log-bucket
+curator:
+  gateway:
+    url:
+      whites:
+        # 登录方法
+        - /login
+      blacks:
+        # 注销方法
+        - /logout

@@ -1,6 +1,7 @@
 package com.curator.backend.info.account.entity.dto;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.curator.api.info.enums.InfoAccountStatusEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -47,9 +48,19 @@ public class InfoAccountDTO implements Serializable {
     private Integer accountStatus;
 
     /**
+     * 账户状态描述
+     */
+    private String accountStatusDesc;
+
+    /**
      * 账户角色
      */
     private String roleId;
+
+    /**
+     * 角色名称
+     */
+    private String roleName;
 
     /**
      * 父账号id
@@ -81,4 +92,7 @@ public class InfoAccountDTO implements Serializable {
      */
     private LocalDateTime updateTime;
 
+    public String getAccountStatusDesc() {
+        return InfoAccountStatusEnum.getDesc(accountStatus);
+    }
 }

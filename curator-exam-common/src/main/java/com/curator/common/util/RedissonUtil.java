@@ -2,6 +2,8 @@ package com.curator.common.util;
 
 import org.redisson.Redisson;
 import org.redisson.api.*;
+import org.redisson.client.codec.Codec;
+import org.redisson.codec.JsonJacksonCodec;
 import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,6 +35,8 @@ public class RedissonUtil {
     @PostConstruct
     public void init() {
         Config config = new Config();
+        //使用json序列化方式
+        config.setCodec(new JsonJacksonCodec());
         config.useSingleServer()
                 .setAddress("redis://" + host + ":" + port)
                 .setPassword(password);

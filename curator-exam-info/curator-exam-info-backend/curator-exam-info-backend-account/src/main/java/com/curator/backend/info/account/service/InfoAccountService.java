@@ -9,6 +9,7 @@ import com.curator.common.support.ResultResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -51,7 +52,7 @@ public interface InfoAccountService {
      * @param info 账户信息
      * @return {@link ResultResponse}
      */
-    ResultResponse<InfoAccountDTO> saveInfoAccount(InfoAccountInfo info);
+    ResultResponse<InfoAccountDTO> saveInfoAccount(InfoAccountInfo info, HttpServletRequest request);
 
     /**
      * 编辑账户

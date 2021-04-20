@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration  scan="true" scanPeriod="60 seconds" debug="false">
-    <contextName>curator-exam-auth-core</contextName>
-    <property name="log.path" value="/data/com/curator/log/curator-exam-auth-core" />
+    <contextName>curator-exam-gateway</contextName>
+    <property name="log.path" value="/data/com/curator/log/curator-exam-gateway" />
     <!--输出到控制台-->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <!-- 临界值过滤 -->
@@ -15,9 +15,9 @@
 
     <!--输出到文件-->
     <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${log.path}/curator-exam-auth-core.log</file>
+        <file>${log.path}/curator-exam-gateway.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/curator-exam-auth-core.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <fileNamePattern>${log.path}/curator-exam-gateway.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
             <!-- 日志保存周期 -->
             <maxHistory>30</maxHistory>
             <!-- 总大小 -->
