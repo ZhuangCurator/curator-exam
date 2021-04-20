@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.curator.api.auth.enums.InfoAccountStatusEnum;
 import com.curator.api.auth.pojo.dto.LoginAccountDTO;
 import com.curator.api.auth.pojo.vo.LoginAccountInfo;
+import com.curator.api.info.provider.InfoAccountProvider;
+import com.curator.api.info.provider.InfoRoleProvider;
 import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
@@ -14,12 +16,15 @@ import com.curator.common.util.ServletUtil;
 import com.curator.core.auth.entity.InfoAccount;
 import com.curator.core.auth.mapper.InfoAccountMapper;
 import com.curator.core.auth.service.LoginService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,6 +38,10 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private InfoAccountMapper accountMapper;
+    @DubboReference
+    private InfoAccountProvider accountProvider;
+    @DubboReference
+    private InfoRoleProvider roleProvider;
 
     @Override
     public ResultResponse<Map<String, Object>> login(LoginAccountInfo info) {
@@ -84,11 +93,17 @@ public class LoginServiceImpl implements LoginService {
         // 生成token
         String token = IdUtil.fastUUID();
         long loginTime = System.currentTimeMillis();
+        // 角色名
+        ResultResponse<String> roleNameRes = roleProvider.getRoleName(account.getRoleId());
+        // 权限标识
+        ResultResponse<Set<String>> permsRes = accountProvider.getAccountAllPerms(account.getAccountId());
         LoginAccountDTO accountDTO = LoginAccountDTO.builder()
                 .token(token)
                 .accountId(account.getAccountId())
                 .parentAccountId(account.getParentAccountId())
                 .accountName(account.getAccountName())
+                .roleName(Boolean.TRUE.equals(roleNameRes.getSucceeded()) ? roleNameRes.getData() : "角色不存在")
+                .perms(Boolean.TRUE.equals(permsRes.getSucceeded()) ? permsRes.getData() : new HashSet<>())
                 .loginTime(loginTime)
                 .expireTime(loginTime + CommonConstant.TOKEN_EXPIRE_TIME * 1000)
                 .build();
