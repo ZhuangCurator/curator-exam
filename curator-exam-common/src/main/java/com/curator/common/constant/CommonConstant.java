@@ -32,4 +32,36 @@ public class CommonConstant {
      * 默认的超级管理员角色名
      */
     public static final String DEFAULT_SUPER_ADMIN_ROLE = "SUPER_ADMIN_ROLE";
+
+    /**
+     * 默认的超级管理员名
+     */
+    public static final String DEFAULT_SUPER_ADMIN = "SUPER_ADMIN";
+
+    /**
+     * 防护网关请求头TOKEN名称
+     */
+    public static final String CLOUD_GATEWAY_TOKEN_HEADER = "CURATOR_GATEWAY_TOKEN";
+
+    /**
+     * 防护网关请求头TOKEN值
+     */
+    public static final String CLOUD_GATEWAY_TOKEN_VALUE = "CURATOR:GATEWAY:T9KaDB3FLPxRnX";
+
+    /**
+     * 账户id标识
+     */
+    public static final String HTTP_HEADER_ACCOUNT_ID = "accountId";
+
+    /**
+     * 父级账户id标识
+     */
+    public static final String HTTP_HEADER_ACCOUNT_PARENT_ID = "parentAccountId";
+
+    /**
+     * 账户名标识
+     */
+    public static final String HTTP_HEADER_ACCOUNT_NAME = "accountName";
+
+
 }

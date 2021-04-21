@@ -33,25 +33,6 @@ public class InfoAccountController {
     @Autowired
     private InfoAccountService accountService;
 
-    @GetMapping("/redisson/cache")
-    public void testRedissonCache() {
-        String str = "I AM A STUDENT";
-        RedissonUtil.setCacheObject("str", str);
-        String cacheStr = RedissonUtil.getCacheObject("str");
-        System.out.println(cacheStr);
-        System.out.println("================================");
-        ResultResponse<String> resultResponse = ResultResponse.<String>builder().success("成功").data("测试").build();
-        RedissonUtil.setCacheObject("res", resultResponse);
-        ResultResponse<String> cacheRes = RedissonUtil.getCacheObject("res");
-        System.out.println(JsonUtil.obj2String(cacheRes));
-        System.out.println("================================");
-        List<String> list = Arrays.asList("aa", "bb", "cc");
-        RedissonUtil.setCacheList("list", list);
-        RedissonUtil.setCacheListValue("list", "dd");
-        List<String> cacheList = RedissonUtil.getCacheList("list");
-        System.out.println(JsonUtil.obj2String(cacheList));
-    }
-    
     /**
      * 账户分页查询
      *
@@ -96,8 +77,8 @@ public class InfoAccountController {
      */
     @PostMapping
     @Log(controllerName = "InfoAccountController", remark = "添加账户")
-    ResultResponse<InfoAccountDTO> saveInfoAccount(@RequestBody InfoAccountInfo info) {
-        return accountService.saveInfoAccount(info);
+    ResultResponse<InfoAccountDTO> saveInfoAccount(@RequestBody InfoAccountInfo info, HttpServletRequest request) {
+        return accountService.saveInfoAccount(info, request);
     }
 
     /**
@@ -125,12 +106,12 @@ public class InfoAccountController {
     }
 
     /**
-     * 添加超级管理员账户(仅供测试使用)
+     * 添加超级管理员账户(仅供测试时初始化超级管理员调用)
      *
      * @param info 账户信息
      * @return {@link ResultResponse}
      */
-    @PostMapping
+    @PostMapping("/super/admin")
     @Log(controllerName = "InfoAccountController", remark = "添加超级管理员账户")
     ResultResponse<InfoAccountDTO> saveInfoSuperAdminAccount() {
         return accountService.saveInfoSuperAdminAccount();

@@ -1,7 +1,9 @@
 package com.curator.api.auth.pojo.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -12,6 +14,8 @@ import java.util.Set;
  */
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginAccountDTO implements Serializable {
 
     /**

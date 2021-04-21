@@ -73,7 +73,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public ResultResponse<?> logout(HttpServletRequest request) {
-        String token = ServletUtil.getParameter(CommonConstant.TOKEN_HEADER);
+        String token = request.getHeader(CommonConstant.TOKEN_HEADER);
         if(Help.isNotEmpty(token) && token.startsWith(CommonConstant.TOKEN_PREFIX)) {
             token = token.replaceAll(CommonConstant.TOKEN_PREFIX, "");
         }
@@ -105,13 +105,13 @@ public class LoginServiceImpl implements LoginService {
                 .roleName(Boolean.TRUE.equals(roleNameRes.getSucceeded()) ? roleNameRes.getData() : "角色不存在")
                 .perms(Boolean.TRUE.equals(permsRes.getSucceeded()) ? permsRes.getData() : new HashSet<>())
                 .loginTime(loginTime)
-                .expireTime(loginTime + CommonConstant.TOKEN_EXPIRE_TIME * 1000)
+                .expireTime(loginTime + CommonConstant.TOKEN_EXPIRE_TIME * 60 * 1000)
                 .build();
         // 保存或更新用户token
         Map<String, Object> map = new HashMap<>(8);
-        map.put("access_token", token);
+        map.put("access_token", CommonConstant.TOKEN_PREFIX + token);
         map.put("expire_time", CommonConstant.TOKEN_EXPIRE_TIME);
-        RedissonUtil.setCacheObject(CommonConstant.CACHE_ACCOUNT_PREFIX + token, accountDTO, CommonConstant.TOKEN_EXPIRE_TIME, TimeUnit.SECONDS);
+        RedissonUtil.setCacheObject(CommonConstant.CACHE_ACCOUNT_PREFIX + token, accountDTO, CommonConstant.TOKEN_EXPIRE_TIME, TimeUnit.MINUTES);
         return map;
     }
 }

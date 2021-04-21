@@ -1,0 +1,51 @@
+server:
+  port: 9010
+spring:
+  profiles:
+    active: local
+  application:
+    name: curator-exam-gateway
+  cloud:
+    # 网关配置
+    gateway:
+      discovery:
+        locator:
+          lowerCaseServiceId: true
+          enabled: true
+      routes:
+        # 认证中心
+        - id: curator-exam-auth-core
+          uri: lb://curator-exam-auth-core
+          predicates:
+            - Path=/examAuthCore/**
+          filters:
+            - StripPrefix=1
+        # 信息后台服务
+        - id: curator-exam-info-backend
+          uri: lb://curator-exam-info-backend
+          predicates:
+            - Path=/examInfoBackend/**
+          filters:
+            - StripPrefix=1
+        # 信息核心服务
+        - id: curator-exam-info-core
+          uri: lb://curator-exam-info-core
+          predicates:
+            - Path=/examInfoCore/**
+          filters:
+            - StripPrefix=1
+        # 日志核心服务
+        - id: curator-exam-log-core
+          uri: lb://curator-exam-log-core
+          predicates:
+            - Path=/examLogCore/**
+          filters:
+            - StripPrefix=1
+
+# 配置监控
+management:
+  endpoints:
+    web:
+      exposure:
+        # spring boot actuator 监控所有端点
+        include: '*'
