@@ -1,6 +1,5 @@
 package com.curator.exam.gateway.filter;
 
-
 import com.curator.api.auth.pojo.dto.LoginAccountDTO;
 import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.ResultResponse;
@@ -42,7 +41,7 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.*
 @SuppressWarnings("rawtypes")
 @Slf4j
 @Component
-public class GatewayRequestFilter implements GlobalFilter {
+public class AuthFilter implements GlobalFilter {
 
     @Autowired
     private GatewayUrlProperties gatewayUrlProperties;
@@ -55,13 +54,16 @@ public class GatewayRequestFilter implements GlobalFilter {
         if (checkBlackUriResult != null) {
             return checkBlackUriResult;
         }
-        String url = exchange.getRequest().getURI().getPath();
         // 保存访问日志
         accessLog(exchange);
-        // 验证白名单
-        List<String> whiteUriList = gatewayUrlProperties.getWhites();
-        if (Help.matches(url, whiteUriList)){
-            return chain.filter(handleServerWebExchange(exchange));
+        LinkedHashSet<URI> uriSet = exchange.getAttribute(GATEWAY_ORIGINAL_REQUEST_URL_ATTR);
+        if (Help.isNotEmpty(uriSet)) {
+            // 验证白名单
+            List<String> whiteUriList = gatewayUrlProperties.getWhites();
+            URI originUri = uriSet.stream().findFirst().orElse(null);
+            if (Help.matches(originUri.getPath(), whiteUriList)) {
+                return chain.filter(handleServerWebExchange(exchange));
+            }
         }
         // 获取token
         String token = exchange.getRequest().getHeaders().getFirst(CommonConstant.TOKEN_HEADER);
@@ -71,11 +73,11 @@ public class GatewayRequestFilter implements GlobalFilter {
         } else {
             token = token.replaceAll(CommonConstant.TOKEN_PREFIX, "");
             LoginAccountDTO accountDTO = RedissonUtil.getCacheObject(CommonConstant.CACHE_ACCOUNT_PREFIX + token);
-            if(Help.isEmpty(accountDTO)) {
+            if (Help.isEmpty(accountDTO)) {
                 ResultResponse resultResponse = ResultResponse.builder().failure("登录状态已过期").build();
                 return makeResponse(exchange, resultResponse);
             }
-            if(Help.isEmpty(accountDTO.getAccountName()) || Help.isEmpty(accountDTO.getAccountId())) {
+            if (Help.isEmpty(accountDTO.getAccountName()) || Help.isEmpty(accountDTO.getAccountId())) {
                 ResultResponse resultResponse = ResultResponse.builder().failure("令牌验证失败").build();
                 return makeResponse(exchange, resultResponse);
             }
@@ -101,11 +103,16 @@ public class GatewayRequestFilter implements GlobalFilter {
      * @return
      */
     private Mono<Void> checkBlackUri(ServerWebExchange exchange) {
-        String url = exchange.getRequest().getURI().getPath();
+        LinkedHashSet<URI> uriSet = exchange.getAttribute(GATEWAY_ORIGINAL_REQUEST_URL_ATTR);
         AtomicBoolean shouldForward = new AtomicBoolean(true);
-        List<String> blackUriList = gatewayUrlProperties.getBlacks();
-        if(Help.matches(url, blackUriList)) {
-            shouldForward.set(false);
+        if (Help.isNotEmpty(uriSet)) {
+            URI originUri = uriSet.stream().findFirst().orElse(null);
+            List<String> blackUriList = gatewayUrlProperties.getBlacks();
+            if (Help.isNotEmpty(originUri.getPath()) && Help.isNotEmpty(blackUriList)) {
+                if (Help.matches(originUri.getPath(), blackUriList)) {
+                    shouldForward.set(false);
+                }
+            }
         }
         if (!shouldForward.get()) {
             ResultResponse resultResponse = ResultResponse.builder().failure("该URI不允许外部访问").build();
@@ -151,7 +158,7 @@ public class GatewayRequestFilter implements GlobalFilter {
      */
     private ServerWebExchange handleServerWebExchange(ServerWebExchange exchange) {
         // 网关防护token
-        byte[] gatewayToken =  Base64Utils.encode(CommonConstant.CLOUD_GATEWAY_TOKEN_VALUE.getBytes());
+        byte[] gatewayToken = Base64Utils.encode(CommonConstant.CLOUD_GATEWAY_TOKEN_VALUE.getBytes());
         // 设置网关防护token到请求头
         ServerHttpRequest mutableReq = exchange.getRequest().mutate()
                 .header(CommonConstant.CLOUD_GATEWAY_TOKEN_HEADER, new String(gatewayToken))
