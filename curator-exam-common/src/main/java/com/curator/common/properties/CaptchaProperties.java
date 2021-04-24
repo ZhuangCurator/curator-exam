@@ -18,20 +18,20 @@ public class CaptchaProperties {
     /**
      * 验证码字符长度
      */
-    private String length;
+    private Integer length;
 
     /**
      * 验证码图片宽度
      */
-    private String width;
+    private Integer width;
 
     /**
      * 验证码图片高度
      */
-    private String height;
+    private Integer height;
 
     /**
      * 验证码过期时间(单位: 秒)
      */
-    private Long expire;
+    private Integer expire;
 }
