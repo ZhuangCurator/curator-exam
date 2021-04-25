@@ -1,10 +1,13 @@
-package com.curator.common.captcha.generator;
+package com.curator.core.auth.captcha.generator;
 
 import cn.hutool.core.util.RandomUtil;
-import com.curator.common.properties.Captcha;
-import com.curator.common.properties.CaptchaProperties;
+import com.curator.api.auth.pojo.dto.CaptchaDTO;
+import com.curator.core.auth.properties.CaptchaProperties;
+import org.springframework.stereotype.Component;
+
 
 import javax.servlet.http.HttpServletRequest;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
@@ -13,7 +16,8 @@ import java.awt.image.BufferedImage;
  * @author Jun
  * @date 2021/4/23
  */
-public class ChineseCaptchaGenerator extends CaptchaGenerator{
+@Component
+public class ChineseCaptchaGenerator extends CaptchaGenerator {
 
     /**
      * 常用汉字
@@ -23,7 +27,7 @@ public class ChineseCaptchaGenerator extends CaptchaGenerator{
     private CaptchaProperties captchaProperties;
 
     @Override
-    public Captcha generate(HttpServletRequest request) {
+    public CaptchaDTO generate(HttpServletRequest request) {
         // 可以在页面上配置图片验证码的长宽
         int width = width(captchaProperties, request);
         int height = height(captchaProperties, request);
@@ -31,7 +35,12 @@ public class ChineseCaptchaGenerator extends CaptchaGenerator{
         String randomStr = randomStr(captchaProperties.getLength());
         BufferedImage image = createImage(captchaProperties.getLength(), width, height, randomStr);
 
-        return new Captcha(image, randomStr, captchaProperties.getExpire());
+        return new CaptchaDTO(image, randomStr, captchaProperties.getExpire());
+    }
+
+    @Override
+    public Font font() {
+        return new Font("楷体", Font.PLAIN, 30);
     }
 
     private static String randomStr(int len) {

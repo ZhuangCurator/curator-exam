@@ -1,4 +1,4 @@
-package com.curator.core.auth.config;
+package com.curator.core.auth.configure;
 
 import com.curator.common.util.Help;
 import org.springframework.boot.ApplicationArguments;

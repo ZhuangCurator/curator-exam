@@ -1,4 +1,4 @@
-package com.curator.common.properties;
+package com.curator.api.auth.pojo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +16,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Captcha implements Serializable {
+public class CaptchaDTO implements Serializable {
 
     /**
      * 图片对象
@@ -31,6 +31,6 @@ public class Captcha implements Serializable {
     /**
      * 过期时间
      */
-    private long expireIn;
+    private Long expireIn;
 
 }

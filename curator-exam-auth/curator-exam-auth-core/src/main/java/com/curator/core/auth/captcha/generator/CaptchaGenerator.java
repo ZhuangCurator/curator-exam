@@ -1,7 +1,7 @@
-package com.curator.common.captcha.generator;
+package com.curator.core.auth.captcha.generator;
 
-import com.curator.common.properties.Captcha;
-import com.curator.common.properties.CaptchaProperties;
+import com.curator.api.auth.pojo.dto.CaptchaDTO;
+import com.curator.core.auth.properties.CaptchaProperties;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +24,7 @@ public abstract class CaptchaGenerator {
      * @param request http请求
      * @return 验证码对象
      */
-    public abstract Captcha generate(HttpServletRequest request);
+    public abstract CaptchaDTO generate(HttpServletRequest request);
 
     /**
      * 获取图片宽度
@@ -42,6 +42,15 @@ public abstract class CaptchaGenerator {
      */
     public int height(CaptchaProperties captchaProperties, HttpServletRequest request){
         return ServletRequestUtils.getIntParameter(request,"height",captchaProperties.getWidth());
+    }
+
+    /**
+     * 获取字体
+     *
+     * @return
+     */
+    public Font font() {
+        return new Font("Times New Roman", Font.ITALIC, 30);
     }
 
     /**
@@ -83,7 +92,7 @@ public abstract class CaptchaGenerator {
         // 填充背景
         g.setColor(getRandColor(200, 250));
         g.fillRect(0, 0, width, height);
-        g.setFont(new Font("Times New Roman", Font.ITALIC, 30));
+        g.setFont(font());
         // 随机画干扰线
         int num = 155;
         IntStream.range(0, num).map(i1 -> random.nextInt(width)).forEach(x -> {

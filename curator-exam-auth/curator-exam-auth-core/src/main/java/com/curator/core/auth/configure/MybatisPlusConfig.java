@@ -1,4 +1,4 @@
-package com.curator.core.auth.config;
+package com.curator.core.auth.configure;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;

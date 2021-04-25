@@ -1,4 +1,4 @@
-package com.curator.common.properties;
+package com.curator.core.auth.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -18,20 +18,20 @@ public class CaptchaProperties {
     /**
      * 验证码字符长度
      */
-    private Integer length;
+    private Integer length = 4;
 
     /**
      * 验证码图片宽度
      */
-    private Integer width;
+    private Integer width = 200;
 
     /**
      * 验证码图片高度
      */
-    private Integer height;
+    private Integer height = 100;
 
     /**
      * 验证码过期时间(单位: 秒)
      */
-    private Integer expire;
+    private Long expire = 300L;
 }

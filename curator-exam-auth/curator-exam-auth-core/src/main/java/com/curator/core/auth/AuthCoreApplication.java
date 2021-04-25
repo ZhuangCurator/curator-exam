@@ -8,9 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @date 2021/4/19
  */
 @SpringBootApplication
-public class AuthApplication {
+public class AuthCoreApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AuthApplication.class, args);
+        SpringApplication.run(AuthCoreApplication.class, args);
     }
 }

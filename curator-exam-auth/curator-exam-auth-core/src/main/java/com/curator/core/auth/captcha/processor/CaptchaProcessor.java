@@ -1,4 +1,4 @@
-package com.curator.common.captcha.processor;
+package com.curator.core.auth.captcha.processor;
 
 import com.curator.common.support.ResultResponse;
 
@@ -21,7 +21,7 @@ public interface CaptchaProcessor {
      * @param response
      * @return
      */
-    ResultResponse<HashMap<String, Object>> create(HttpServletRequest request, HttpServletResponse response);
+    ResultResponse<HashMap<String, Object>> create(HttpServletRequest request, HttpServletResponse response, String generator) throws Exception;
 
     /**
      * 校验验证码
