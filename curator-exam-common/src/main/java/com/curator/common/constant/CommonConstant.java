@@ -63,5 +63,8 @@ public class CommonConstant {
      */
     public static final String HTTP_HEADER_ACCOUNT_NAME = "accountName";
 
-
+    /**
+     * 前后分离时 发送到前端的验证码图片经过base64加密后 加上此前缀
+     */
+    public static final String BASE64_IMAGE_PREFIX = "data:image/jpeg;base64,";
 }

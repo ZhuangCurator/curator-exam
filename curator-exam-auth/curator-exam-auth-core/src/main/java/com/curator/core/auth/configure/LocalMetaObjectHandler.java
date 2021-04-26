@@ -1,4 +1,4 @@
-package com.curator.core.auth.config;
+package com.curator.core.auth.configure;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
