@@ -28,11 +28,23 @@ public class LoginController {
      * @param info 账户名、密码等
      * @return 登录后的唯一标识
      */
-    @PostMapping("/login")
-    @Log(controllerName = "LoginController", remark = "账户登录")
-    public ResultResponse<Map<String, Object>> login(@RequestBody LoginAccountInfo info) {
+    @PostMapping("/login/account")
+    @Log(controllerName = "LoginController", remark = "账户密码登录")
+    public ResultResponse<Map<String, Object>> login(LoginAccountInfo info) {
        return loginService.login(info);
     }
+
+    // /**
+    //  * 手机号登录
+    //  *
+    //  * @param info 账户名、密码等
+    //  * @return 登录后的唯一标识
+    //  */
+    // @PostMapping("/login/phone")
+    // @Log(controllerName = "LoginController", remark = "账户登录")
+    // public ResultResponse<Map<String, Object>> login(LoginAccountInfo info) {
+    //     return loginService.login(info);
+    // }
 
     /**
      * 账户注销

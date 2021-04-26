@@ -29,5 +29,5 @@ public interface CaptchaProcessor {
      * @param request
      * @return
      */
-    ResultResponse<?> validate(HttpServletRequest request);
+    void validate(HttpServletRequest request);
 }

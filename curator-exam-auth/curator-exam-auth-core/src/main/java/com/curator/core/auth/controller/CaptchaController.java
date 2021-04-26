@@ -39,4 +39,16 @@ public class CaptchaController {
             @PathVariable("type") String type,  @PathVariable(value = "generator", required = false) String generator) throws Exception{
         return captchaProcessorHolder.findValidateCodeProcessor(type).create(request, response, generator);
     }
+
+    /**
+     * 验证码异常处理
+     *
+     * @param request 请求
+     * @return
+     */
+    @GetMapping("/captcha/exception")
+    public ResultResponse<?> exception(HttpServletRequest request) {
+        String message = (String) request.getAttribute("message");
+        return ResultResponse.builder().failure(message).build();
+    }
 }

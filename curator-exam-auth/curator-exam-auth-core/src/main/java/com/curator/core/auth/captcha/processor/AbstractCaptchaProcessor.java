@@ -6,9 +6,10 @@ import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.common.util.RedissonUtil;
 import com.curator.core.auth.captcha.generator.CaptchaGenerator;
-import com.curator.core.auth.captcha.generator.SmsCaptchaGenerator;
+import com.curator.core.auth.exception.CaptchaException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.ServletRequestUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,8 +34,24 @@ public abstract class AbstractCaptchaProcessor implements CaptchaProcessor {
     }
 
     @Override
-    public ResultResponse<?> validate(HttpServletRequest request) {
-        return null;
+    public void validate(HttpServletRequest request) {
+        String uuid = ServletRequestUtils.getStringParameter(request, "uuid", "");
+        if (Help.isEmpty(uuid)) {
+            throw new CaptchaException("验证码唯一标识不能为空!");
+        }
+        String codeInRedis = RedissonUtil.getCacheObject(getRedisCacheKey(uuid));
+        String codeInRequest = ServletRequestUtils.getStringParameter(request,
+                "captcha", "");
+        if (Help.isEmpty(codeInRequest)) {
+            throw new CaptchaException("验证码的值不能为空!");
+        } else if (Help.isEmpty(codeInRedis)) {
+            throw new CaptchaException("验证码已过期!");
+        } else if (!codeInRedis.equals(codeInRequest)) {
+            throw new CaptchaException("请输入正确的验证码!");
+        } else {
+            // 校验成功 删除缓存中的验证码
+            RedissonUtil.deleteObject(getRedisCacheKey(uuid));
+        }
     }
 
     /**
@@ -52,15 +69,14 @@ public abstract class AbstractCaptchaProcessor implements CaptchaProcessor {
      * 生成校验码
      *
      * @param request
-     *
      * @param generator 生成器简称，若一个处理器对应多个生成器，则由此判断使用哪个生成器
      * @return
      */
     private CaptchaDTO generate(HttpServletRequest request, String generator) {
         String generatorName;
-        if(Help.isNotEmpty(generator)) {
+        if (Help.isNotEmpty(generator)) {
             generatorName = generator.trim().toLowerCase() + CaptchaGenerator.class.getSimpleName();
-        }else {
+        } else {
             String className = getClass().getSimpleName();
             String type = StringUtils.substringBefore(className, "CaptchaProcessor").toLowerCase();
             generatorName = type + CaptchaGenerator.class.getSimpleName();
