@@ -21,7 +21,8 @@ curator:
     url:
       whites:
         # 登录方法
-        - /login
+        - /examAuthCore/login
+        - /examAuthCore/captcha/.*
       blacks:
         # 注销方法
-        - /logout
+        - /examAuthCore/logout

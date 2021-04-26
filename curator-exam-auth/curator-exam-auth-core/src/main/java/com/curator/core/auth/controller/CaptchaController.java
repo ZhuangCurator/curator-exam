@@ -6,6 +6,7 @@ import com.curator.core.auth.captcha.processor.CaptchaProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +47,7 @@ public class CaptchaController {
      * @param request 请求
      * @return
      */
-    @GetMapping("/captcha/exception")
+    @PostMapping("/captcha/exception")
     public ResultResponse<?> exception(HttpServletRequest request) {
         String message = (String) request.getAttribute("message");
         return ResultResponse.builder().failure(message).build();
