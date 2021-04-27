@@ -41,7 +41,7 @@ public class InfoAccountController {
      */
     @GetMapping("/page")
     @Log(controllerName = "InfoAccountController", remark = "账户分页查询")
-    ResultResponse<PageResult<InfoAccountDTO>> pageWithInfoAccount(HttpServletRequest re, InfoAccountSearch search) {
+    ResultResponse<PageResult<InfoAccountDTO>> pageWithInfoAccount(InfoAccountSearch search) {
         return accountService.pageWithInfoAccount(search);
     }
 

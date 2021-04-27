@@ -3,11 +3,11 @@ spring:
     nacos:
       discovery:
         # Nacos 服务注册中心地址
-        server-addr: 127.0.0.1:8848
+        server-addr: 127.0.0.1:9005
         namespace: 55ba0dec-3601-4171-83d7-d5b3a70bebad
         group: ${spring.profiles.active}-group
       config:
-        server-addr: 127.0.0.1:8848
+        server-addr: 127.0.0.1:9005
         file-extension: yaml
         group: curator-exam-auth-core
         namespace: 55ba0dec-3601-4171-83d7-d5b3a70bebad
