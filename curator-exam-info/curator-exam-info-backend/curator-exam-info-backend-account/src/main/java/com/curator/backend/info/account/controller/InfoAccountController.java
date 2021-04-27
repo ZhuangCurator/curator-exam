@@ -41,7 +41,7 @@ public class InfoAccountController {
      */
     @GetMapping("/page")
     @Log(controllerName = "InfoAccountController", remark = "账户分页查询")
-    ResultResponse<PageResult<InfoAccountDTO>> pageWithInfoAccount(HttpServletRequest re, InfoAccountSearch search) {
+    ResultResponse<PageResult<InfoAccountDTO>> pageWithInfoAccount(InfoAccountSearch search) {
         return accountService.pageWithInfoAccount(search);
     }
 
@@ -108,7 +108,6 @@ public class InfoAccountController {
     /**
      * 添加超级管理员账户(仅供测试时初始化超级管理员调用)
      *
-     * @param info 账户信息
      * @return {@link ResultResponse}
      */
     @PostMapping("/super/admin")

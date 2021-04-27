@@ -6,10 +6,10 @@ import com.curator.core.auth.exception.CaptchaException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 
 import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ import java.util.Set;
  * @author Jun
  * @date 2021/4/26
  */
-@Component
+@WebFilter
 public class CaptchaFilter implements Filter, InitializingBean {
 
     @Autowired
@@ -47,6 +47,7 @@ public class CaptchaFilter implements Filter, InitializingBean {
                 request.setAttribute("message", exception.getMessage());
                 // 请求转发
                 request.getRequestDispatcher("/captcha/exception").forward(request, response);
+                return;
             }
         }
         chain.doFilter(request, response);
@@ -60,7 +61,7 @@ public class CaptchaFilter implements Filter, InitializingBean {
     /**
      * 存放所有需要校验验证码的url
      */
-    private final HashMap<String, String> urlMap = new HashMap<>(8);
+    private HashMap<String, String> urlMap = new HashMap<>(8);
 
     @Override
     public void afterPropertiesSet() throws Exception {
