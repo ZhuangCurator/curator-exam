@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * <p>
  * 请求日志信息 前端控制器
@@ -33,7 +35,7 @@ public class InfoRequestLogController {
      * @return 分页结果
      */
     @GetMapping("/page")
-    ResultResponse<PageResult<InfoRequestLogDTO>> pageWithRequestLog(InfoRequestLogSearch search){
-        return requestLogService.pageWithRequestLog(search);
+    ResultResponse<PageResult<InfoRequestLogDTO>> pageWithRequestLog(InfoRequestLogSearch search, HttpServletRequest request){
+        return requestLogService.pageWithRequestLog(search, request);
     }
 }

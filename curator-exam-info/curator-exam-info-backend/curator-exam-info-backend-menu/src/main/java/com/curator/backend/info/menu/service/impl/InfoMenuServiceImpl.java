@@ -11,6 +11,7 @@ import com.curator.backend.info.menu.entity.vo.info.InfoMenuInfo;
 import com.curator.backend.info.menu.entity.vo.search.InfoMenuSearch;
 import com.curator.backend.info.menu.mapper.InfoMenuMapper;
 import com.curator.backend.info.menu.service.InfoMenuService;
+import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
@@ -18,6 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,16 +36,17 @@ public class InfoMenuServiceImpl implements InfoMenuService {
     private InfoMenuMapper menuMapper;
 
     @Override
-    public ResultResponse<PageResult<InfoMenuDTO>> pageWithInfoMenu(InfoMenuSearch search) {
+    public ResultResponse<PageResult<InfoMenuDTO>> pageWithInfoMenu(InfoMenuSearch search, HttpServletRequest request) {
         Page<InfoMenu> page = new Page<>(search.getCurrent(), search.getPageSize());
         QueryWrapper<InfoMenu> wrapper = new QueryWrapper<>();
         wrapper.like(Help.isNotEmpty(search.getMenuName()), "menu_name", search.getMenuName())
                 .eq(Help.isNotEmpty(search.getMenuType()), "menu_type", search.getMenuType())
                 .eq(Help.isNotEmpty(search.getMenuStatus()), "menu_status", search.getMenuStatus())
                 .orderByDesc("create_time");
-        if (Boolean.FALSE.equals(search.getSuperAdmin()) && Help.isNotEmpty(search.getCreateAccountId())) {
-            wrapper.and(wr -> wr.eq("create_account_id", search.getCreateAccountId())
-                    .or(w -> w.eq("parent_account_id", search.getCreateAccountId())));
+        if (Boolean.FALSE.equals(search.getSuperAdmin())) {
+            String createAccountId = request.getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+            wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
+                    .or(w -> w.eq("parent_account_id", createAccountId)));
         }
         IPage<InfoMenu> iPage = menuMapper.selectPage(page, wrapper);
         List<InfoMenuDTO> resultList = iPage.getRecords().stream()
@@ -57,14 +60,15 @@ public class InfoMenuServiceImpl implements InfoMenuService {
     }
 
     @Override
-    public ResultResponse<List<InfoMenuDTO>> listWithInfoMenu(InfoMenuSearch search) {
+    public ResultResponse<List<InfoMenuDTO>> listWithInfoMenu(InfoMenuSearch search, HttpServletRequest request) {
         QueryWrapper<InfoMenu> wrapper = new QueryWrapper<>();
         wrapper.like(Help.isNotEmpty(search.getMenuName()), "menu_name", search.getMenuName())
                 .eq("menu_status", InfoMenuStatusEnum.ENABLE.getStatus())
                 .orderByDesc("create_time");
-        if (Boolean.FALSE.equals(search.getSuperAdmin()) && Help.isNotEmpty(search.getCreateAccountId())) {
-            wrapper.and(wr -> wr.eq("create_account_id", search.getCreateAccountId())
-                    .or(w -> w.eq("parent_account_id", search.getCreateAccountId())));
+        if (Boolean.FALSE.equals(search.getSuperAdmin())) {
+            String createAccountId = request.getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+            wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
+                    .or(w -> w.eq("parent_account_id", createAccountId)));
         }
         List<InfoMenu> list = menuMapper.selectList(wrapper);
         List<InfoMenuDTO> resultList = list.stream().map(this::convertEntity).collect(Collectors.toList());

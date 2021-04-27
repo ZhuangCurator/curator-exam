@@ -41,8 +41,8 @@ public class InfoAccountController {
      */
     @GetMapping("/page")
     @Log(controllerName = "InfoAccountController", remark = "账户分页查询")
-    ResultResponse<PageResult<InfoAccountDTO>> pageWithInfoAccount(InfoAccountSearch search) {
-        return accountService.pageWithInfoAccount(search);
+    ResultResponse<PageResult<InfoAccountDTO>> pageWithInfoAccount(InfoAccountSearch search, HttpServletRequest request) {
+        return accountService.pageWithInfoAccount(search, request);
     }
 
     /**
@@ -53,20 +53,20 @@ public class InfoAccountController {
      */
     @GetMapping("/list")
     @Log(controllerName = "InfoAccountController", remark = "账户列表查询")
-    ResultResponse<List<InfoAccountDTO>> listWithInfoAccount(InfoAccountSearch search) {
-        return accountService.listWithInfoAccount(search);
+    ResultResponse<List<InfoAccountDTO>> listWithInfoAccount(InfoAccountSearch search, HttpServletRequest request) {
+        return accountService.listWithInfoAccount(search, request);
     }
 
     /**
      * 查询账户
      *
-     * @param InfoAccountId 账户ID
+     * @param id 账户ID
      * @return {@link ResultResponse}
      */
-    @GetMapping("/{InfoAccountId}")
+    @GetMapping("/{id}")
     @Log(controllerName = "InfoAccountController", remark = "单个查询账户")
-    ResultResponse<InfoAccountDTO> getInfoAccount(@PathVariable("InfoAccountId") String InfoAccountId) {
-        return accountService.getInfoAccount(InfoAccountId);
+    ResultResponse<InfoAccountDTO> getInfoAccount(@PathVariable("id") String id) {
+        return accountService.getInfoAccount(id);
     }
 
     /**

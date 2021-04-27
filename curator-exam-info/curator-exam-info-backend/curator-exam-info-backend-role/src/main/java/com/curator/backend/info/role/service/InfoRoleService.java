@@ -7,6 +7,7 @@ import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public interface InfoRoleService {
      * @param search 查询条件
      * @return {@link ResultResponse}
      */
-    ResultResponse<PageResult<InfoRoleDTO>> pageWithInfoRole(InfoRoleSearch search);
+    ResultResponse<PageResult<InfoRoleDTO>> pageWithInfoRole(InfoRoleSearch search, HttpServletRequest request);
 
     /**
      * 角色列表查询
@@ -33,7 +34,7 @@ public interface InfoRoleService {
      * @param search 查询条件
      * @return {@link ResultResponse}
      */
-    ResultResponse<List<InfoRoleDTO>> listWithInfoRole(InfoRoleSearch search);
+    ResultResponse<List<InfoRoleDTO>> listWithInfoRole(InfoRoleSearch search, HttpServletRequest request);
 
     /**
      * 查询角色
@@ -49,7 +50,7 @@ public interface InfoRoleService {
      * @param info 角色信息
      * @return {@link ResultResponse}
      */
-    ResultResponse<InfoRoleDTO> saveInfoRole(InfoRoleInfo info);
+    ResultResponse<InfoRoleDTO> saveInfoRole(InfoRoleInfo info, HttpServletRequest request);
 
     /**
      * 编辑角色

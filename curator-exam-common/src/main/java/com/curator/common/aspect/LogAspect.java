@@ -89,9 +89,9 @@ public class LogAspect {
 
             // 保存数据库日志
             LogResult logInfo = new LogResult();
-            logInfo.setCreateAccountName(ServletUtil.getParameter(CommonConstant.HTTP_HEADER_ACCOUNT_NAME));
-            logInfo.setCreateAccountId(ServletUtil.getParameter(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
-            logInfo.setParentAccountId(ServletUtil.getParameter(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
+            logInfo.setCreateAccountName(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_NAME));
+            logInfo.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
+            logInfo.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
             // 应用名
             logInfo.setApplicationName(environment.getProperty("spring.application.name"));
             // 请求状态

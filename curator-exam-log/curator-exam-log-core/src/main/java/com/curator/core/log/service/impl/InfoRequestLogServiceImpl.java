@@ -1,12 +1,12 @@
 package com.curator.core.log.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.curator.api.log.pojo.dto.InfoRequestLogDTO;
 import com.curator.api.log.pojo.vo.info.InfoRequestLogInfo;
 import com.curator.api.log.pojo.vo.seacrh.InfoRequestLogSearch;
+import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
@@ -17,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class InfoRequestLogServiceImpl implements InfoRequestLogService {
     private InfoRequestLogMapper requestLogMapper;
 
     @Override
-    public ResultResponse<PageResult<InfoRequestLogDTO>> pageWithRequestLog(InfoRequestLogSearch search) {
+    public ResultResponse<PageResult<InfoRequestLogDTO>> pageWithRequestLog(InfoRequestLogSearch search, HttpServletRequest request) {
         Page<InfoRequestLog> page = new Page<>(search.getCurrent(), search.getPageSize());
         QueryWrapper<InfoRequestLog> wrapper = new QueryWrapper<>();
         wrapper.like(Help.isNotEmpty(search.getApplicationName()), "application_name", search.getApplicationName())
@@ -45,9 +46,10 @@ public class InfoRequestLogServiceImpl implements InfoRequestLogService {
                 .like(Help.isNotEmpty(search.getRequestUrl()), "request_url", search.getRequestUrl())
                 .eq(Help.isNotEmpty(search.getStatus()), "status", search.getStatus())
                 .orderByDesc("create_time");
-        if (Boolean.FALSE.equals(search.getSuperAdmin()) && Help.isNotEmpty(search.getCreateAccountId())) {
-            wrapper.and(wr -> wr.eq("create_account_id", search.getCreateAccountId())
-                    .or(w -> w.eq("parent_account_id", search.getCreateAccountId())));
+        if (Boolean.FALSE.equals(search.getSuperAdmin())) {
+            String createAccountId = request.getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+            wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
+                    .or(w -> w.eq("parent_account_id", createAccountId)));
         }
         IPage<InfoRequestLog> iPage = requestLogMapper.selectPage(page, wrapper);
         List<InfoRequestLogDTO> resultList = iPage.getRecords().stream()
