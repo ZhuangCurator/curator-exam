@@ -20,7 +20,6 @@ import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.common.util.SecurityUtil;
-import com.curator.common.util.ServletUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,15 +45,16 @@ public class InfoAccountServiceImpl implements InfoAccountService {
     private InfoRoleMapper roleMapper;
 
     @Override
-    public ResultResponse<PageResult<InfoAccountDTO>> pageWithInfoAccount(InfoAccountSearch search) {
+    public ResultResponse<PageResult<InfoAccountDTO>> pageWithInfoAccount(InfoAccountSearch search, HttpServletRequest request) {
         Page<InfoAccount> page = new Page<>(search.getCurrent(), search.getPageSize());
         QueryWrapper<InfoAccount> wrapper = new QueryWrapper<>();
         wrapper.like(Help.isNotEmpty(search.getAccountName()), "account_name", search.getAccountName())
                 .eq(Help.isNotEmpty(search.getAccountStatus()), "account_status", search.getAccountStatus())
                 .orderByDesc("create_time");
-        if (Boolean.FALSE.equals(search.getSuperAdmin()) && Help.isNotEmpty(search.getCreateAccountId())) {
-            wrapper.and(wr -> wr.eq("create_account_id", search.getCreateAccountId())
-                    .or(w -> w.eq("parent_account_id", search.getCreateAccountId())));
+        if (Boolean.FALSE.equals(search.getSuperAdmin())) {
+            String createAccountId = request.getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+            wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
+                    .or(w -> w.eq("parent_account_id", createAccountId)));
         }
         IPage<InfoAccount> iPage = accountMapper.selectPage(page, wrapper);
         List<InfoAccountDTO> resultList = iPage.getRecords().stream()
@@ -68,15 +68,16 @@ public class InfoAccountServiceImpl implements InfoAccountService {
     }
 
     @Override
-    public ResultResponse<List<InfoAccountDTO>> listWithInfoAccount(InfoAccountSearch search) {
+    public ResultResponse<List<InfoAccountDTO>> listWithInfoAccount(InfoAccountSearch search, HttpServletRequest request) {
 
         QueryWrapper<InfoAccount> wrapper = new QueryWrapper<>();
         wrapper.like(Help.isNotEmpty(search.getAccountName()), "account_name", search.getAccountName())
                 .eq("account_status", InfoAccountStatusEnum.NORMAL.getStatus())
                 .orderByDesc("create_time");
-        if (Boolean.FALSE.equals(search.getSuperAdmin()) && Help.isNotEmpty(search.getCreateAccountId())) {
-            wrapper.and(wr -> wr.eq("create_account_id", search.getCreateAccountId())
-                    .or(w -> w.eq("parent_account_id", search.getCreateAccountId())));
+        if (Boolean.FALSE.equals(search.getSuperAdmin())) {
+            String createAccountId = request.getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+            wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
+                    .or(w -> w.eq("parent_account_id", createAccountId)));
         }
         List<InfoAccount> list = accountMapper.selectList(wrapper);
         List<InfoAccountDTO> resultList = list.stream().map(this::convertEntity).collect(Collectors.toList());

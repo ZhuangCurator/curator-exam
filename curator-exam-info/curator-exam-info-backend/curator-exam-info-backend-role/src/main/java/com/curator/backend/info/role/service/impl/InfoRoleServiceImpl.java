@@ -11,6 +11,7 @@ import com.curator.backend.info.role.entity.vo.info.InfoRoleInfo;
 import com.curator.backend.info.role.entity.vo.search.InfoRoleSearch;
 import com.curator.backend.info.role.mapper.InfoRoleMapper;
 import com.curator.backend.info.role.service.InfoRoleService;
+import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
@@ -18,6 +19,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.management.relation.RoleStatus;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,15 +39,16 @@ public class InfoRoleServiceImpl implements InfoRoleService {
     private InfoRoleMapper roleMapper;
     
     @Override
-    public ResultResponse<PageResult<InfoRoleDTO>> pageWithInfoRole(InfoRoleSearch search) {
+    public ResultResponse<PageResult<InfoRoleDTO>> pageWithInfoRole(InfoRoleSearch search, HttpServletRequest request) {
         Page<InfoRole> page = new Page<>(search.getCurrent(), search.getPageSize());
         QueryWrapper<InfoRole> wrapper = new QueryWrapper<>();
         wrapper.like(Help.isNotEmpty(search.getRoleName()), "role_name", search.getRoleName())
                 .eq(Help.isNotEmpty(search.getRoleStatus()), "role_status", search.getRoleStatus())
                 .orderByDesc("create_time");
-        if (Boolean.FALSE.equals(search.getSuperAdmin()) && Help.isNotEmpty(search.getCreateAccountId())) {
-            wrapper.and(wr -> wr.eq("create_account_id", search.getCreateAccountId())
-                    .or(w -> w.eq("parent_account_id", search.getCreateAccountId())));
+        if (Boolean.FALSE.equals(search.getSuperAdmin())) {
+            String createAccountId = request.getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+            wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
+                    .or(w -> w.eq("parent_account_id", createAccountId)));
         }
         IPage<InfoRole> iPage = roleMapper.selectPage(page, wrapper);
         List<InfoRoleDTO> resultList = iPage.getRecords().stream()
@@ -54,49 +58,54 @@ public class InfoRoleServiceImpl implements InfoRoleService {
         BeanUtils.copyProperties(iPage, resultPage, "records");
         resultPage.setRecords(resultList);
 
-        return ResultResponse.<PageResult<InfoRoleDTO>>builder().success("菜单分页查询成功").data(resultPage).build();
+        return ResultResponse.<PageResult<InfoRoleDTO>>builder().success("角色分页查询成功").data(resultPage).build();
     }
 
     @Override
-    public ResultResponse<List<InfoRoleDTO>> listWithInfoRole(InfoRoleSearch search) {
+    public ResultResponse<List<InfoRoleDTO>> listWithInfoRole(InfoRoleSearch search, HttpServletRequest request) {
         QueryWrapper<InfoRole> wrapper = new QueryWrapper<>();
         wrapper.like(Help.isNotEmpty(search.getRoleName()), "role_name", search.getRoleName())
                 .eq("role_status", InfoRoleStatusEnum.ENABLE.getStatus())
                 .orderByDesc("create_time");
-        if (Boolean.FALSE.equals(search.getSuperAdmin()) && Help.isNotEmpty(search.getCreateAccountId())) {
-            wrapper.and(wr -> wr.eq("create_account_id", search.getCreateAccountId())
-                    .or(w -> w.eq("parent_account_id", search.getCreateAccountId())));
+        if (Boolean.FALSE.equals(search.getSuperAdmin())) {
+            String createAccountId = request.getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+            wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
+                    .or(w -> w.eq("parent_account_id", createAccountId)));
         }
         List<InfoRole> list = roleMapper.selectList(wrapper);
         List<InfoRoleDTO> resultList = list.stream().map(this::convertEntity).collect(Collectors.toList());
 
-        return ResultResponse.<List<InfoRoleDTO>>builder().success("菜单列表查询成功").data(resultList).build();
+        return ResultResponse.<List<InfoRoleDTO>>builder().success("角色列表查询成功").data(resultList).build();
     }
 
     @Override
     public ResultResponse<InfoRoleDTO> getInfoRole(String id) {
         InfoRole entity = roleMapper.selectById(id);
-        return ResultResponse.<InfoRoleDTO>builder().success("菜单查询成功").data(convertEntity(entity)).build();
+        return ResultResponse.<InfoRoleDTO>builder().success("角色查询成功").data(convertEntity(entity)).build();
     }
 
     @Override
-    public ResultResponse<InfoRoleDTO> saveInfoRole(InfoRoleInfo info) {
+    public ResultResponse<InfoRoleDTO> saveInfoRole(InfoRoleInfo info, HttpServletRequest request) {
         InfoRole entity = convertInfo(info);
+        // 默认启用
+        entity.setRoleStatus(InfoRoleStatusEnum.ENABLE.getStatus());
+        entity.setCreateAccountId(request.getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
+        entity.setParentAccountId(request.getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
         roleMapper.insert(entity);
-        return ResultResponse.<InfoRoleDTO>builder().success("菜单添加成功").data(convertEntity(entity)).build();
+        return ResultResponse.<InfoRoleDTO>builder().success("角色添加成功").data(convertEntity(entity)).build();
     }
 
     @Override
     public ResultResponse<InfoRoleDTO> putInfoRole(InfoRoleInfo info) {
         InfoRole entity = convertInfo(info);
         roleMapper.update(entity, new UpdateWrapper<InfoRole>().eq("Role_id", info.getRoleId()));
-        return ResultResponse.<InfoRoleDTO>builder().success("菜单更新成功").data(convertEntity(entity)).build();
+        return ResultResponse.<InfoRoleDTO>builder().success("角色更新成功").data(convertEntity(entity)).build();
     }
 
     @Override
     public ResultResponse<String> removeInfoRole(String id) {
         roleMapper.deleteById(id);
-        return ResultResponse.<String>builder().success("菜单删除成功").data(id).build();
+        return ResultResponse.<String>builder().success("角色删除成功").data(id).build();
     }
 
     /**
@@ -116,7 +125,7 @@ public class InfoRoleServiceImpl implements InfoRoleService {
     /**
      * 将 页面信息 转为 数据库对象
      *
-     * @param info 菜单 页面信息
+     * @param info 角色 页面信息
      * @return 数据库对应实体类
      */
     private InfoRole convertInfo(InfoRoleInfo info) {

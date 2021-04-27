@@ -6,6 +6,8 @@ import com.curator.api.log.pojo.vo.seacrh.InfoRequestLogSearch;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * <p>
  * 请求日志信息 服务类
@@ -22,7 +24,7 @@ public interface InfoRequestLogService {
      * @param search {@link InfoRequestLogSearch}
      * @return 分页结果
      */
-    ResultResponse<PageResult<InfoRequestLogDTO>> pageWithRequestLog(InfoRequestLogSearch search);
+    ResultResponse<PageResult<InfoRequestLogDTO>> pageWithRequestLog(InfoRequestLogSearch search, HttpServletRequest request);
 
     /**
      * 添加日志信息

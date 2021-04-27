@@ -7,6 +7,7 @@ import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public interface InfoMenuService {
      * @param search 查询条件
      * @return {@link ResultResponse}
      */
-    ResultResponse<PageResult<InfoMenuDTO>> pageWithInfoMenu(InfoMenuSearch search);
+    ResultResponse<PageResult<InfoMenuDTO>> pageWithInfoMenu(InfoMenuSearch search, HttpServletRequest request);
 
     /**
      * 菜单列表查询
@@ -33,7 +34,7 @@ public interface InfoMenuService {
      * @param search 查询条件
      * @return {@link ResultResponse}
      */
-    ResultResponse<List<InfoMenuDTO>> listWithInfoMenu(InfoMenuSearch search);
+    ResultResponse<List<InfoMenuDTO>> listWithInfoMenu(InfoMenuSearch search, HttpServletRequest request);
 
     /**
      * 查询菜单

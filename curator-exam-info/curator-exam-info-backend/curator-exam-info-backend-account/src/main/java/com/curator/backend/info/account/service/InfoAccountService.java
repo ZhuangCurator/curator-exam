@@ -28,7 +28,7 @@ public interface InfoAccountService {
      * @param search 查询条件
      * @return {@link ResultResponse}
      */
-    ResultResponse<PageResult<InfoAccountDTO>> pageWithInfoAccount(InfoAccountSearch search);
+    ResultResponse<PageResult<InfoAccountDTO>> pageWithInfoAccount(InfoAccountSearch search, HttpServletRequest request);
 
     /**
      * 账户列表查询
@@ -36,7 +36,7 @@ public interface InfoAccountService {
      * @param search 查询条件
      * @return {@link ResultResponse}
      */
-    ResultResponse<List<InfoAccountDTO>> listWithInfoAccount(InfoAccountSearch search);
+    ResultResponse<List<InfoAccountDTO>> listWithInfoAccount(InfoAccountSearch search, HttpServletRequest request);
 
     /**
      * 查询账户
@@ -50,6 +50,7 @@ public interface InfoAccountService {
      * 添加账户
      *
      * @param info 账户信息
+     * @param request 请求
      * @return {@link ResultResponse}
      */
     ResultResponse<InfoAccountDTO> saveInfoAccount(InfoAccountInfo info, HttpServletRequest request);

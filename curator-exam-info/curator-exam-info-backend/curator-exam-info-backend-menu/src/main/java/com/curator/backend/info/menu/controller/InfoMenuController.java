@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -36,8 +37,8 @@ public class InfoMenuController {
      */
     @GetMapping("/page")
     @Log(controllerName = "InfoMenuController", remark = "菜单分页查询")
-    ResultResponse<PageResult<InfoMenuDTO>> pageWithInfoMenu(InfoMenuSearch search) {
-        return menuService.pageWithInfoMenu(search);
+    ResultResponse<PageResult<InfoMenuDTO>> pageWithInfoMenu(InfoMenuSearch search, HttpServletRequest request) {
+        return menuService.pageWithInfoMenu(search, request);
     }
 
     /**
@@ -48,8 +49,8 @@ public class InfoMenuController {
      */
     @GetMapping("/list")
     @Log(controllerName = "InfoMenuController", remark = "菜单列表查询")
-    ResultResponse<List<InfoMenuDTO>> listWithInfoMenu(InfoMenuSearch search) {
-        return menuService.listWithInfoMenu(search);
+    ResultResponse<List<InfoMenuDTO>> listWithInfoMenu(InfoMenuSearch search, HttpServletRequest request) {
+        return menuService.listWithInfoMenu(search, request);
     }
 
     /**

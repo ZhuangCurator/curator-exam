@@ -9,9 +9,9 @@ import com.curator.common.annotation.Log;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -37,8 +37,8 @@ public class InfoMenuGroupController {
      */
     @GetMapping("/page")
     @Log(controllerName = "InfoMenuGroupController", remark = "菜单组分页查询")
-    ResultResponse<PageResult<InfoMenuGroupDTO>> pageWithInfoMenuGroup(InfoMenuGroupSearch search) {
-        return menuGroupService.pageWithInfoMenuGroup(search);
+    ResultResponse<PageResult<InfoMenuGroupDTO>> pageWithInfoMenuGroup(InfoMenuGroupSearch search, HttpServletRequest request) {
+        return menuGroupService.pageWithInfoMenuGroup(search, request);
     }
 
     /**
@@ -49,8 +49,8 @@ public class InfoMenuGroupController {
      */
     @GetMapping("/list")
     @Log(controllerName = "InfoMenuGroupController", remark = "菜单组列表查询")
-    ResultResponse<List<InfoMenuGroupDTO>> listWithInfoMenuGroup(InfoMenuGroupSearch search) {
-        return menuGroupService.listWithInfoMenuGroup(search);
+    ResultResponse<List<InfoMenuGroupDTO>> listWithInfoMenuGroup(InfoMenuGroupSearch search, HttpServletRequest request) {
+        return menuGroupService.listWithInfoMenuGroup(search, request);
     }
 
     /**
