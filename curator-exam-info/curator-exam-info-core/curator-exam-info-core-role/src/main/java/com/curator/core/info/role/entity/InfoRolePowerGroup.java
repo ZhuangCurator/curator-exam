@@ -1,4 +1,4 @@
-package com.curator.backend.info.role.entity.vo.info;
+package com.curator.core.info.role.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 角色信息 页面信息
+ * 角色与权限组关联
  * </p>
  *
  * @author Jun
@@ -17,43 +17,54 @@ import java.time.LocalDateTime;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class InfoRoleInfo implements Serializable {
+public class InfoRolePowerGroup implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 角色主键
+     * 主键
+     */
+    @TableId(value = "role_power_group_id", type = IdType.ASSIGN_ID)
+    private String rolePowerId;
+
+    /**
+     * 角色id
      */
     private String roleId;
 
     /**
-     * 角色名
+     * 权限组id
      */
-    private String roleName;
+    private String powerGroupId;
 
     /**
-     * 角色状态（1-启用，2-停用）
+     * 创建账户 id
      */
-    private Integer roleStatus;
+    private String createAccountId;
 
     /**
-     * 备注
+     * 创建账户父账户 id
      */
-    private String roleRemark;
+    private String parentAccountId;
 
     /**
      * 1 表示删除，0 表示未删除
      */
+    @TableLogic
+    @TableField(value = "is_deleted", fill = FieldFill.INSERT)
     private Integer deleted;
 
     /**
      * 插入时间
      */
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
+
 
 }

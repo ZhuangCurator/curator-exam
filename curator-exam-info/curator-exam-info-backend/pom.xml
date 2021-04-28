@@ -16,7 +16,7 @@
     <modules>
         <module>curator-exam-info-backend-launcher</module>
         <module>curator-exam-info-backend-account</module>
-        <module>curator-exam-info-backend-menu</module>
+        <module>curator-exam-info-backend-power</module>
         <module>curator-exam-info-backend-role</module>
     </modules>
 

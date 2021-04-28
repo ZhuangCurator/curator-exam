@@ -25,7 +25,7 @@
         </dependency>
         <dependency>
             <groupId>com.curator</groupId>
-            <artifactId>curator-exam-info-backend-menu</artifactId>
+            <artifactId>curator-exam-info-backend-power</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

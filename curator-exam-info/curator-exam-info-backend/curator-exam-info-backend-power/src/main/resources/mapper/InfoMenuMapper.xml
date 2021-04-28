@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.curator.backend.info.power.mapper.InfoPowerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.curator.backend.info.power.entity.InfoPower">
+        <id column="power_id" property="powerId" />
+        <result column="power_name" property="powerName" />
+        <result column="parent_id" property="parentId" />
+        <result column="power_order" property="powerOrder" />
+        <result column="power_type" property="powerType" />
+        <result column="power_status" property="powerStatus" />
+        <result column="power_path" property="powerPath" />
+        <result column="power_component" property="powerComponent" />
+        <result column="power_perms" property="powerPerms" />
+        <result column="power_icon" property="powerIcon" />
+        <result column="power_remark" property="powerRemark" />
+        <result column="create_account_id" property="createAccountId" />
+        <result column="is_deleted" property="deleted" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+</mapper>

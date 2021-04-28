@@ -1,6 +1,5 @@
-package com.curator.backend.info.role.entity.vo.info;
+package com.curator.backend.info.power.entity.dto;
 
-import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -9,7 +8,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 角色信息 页面信息
+ * 权限组 数据传输信息
  * </p>
  *
  * @author Jun
@@ -17,29 +16,34 @@ import java.time.LocalDateTime;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class InfoRoleInfo implements Serializable {
+public class InfoPowerGroupDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 角色主键
+     * 权限组主键
      */
-    private String roleId;
+    private String powerGroupId;
 
     /**
-     * 角色名
+     * 权限组名
      */
-    private String roleName;
-
-    /**
-     * 角色状态（1-启用，2-停用）
-     */
-    private Integer roleStatus;
+    private String powerGroupName;
 
     /**
      * 备注
      */
-    private String roleRemark;
+    private String remark;
+
+    /**
+     * 创建账户 id
+     */
+    private String createAccountId;
+
+    /**
+     * 创建账户父账户 id
+     */
+    private String parentAccountId;
 
     /**
      * 1 表示删除，0 表示未删除
@@ -55,5 +59,6 @@ public class InfoRoleInfo implements Serializable {
      * 更新时间
      */
     private LocalDateTime updateTime;
+
 
 }

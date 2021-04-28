@@ -5,18 +5,18 @@ import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.core.info.account.entity.InfoAccount;
-import com.curator.core.info.account.entity.InfoAccountMenu;
+import com.curator.core.info.account.entity.InfoAccountPower;
 import com.curator.core.info.account.mapper.InfoAccountMapper;
-import com.curator.core.info.account.mapper.InfoAccountMenuMapper;
+import com.curator.core.info.account.mapper.InfoAccountPowerMapper;
 import com.curator.core.info.account.service.AccountService;
-import com.curator.core.info.menu.entity.InfoGroupMenu;
-import com.curator.core.info.menu.entity.InfoMenu;
-import com.curator.core.info.menu.mapper.InfoGroupMenuMapper;
-import com.curator.core.info.menu.mapper.InfoMenuMapper;
+import com.curator.core.info.power.entity.InfoGroupPower;
+import com.curator.core.info.power.entity.InfoPower;
+import com.curator.core.info.power.mapper.InfoGroupPowerMapper;
+import com.curator.core.info.power.mapper.InfoPowerMapper;
 import com.curator.core.info.role.entity.InfoRole;
-import com.curator.core.info.role.entity.InfoRoleMenuGroup;
+import com.curator.core.info.role.entity.InfoRolePowerGroup;
 import com.curator.core.info.role.mapper.InfoRoleMapper;
-import com.curator.core.info.role.mapper.InfoRoleMenuGroupMapper;
+import com.curator.core.info.role.mapper.InfoRolePowerGroupMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,13 +37,13 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private InfoRoleMapper roleMapper;
     @Autowired
-    private InfoRoleMenuGroupMapper roleMenuGroupMapper;
+    private InfoRolePowerGroupMapper rolePowerGroupMapper;
     @Autowired
-    private InfoGroupMenuMapper groupMenuMapper;
+    private InfoGroupPowerMapper groupPowerMapper;
     @Autowired
-    private InfoAccountMenuMapper accountMenuMapper;
+    private InfoAccountPowerMapper accountPowerMapper;
     @Autowired
-    private InfoMenuMapper menuMapper;
+    private InfoPowerMapper powerMapper;
 
     @Override
     public ResultResponse<Set<String>> getAccountAllPerms(String accountId) {
@@ -56,20 +56,20 @@ public class AccountServiceImpl implements AccountService {
                 permsSet.add("*:*:*");
             } else {
                 // 查询账户角色对应的权限标识
-                QueryWrapper<InfoRoleMenuGroup> roleMenuGroupWrapper = new QueryWrapper<>();
-                roleMenuGroupWrapper.eq("role_id", account.getRoleId());
-                List<InfoRoleMenuGroup> roleMenuGroupList = roleMenuGroupMapper.selectList(roleMenuGroupWrapper);
-                if (Help.isNotEmpty(roleMenuGroupList)) {
-                    List<String> menuGroupIdList = roleMenuGroupList.stream()
-                            .map(InfoRoleMenuGroup::getMenuGroupId).collect(Collectors.toList());
-                    QueryWrapper<InfoGroupMenu> groupMenuWrapper = new QueryWrapper<>();
-                    groupMenuWrapper.in("menu_group_id", menuGroupIdList);
-                    List<InfoGroupMenu> groupMenuList = groupMenuMapper.selectList(groupMenuWrapper);
-                    if (Help.isNotEmpty(groupMenuList)) {
-                        List<String> menuIdList = groupMenuList.stream()
-                                .map(InfoGroupMenu::getMenuId).collect(Collectors.toList());
-                        if (Help.isNotEmpty(menuIdList)) {
-                            Set<String> permSetWithRole = getMenuPermsSet(menuIdList);
+                QueryWrapper<InfoRolePowerGroup> rolePowerGroupWrapper = new QueryWrapper<>();
+                rolePowerGroupWrapper.eq("role_id", account.getRoleId());
+                List<InfoRolePowerGroup> rolePowerGroupList = rolePowerGroupMapper.selectList(rolePowerGroupWrapper);
+                if (Help.isNotEmpty(rolePowerGroupList)) {
+                    List<String> powerGroupIdList = rolePowerGroupList.stream()
+                            .map(InfoRolePowerGroup::getPowerGroupId).collect(Collectors.toList());
+                    QueryWrapper<InfoGroupPower> groupPowerWrapper = new QueryWrapper<>();
+                    groupPowerWrapper.in("power_group_id", powerGroupIdList);
+                    List<InfoGroupPower> groupPowerList = groupPowerMapper.selectList(groupPowerWrapper);
+                    if (Help.isNotEmpty(groupPowerList)) {
+                        List<String> powerIdList = groupPowerList.stream()
+                                .map(InfoGroupPower::getPowerId).collect(Collectors.toList());
+                        if (Help.isNotEmpty(powerIdList)) {
+                            Set<String> permSetWithRole = getPowerPermsSet(powerIdList);
                             if (Help.isNotEmpty(permSetWithRole)) {
                                 permsSet.addAll(permSetWithRole);
                             }
@@ -79,12 +79,12 @@ public class AccountServiceImpl implements AccountService {
             }
         }
         // 查询账户对应的权限标识
-        QueryWrapper<InfoAccountMenu> accountMenuWrapper = new QueryWrapper<>();
-        accountMenuWrapper.eq("account_id", account.getAccountId());
-        List<InfoAccountMenu> accountMenuList = accountMenuMapper.selectList(accountMenuWrapper);
-        if (Help.isNotEmpty(accountMenuList)) {
-            List<String> menuIdList = accountMenuList.stream().map(InfoAccountMenu::getMenuId).collect(Collectors.toList());
-            Set<String> set = getMenuPermsSet(menuIdList);
+        QueryWrapper<InfoAccountPower> accountPowerWrapper = new QueryWrapper<>();
+        accountPowerWrapper.eq("account_id", account.getAccountId());
+        List<InfoAccountPower> accountPowerList = accountPowerMapper.selectList(accountPowerWrapper);
+        if (Help.isNotEmpty(accountPowerList)) {
+            List<String> powerIdList = accountPowerList.stream().map(InfoAccountPower::getPowerId).collect(Collectors.toList());
+            Set<String> set = getPowerPermsSet(powerIdList);
             if (Help.isNotEmpty(set)) {
                 permsSet.addAll(set);
             }
@@ -93,17 +93,17 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * 查询菜单集合的权限
+     * 查询权限集合的权限
      *
-     * @param menuIdList 菜单id集合
+     * @param powerIdList 权限id集合
      * @return
      */
-    private Set<String> getMenuPermsSet(List<String> menuIdList) {
-        QueryWrapper<InfoMenu> menuQueryWrapper = new QueryWrapper<>();
-        menuQueryWrapper.in("menu_id", menuIdList);
-        List<InfoMenu> menuList = menuMapper.selectList(menuQueryWrapper);
-        if (Help.isNotEmpty(menuList)) {
-            return menuList.stream().map(InfoMenu::getMenuPerms).collect(Collectors.toSet());
+    private Set<String> getPowerPermsSet(List<String> powerIdList) {
+        QueryWrapper<InfoPower> powerQueryWrapper = new QueryWrapper<>();
+        powerQueryWrapper.in("power_id", powerIdList);
+        List<InfoPower> powerList = powerMapper.selectList(powerQueryWrapper);
+        if (Help.isNotEmpty(powerList)) {
+            return powerList.stream().map(InfoPower::getPowerPerms).collect(Collectors.toSet());
         }
         return null;
     }
