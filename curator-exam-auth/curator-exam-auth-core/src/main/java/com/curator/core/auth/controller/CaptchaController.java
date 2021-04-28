@@ -1,5 +1,6 @@
 package com.curator.core.auth.controller;
 
+import com.curator.common.annotation.Log;
 import com.curator.common.support.ResultResponse;
 import com.curator.core.auth.captcha.holder.CaptchaProcessorHolder;
 import com.curator.core.auth.captcha.processor.CaptchaProcessor;
@@ -35,6 +36,7 @@ public class CaptchaController {
      * @param generator 处理器简称： chinese或者number
      * @throws Exception
      */
+    @Log(controllerName = "CaptchaController", remark = "验证码生成")
     @GetMapping(value = { "/captcha/{type}", "/captcha/{type}/{generator}" })
     public ResultResponse<HashMap<String,Object>> createCode(HttpServletRequest request, HttpServletResponse response,
             @PathVariable("type") String type,  @PathVariable(value = "generator", required = false) String generator) throws Exception{
