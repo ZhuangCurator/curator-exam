@@ -1,7 +1,7 @@
-package com.curator.backend.info.account.mapper;
+package com.curator.backend.info.power.mapper;
 
-import com.curator.backend.info.account.entity.InfoAccountPower;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.curator.backend.info.power.entity.InfoAccountPower;
 
 /**
  * <p>

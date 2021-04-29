@@ -1,11 +1,11 @@
 package com.curator.backend.info.power.controller;
 
 import com.curator.backend.info.power.entity.dto.InfoPowerDTO;
+import com.curator.backend.info.power.entity.dto.RouterDTO;
 import com.curator.backend.info.power.entity.vo.info.InfoPowerInfo;
 import com.curator.backend.info.power.entity.vo.search.InfoPowerSearch;
 import com.curator.backend.info.power.service.InfoPowerService;
 import com.curator.common.annotation.Log;
-import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,27 +28,25 @@ public class InfoPowerController {
     private InfoPowerService powerService;
 
     /**
-     * 权限分页查询
+     * 获取用户路由列表
      *
-     * @param search 查询条件
-     * @return {@link ResultResponse}
+     * @return 树状路由
      */
-    @GetMapping("/page")
-    @Log(controllerName = "InfoPowerController", remark = "权限分页查询")
-    ResultResponse<PageResult<InfoPowerDTO>> pageWithInfoPower(InfoPowerSearch search) {
-        return powerService.pageWithInfoPower(search);
+    @GetMapping("/router")
+    ResultResponse<List<RouterDTO>> selectRouter(){
+        return powerService.selectRouter();
     }
 
     /**
-     * 权限列表查询
+     * 树状权限查询
      *
      * @param search 查询条件
      * @return {@link ResultResponse}
      */
     @GetMapping("/list")
     @Log(controllerName = "InfoPowerController", remark = "权限列表查询")
-    ResultResponse<List<InfoPowerDTO>> listWithInfoPower(InfoPowerSearch search) {
-        return powerService.listWithInfoPower(search);
+    ResultResponse<List<InfoPowerDTO>> treeWithInfoPower(InfoPowerSearch search) {
+        return powerService.treeWithInfoPower(search);
     }
 
     /**

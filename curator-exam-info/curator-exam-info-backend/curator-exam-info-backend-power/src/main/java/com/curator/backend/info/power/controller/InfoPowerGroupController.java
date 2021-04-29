@@ -2,7 +2,9 @@ package com.curator.backend.info.power.controller;
 
 
 import com.curator.backend.info.power.entity.dto.InfoPowerGroupDTO;
+import com.curator.backend.info.power.entity.vo.info.InfoGroupPowerInfo;
 import com.curator.backend.info.power.entity.vo.info.InfoPowerGroupInfo;
+import com.curator.backend.info.power.entity.vo.info.InfoRolePowerGroupInfo;
 import com.curator.backend.info.power.entity.vo.search.InfoPowerGroupSearch;
 import com.curator.backend.info.power.service.InfoPowerGroupService;
 import com.curator.common.annotation.Log;
@@ -98,5 +100,29 @@ public class InfoPowerGroupController {
     @Log(controllerName = "InfoPowerGroupController", remark = "删除权限组")
     ResultResponse<String> removeInfoPowerGroup(@PathVariable("id") String id) {
         return powerGroupService.removeInfoPowerGroup(id);
+    }
+
+    /**
+     * 添加权限至权限组
+     *
+     * @param info 关联信息
+     * @return
+     */
+    @PostMapping("/add/power")
+    @Log(controllerName = "InfoPowerGroupController", remark = "添加权限至权限组")
+    ResultResponse<?> addPowerToPowerGroup(@RequestBody InfoGroupPowerInfo info) {
+        return powerGroupService.addPowerToPowerGroup(info);
+    }
+
+    /**
+     * 添加权限组至角色
+     *
+     * @param info 关联信息
+     * @return
+     */
+    @PostMapping("/role/bind")
+    @Log(controllerName = "InfoPowerGroupController", remark = "添加权限组至角色")
+    ResultResponse<?> bindPowerGroupWithRole(@RequestBody InfoRolePowerGroupInfo info) {
+        return powerGroupService.bindPowerGroupWithRole(info);
     }
 }

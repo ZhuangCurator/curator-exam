@@ -45,7 +45,7 @@ public class InfoPower implements Serializable {
     private Integer powerOrder;
 
     /**
-     * 权限类型(1权限 2按钮 3 目录)
+     * 权限类型(1菜单 2按钮 3 目录)
      */
     private Integer powerType;
 

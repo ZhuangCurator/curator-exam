@@ -1,10 +1,15 @@
 package com.curator.backend.info.power.service;
 
 import com.curator.backend.info.power.entity.dto.InfoPowerGroupDTO;
+import com.curator.backend.info.power.entity.vo.info.InfoGroupPowerInfo;
 import com.curator.backend.info.power.entity.vo.info.InfoPowerGroupInfo;
+import com.curator.backend.info.power.entity.vo.info.InfoRolePowerGroupInfo;
 import com.curator.backend.info.power.entity.vo.search.InfoPowerGroupSearch;
+import com.curator.common.annotation.Log;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -67,4 +72,21 @@ public interface InfoPowerGroupService {
      * @return {@link ResultResponse}
      */
     ResultResponse<String> removeInfoPowerGroup(String infoPowerGroupId);
+
+    /**
+     * 添加权限至权限组
+     *
+     * @param info 关联信息
+     * @return
+     */
+    ResultResponse<?> addPowerToPowerGroup(InfoGroupPowerInfo info);
+
+    /**
+     * 添加权限组至角色
+     *
+     * @param info 关联信息
+     * @return
+     */
+    ResultResponse<?> bindPowerGroupWithRole(InfoRolePowerGroupInfo info);
+
 }

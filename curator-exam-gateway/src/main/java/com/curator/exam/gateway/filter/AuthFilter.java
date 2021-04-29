@@ -83,7 +83,7 @@ public class AuthFilter implements GlobalFilter {
             }
             // 刷新账户登录过期时间
             RedissonUtil.expire(CommonConstant.CACHE_ACCOUNT_PREFIX + token,
-                    CommonConstant.TOKEN_EXPIRE_TIME, TimeUnit.MINUTES);
+                    CommonConstant.TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
             // 设置用户信息到请求
             ServerWebExchange webExchange = handleServerWebExchange(exchange);
             ServerHttpRequest mutableReq = webExchange.getRequest().mutate()

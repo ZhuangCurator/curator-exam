@@ -1,7 +1,7 @@
-package com.curator.backend.info.role.mapper;
+package com.curator.backend.info.power.mapper;
 
-import com.curator.backend.info.role.entity.InfoRolePowerGroup;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.curator.backend.info.power.entity.InfoRolePowerGroup;
 
 /**
  * <p>

@@ -4,11 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.curator.backend.info.power.entity.InfoGroupPower;
 import com.curator.backend.info.power.entity.InfoPowerGroup;
+import com.curator.backend.info.power.entity.InfoRolePowerGroup;
 import com.curator.backend.info.power.entity.dto.InfoPowerGroupDTO;
+import com.curator.backend.info.power.entity.vo.info.InfoGroupPowerInfo;
 import com.curator.backend.info.power.entity.vo.info.InfoPowerGroupInfo;
+import com.curator.backend.info.power.entity.vo.info.InfoRolePowerGroupInfo;
 import com.curator.backend.info.power.entity.vo.search.InfoPowerGroupSearch;
+import com.curator.backend.info.power.mapper.InfoGroupPowerMapper;
 import com.curator.backend.info.power.mapper.InfoPowerGroupMapper;
+import com.curator.backend.info.power.mapper.InfoRolePowerGroupMapper;
 import com.curator.backend.info.power.service.InfoPowerGroupService;
 import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.PageResult;
@@ -31,6 +37,10 @@ public class InfoPowerGroupServiceImpl implements InfoPowerGroupService {
 
     @Autowired
     private InfoPowerGroupMapper powerGroupMapper;
+    @Autowired
+    private InfoGroupPowerMapper groupPowerMapper;
+    @Autowired
+    private InfoRolePowerGroupMapper rolePowerGroupMapper;
 
     @Override
     public ResultResponse<PageResult<InfoPowerGroupDTO>> pageWithInfoPowerGroup(InfoPowerGroupSearch search) {
@@ -99,7 +109,51 @@ public class InfoPowerGroupServiceImpl implements InfoPowerGroupService {
     @Override
     public ResultResponse<String> removeInfoPowerGroup(String infoPowerGroupId) {
         powerGroupMapper.deleteById(infoPowerGroupId);
+        // 同时删除权限组与角色的关联关系
+        QueryWrapper<InfoRolePowerGroup> wrapper = new QueryWrapper<>();
+        wrapper.eq("power_group_id", infoPowerGroupId);
+        rolePowerGroupMapper.delete(wrapper);
         return ResultResponse.<String>builder().success("权限组删除成功").data(infoPowerGroupId).build();
+    }
+
+    @Override
+    public ResultResponse<?> addPowerToPowerGroup(InfoGroupPowerInfo info) {
+        if(Help.isNotEmpty(info.getPowerIdList())) {
+            info.getPowerIdList().forEach(powerId -> {
+                QueryWrapper<InfoGroupPower> groupPowerQueryWrapper = new QueryWrapper<>();
+                groupPowerQueryWrapper.eq("power_id", powerId)
+                        .eq("power_group_id", info.getPowerGroupId());
+                Integer count = groupPowerMapper.selectCount(groupPowerQueryWrapper);
+                if(count != null && count > 0) {
+                    InfoGroupPower groupPower = new InfoGroupPower();
+                    groupPower.setPowerGroupId(info.getPowerGroupId());
+                    groupPower.setPowerId(powerId);
+                    groupPowerMapper.insert(groupPower);
+                }
+            });
+            return ResultResponse.builder().success("权限列表成功添加至权限组!").build();
+        }
+        return ResultResponse.builder().failure("权限列表不能为空!").build();
+    }
+
+    @Override
+    public ResultResponse<?> bindPowerGroupWithRole(InfoRolePowerGroupInfo info) {
+        if(Help.isNotEmpty(info.getPowerGroupIdList())) {
+            info.getPowerGroupIdList().forEach(powerGroupId -> {
+                QueryWrapper<InfoRolePowerGroup> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("power_group_id", powerGroupId)
+                        .eq("role_id", info.getRoleId());
+                Integer count = rolePowerGroupMapper.selectCount(queryWrapper);
+                if(count != null && count > 0) {
+                    InfoRolePowerGroup entity = new InfoRolePowerGroup();
+                    entity.setPowerGroupId(powerGroupId);
+                    entity.setRoleId(info.getRoleId());
+                    rolePowerGroupMapper.insert(entity);
+                }
+            });
+            return ResultResponse.builder().success("权限组列表成功与角色绑定!").build();
+        }
+        return ResultResponse.builder().failure("权限组列表不能为空!").build();
     }
 
     /**

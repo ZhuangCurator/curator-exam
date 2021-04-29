@@ -1,10 +1,12 @@
 package com.curator.backend.info.power.service;
 
 import com.curator.backend.info.power.entity.dto.InfoPowerDTO;
+import com.curator.backend.info.power.entity.dto.RouterDTO;
 import com.curator.backend.info.power.entity.vo.info.InfoPowerInfo;
 import com.curator.backend.info.power.entity.vo.search.InfoPowerSearch;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -20,20 +22,19 @@ import java.util.List;
 public interface InfoPowerService {
 
     /**
-     * 权限分页查询
+     * 获取用户路由列表
      *
-     * @param search 查询条件
-     * @return {@link ResultResponse}
+     * @return 树状路由
      */
-    ResultResponse<PageResult<InfoPowerDTO>> pageWithInfoPower(InfoPowerSearch search);
+    ResultResponse<List<RouterDTO>> selectRouter();
 
     /**
-     * 权限列表查询
+     * 树状权限查询
      *
      * @param search 查询条件
      * @return {@link ResultResponse}
      */
-    ResultResponse<List<InfoPowerDTO>> listWithInfoPower(InfoPowerSearch search);
+    ResultResponse<List<InfoPowerDTO>> treeWithInfoPower(InfoPowerSearch search);
 
     /**
      * 查询权限

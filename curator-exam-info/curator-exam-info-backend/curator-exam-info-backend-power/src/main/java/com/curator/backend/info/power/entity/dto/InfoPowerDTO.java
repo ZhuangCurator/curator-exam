@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -100,5 +101,8 @@ public class InfoPowerDTO implements Serializable {
      */
     private LocalDateTime updateTime;
 
-
+    /**
+     * 子权限
+     */
+    private List<InfoPowerDTO> children;
 }
