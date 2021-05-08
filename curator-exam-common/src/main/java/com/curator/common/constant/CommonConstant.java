@@ -9,9 +9,9 @@ package com.curator.common.constant;
 public class CommonConstant {
 
     /**
-     * 令牌 有效期(分钟)
+     * 令牌 有效期(毫秒)
      */
-    public static final long TOKEN_EXPIRE_TIME = 60;
+    public static final long TOKEN_EXPIRE_TIME = 8 * 60 * 60 * 1000;
 
     /**
      * 令牌自定义标识

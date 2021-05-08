@@ -34,6 +34,13 @@ spring:
             - Path=/examInfoCore/**
           filters:
             - StripPrefix=1
+        # 考试后台服务
+        - id: curator-exam-paper-backend
+          uri: lb://curator-exam-paper-backend
+          predicates:
+            - Path=/examPaperBackend/**
+          filters:
+            - StripPrefix=1
         # 日志核心服务
         - id: curator-exam-log-core
           uri: lb://curator-exam-log-core

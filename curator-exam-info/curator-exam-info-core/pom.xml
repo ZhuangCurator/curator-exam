@@ -15,7 +15,7 @@
 
     <modules>
         <module>curator-exam-info-core-launcher</module>
-        <module>curator-exam-info-core-menu</module>
+        <module>curator-exam-info-core-power</module>
         <module>curator-exam-info-core-role</module>
         <module>curator-exam-info-core-account</module>
     </modules>

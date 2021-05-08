@@ -54,7 +54,7 @@ public class LoginAccountDTO implements Serializable {
     private Long loginTime;
 
     /**
-     * 过期时间
+     * 过期时间(毫秒)
      */
     private Long expireTime;
 }

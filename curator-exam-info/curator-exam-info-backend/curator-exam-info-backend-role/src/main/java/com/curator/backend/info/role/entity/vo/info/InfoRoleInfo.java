@@ -42,16 +42,6 @@ public class InfoRoleInfo implements Serializable {
     private String roleRemark;
 
     /**
-     * 创建账户 id
-     */
-    private String createAccountId;
-
-    /**
-     * 创建账户父账户 id
-     */
-    private String parentAccountId;
-
-    /**
      * 1 表示删除，0 表示未删除
      */
     private Integer deleted;

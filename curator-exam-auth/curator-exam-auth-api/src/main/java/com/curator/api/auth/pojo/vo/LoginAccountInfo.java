@@ -21,13 +21,4 @@ public class LoginAccountInfo implements Serializable {
      */
     private String accountPassword;
 
-    /**
-     * 图片验证码
-     */
-    private String imageCode;
-
-    /**
-     * 唯一标识
-     */
-    private String uuid;
 }

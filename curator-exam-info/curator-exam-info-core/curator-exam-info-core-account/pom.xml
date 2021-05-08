@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>com.curator</groupId>
-            <artifactId>curator-exam-info-core-menu</artifactId>
+            <artifactId>curator-exam-info-core-power</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
