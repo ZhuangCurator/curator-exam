@@ -124,10 +124,12 @@ public class InfoPowerGroupServiceImpl implements InfoPowerGroupService {
                 groupPowerQueryWrapper.eq("power_id", powerId)
                         .eq("power_group_id", info.getPowerGroupId());
                 Integer count = groupPowerMapper.selectCount(groupPowerQueryWrapper);
-                if(count != null && count > 0) {
+                if(count == null || count == 0) {
                     InfoGroupPower groupPower = new InfoGroupPower();
                     groupPower.setPowerGroupId(info.getPowerGroupId());
                     groupPower.setPowerId(powerId);
+                    groupPower.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
+                    groupPower.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
                     groupPowerMapper.insert(groupPower);
                 }
             });
@@ -144,10 +146,12 @@ public class InfoPowerGroupServiceImpl implements InfoPowerGroupService {
                 queryWrapper.eq("power_group_id", powerGroupId)
                         .eq("role_id", info.getRoleId());
                 Integer count = rolePowerGroupMapper.selectCount(queryWrapper);
-                if(count != null && count > 0) {
+                if(count == null || count == 0) {
                     InfoRolePowerGroup entity = new InfoRolePowerGroup();
                     entity.setPowerGroupId(powerGroupId);
                     entity.setRoleId(info.getRoleId());
+                    entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
+                    entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
                     rolePowerGroupMapper.insert(entity);
                 }
             });

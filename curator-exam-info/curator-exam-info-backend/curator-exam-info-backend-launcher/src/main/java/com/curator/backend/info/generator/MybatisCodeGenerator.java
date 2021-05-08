@@ -234,14 +234,14 @@ public class MybatisCodeGenerator {
     public static void main(String[] args) {
         ConfigBuilder builder = new ConfigBuilder();
         MybatisCodeGenerator codeGenerator = builder
-                .dbUrl("jdbc:mysql://127.0.0.1:3306/curator-exam-info?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL")
+                .dbUrl("jdbc:mysql://139.196.12.144:3306/curator-exam-paper?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL")
                 .userName("root")
                 .password("LIUjun033453!")
                 .dir("/home/jun/Desktop/src/main/java")
                 .xmlDir("/home/jun/Desktop/src/main/resources")
-                .packageName("com.curator.backend.log")
+                .packageName("com.curator.backend.paper")
                 .build();
         //根据表生成后台代码
-        codeGenerator.code("info_request_log");
+        codeGenerator.code("question","question_answer","question_bank", "test_paper", "test_paper_question", "paper_generation_rule", "paper_generation_rule_detail", "bank_question");
     }
 }
