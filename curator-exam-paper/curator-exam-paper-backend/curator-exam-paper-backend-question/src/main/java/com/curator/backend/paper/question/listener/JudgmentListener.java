@@ -41,7 +41,7 @@ public class JudgmentListener extends AnalysisEventListener<QuestionExcelInfo> {
             questionInfo.setQuestionStem(excelInfo.getQuestionStem());
             questionInfo.setQuestionAnalysis(excelInfo.getAnalysis());
             questionInfo.setQuestionPoint(excelInfo.getPoint());
-            questionInfo.setOrder(0);
+            questionInfo.setOrdered(0);
             questionInfo.setQuestionType(QuestionTypeEnum.JUDGMENT.getStatus());
             // 试题难度
             if (Help.isNotEmpty(excelInfo.getDifficulty())) {
@@ -80,9 +80,9 @@ public class JudgmentListener extends AnalysisEventListener<QuestionExcelInfo> {
                 info.setContent(excelInfo.getOptionsA());
                 String option = "A";
                 if (answer.equals(option)) {
-                    info.setRight(1);
+                    info.setRighted(1);
                 } else {
-                    info.setRight(0);
+                    info.setRighted(0);
                 }
                 questionAnswerInfoList.add(info);
             } else {
@@ -96,9 +96,9 @@ public class JudgmentListener extends AnalysisEventListener<QuestionExcelInfo> {
                 info.setContent(excelInfo.getOptionsB());
                 String option = "B";
                 if (answer.equals(option)) {
-                    info.setRight(1);
+                    info.setRighted(1);
                 } else {
-                    info.setRight(0);
+                    info.setRighted(0);
                 }
                 questionAnswerInfoList.add(info);
             } else {

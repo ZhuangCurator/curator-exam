@@ -122,6 +122,7 @@ public class QuestionController {
      * 下载试题导入模版
      */
     @GetMapping("/export/template")
+    @Log(controllerName = "QuestionController", remark = "下载试题导入模版")
     void exportQuestionTemplate(HttpServletResponse response) {
         try {
             InputStream in = this.getClass().getResourceAsStream("/static/Question.xlsx");
@@ -143,6 +144,7 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/preCheck")
+    @Log(controllerName = "QuestionController", remark = "预校验 试题Excel")
     ResultResponse<?> preCheckQuestionTemplate(MultipartFile file) {
         ExcelReader excelReader = null;
         String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
@@ -183,6 +185,7 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/batch/upload")
+    @Log(controllerName = "QuestionController", remark = "批量上传 试题")
     ResultResponse<?> batchUploadQuestion() {
         return questionService.batchUploadQuestion();
     }

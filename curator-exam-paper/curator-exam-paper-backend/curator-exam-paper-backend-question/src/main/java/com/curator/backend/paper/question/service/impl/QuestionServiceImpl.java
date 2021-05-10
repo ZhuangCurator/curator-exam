@@ -106,13 +106,13 @@ public class QuestionServiceImpl implements QuestionService {
         // 保存答案
         List<QuestionAnswerInfo> questionAnswerInfoList = info.getQuestionAnswerInfoList();
         // 正确答案个数
-        long size = questionAnswerInfoList.stream().filter(questionAnswerInfo -> questionAnswerInfo.getRight() == 1).count();
+        long size = questionAnswerInfoList.stream().filter(questionAnswerInfo -> questionAnswerInfo.getRighted() == 1).count();
         // 四舍五入,保留两位小数
         BigDecimal answerPoint = new BigDecimal(entity.getQuestionPoint()).divide(new BigDecimal(size), 2, BigDecimal.ROUND_HALF_UP);
         questionAnswerInfoList.forEach(questionAnswerInfo -> {
             QuestionAnswer answerEntity = convertInfo(questionAnswerInfo);
             answerEntity.setQuestionId(entity.getQuestionId());
-            if(questionAnswerInfo.getRight() == 1) {
+            if(questionAnswerInfo.getRighted() == 1) {
                 // 正确答案设置分数
                 answerEntity.setQuestionPoint(answerPoint);
             }
@@ -129,12 +129,16 @@ public class QuestionServiceImpl implements QuestionService {
         questionMapper.update(entity, new UpdateWrapper<Question>().eq("question_id", info.getQuestionId()));
         List<QuestionAnswerInfo> questionAnswerInfoList = info.getQuestionAnswerInfoList();
         // 正确答案个数
-        long size = questionAnswerInfoList.stream().filter(questionAnswerInfo -> questionAnswerInfo.getRight() == 1).count();
+        long size = questionAnswerInfoList.stream().filter(questionAnswerInfo -> questionAnswerInfo.getRighted() == 1).count();
         // 四舍五入,保留两位小数
         BigDecimal answerPoint = new BigDecimal(entity.getQuestionPoint()).divide(new BigDecimal(size), 2, BigDecimal.ROUND_HALF_UP);
         questionAnswerInfoList.forEach(questionAnswerInfo -> {
             QuestionAnswer answerEntity = convertInfo(questionAnswerInfo);
-            answerEntity.setQuestionPoint(answerPoint);
+            answerEntity.setQuestionPoint(new BigDecimal(0));
+            if(answerEntity.getRighted() == 1) {
+                // 正确答案设置分数
+                answerEntity.setQuestionPoint(answerPoint);
+            }
             questionAnswerMapper.update(answerEntity, new UpdateWrapper<QuestionAnswer>().eq("question_answer_id", answerEntity.getQuestionAnswerId()));
         });
         return ResultResponse.<QuestionDTO>builder().success("试题更新成功").data(convertEntity(entity)).build();
@@ -173,14 +177,16 @@ public class QuestionServiceImpl implements QuestionService {
             // 保存答案
             List<QuestionAnswerInfo> questionAnswerInfoList = questionInfo.getQuestionAnswerInfoList();
             // 正确答案个数
-            long size = questionAnswerInfoList.stream().filter(questionAnswerInfo -> questionAnswerInfo.getRight() == 1).count();
+            long size = questionAnswerInfoList.stream().filter(questionAnswerInfo -> questionAnswerInfo.getRighted() == 1).count();
             // 四舍五入,保留两位小数
             BigDecimal answerPoint = new BigDecimal(entity.getQuestionPoint()).divide(new BigDecimal(size), 2, BigDecimal.ROUND_HALF_UP);
             questionAnswerInfoList.forEach(questionAnswerInfo -> {
                 QuestionAnswer answerEntity = convertInfo(questionAnswerInfo);
                 answerEntity.setQuestionAnswerId(snowflake.nextIdStr());
                 answerEntity.setQuestionId(entity.getQuestionId());
-                if(questionAnswerInfo.getRight() == 1) {
+                // 答案默认0分
+                answerEntity.setQuestionPoint(new BigDecimal(0));
+                if(questionAnswerInfo.getRighted() == 1) {
                     // 正确答案设置分数
                     answerEntity.setQuestionPoint(answerPoint);
                 }
@@ -194,7 +200,7 @@ public class QuestionServiceImpl implements QuestionService {
         });
         questionMapper.batchAddQuestion(questionList);
         questionAnswerMapper.batchAddQuestionAnswer(questionAnswerList);
-        return null;
+        return ResultResponse.builder().success("试题批量导入成功！").build();
     }
 
     /**

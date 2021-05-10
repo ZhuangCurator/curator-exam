@@ -62,7 +62,7 @@ public class QuestionDTO implements Serializable {
     /**
      * 填空题答案是否有序(1-是，0-否)
      */
-    private Integer order;
+    private Integer ordered;
 
     /**
      * 创建账户 id

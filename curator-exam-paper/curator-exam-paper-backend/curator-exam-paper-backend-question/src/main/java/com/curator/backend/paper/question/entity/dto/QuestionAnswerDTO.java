@@ -39,7 +39,7 @@ public class QuestionAnswerDTO implements Serializable {
     /**
      * 答案是否正确(1-是，0-否)
      */
-    private Integer right;
+    private Integer righted;
 
     /**
      * 创建账户 id

@@ -8,7 +8,7 @@
         <result column="question_id" property="questionId" />
         <result column="content" property="content" />
         <result column="question_point" property="questionPoint" />
-        <result column="is_right" property="right" />
+        <result column="is_righted" property="righted" />
         <result column="create_account_id" property="createAccountId" />
         <result column="parent_account_id" property="parentAccountId" />
         <result column="is_deleted" property="deleted" />
@@ -16,11 +16,11 @@
         <result column="update_time" property="updateTime" />
     </resultMap>
     <insert id="batchAddQuestionAnswer">
-        insert into question_answer(question_answer_id,question_id,content,question_point,is_right,
+        insert into question_answer(question_answer_id,question_id,content,question_point,is_righted,
         create_account_id,parent_account_id,is_deleted,create_time,update_time)
         values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.questionAnswerId}, #{item.questionId}, #{item.content}, #{item.questionPoint}, #{item.right},
+            (#{item.questionAnswerId}, #{item.questionId}, #{item.content}, #{item.questionPoint}, #{item.righted},
             #{item.createAccountId}, #{item.parentAccountId}, #{item.deleted}, #{item.createTime}, #{item.updateTime})
         </foreach>
 

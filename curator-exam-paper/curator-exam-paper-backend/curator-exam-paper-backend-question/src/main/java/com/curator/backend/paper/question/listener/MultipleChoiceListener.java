@@ -43,7 +43,7 @@ public class MultipleChoiceListener extends AnalysisEventListener<QuestionExcelI
             questionInfo.setQuestionStem(excelInfo.getQuestionStem());
             questionInfo.setQuestionAnalysis(excelInfo.getAnalysis());
             questionInfo.setQuestionPoint(excelInfo.getPoint());
-            questionInfo.setOrder(0);
+            questionInfo.setOrdered(0);
             questionInfo.setQuestionType(QuestionTypeEnum.MULTIPLE_CHOICE.getStatus());
             // 试题难度
             if (Help.isNotEmpty(excelInfo.getDifficulty())) {
@@ -100,11 +100,11 @@ public class MultipleChoiceListener extends AnalysisEventListener<QuestionExcelI
                             QuestionAnswerInfo answerInfo = new QuestionAnswerInfo();
                             answerInfo.setContent(fieldValue);
                             // 该选项默认为错误
-                            answerInfo.setRight(0);
+                            answerInfo.setRighted(0);
                             answerList.forEach(answer -> {
                                 if (fieldName.contains(answer)) {
                                     // 如果该选项名包含 大写的答案内容，则为正确答案
-                                    answerInfo.setRight(1);
+                                    answerInfo.setRighted(1);
                                 }
                             });
                             questionAnswerInfoList.add(answerInfo);

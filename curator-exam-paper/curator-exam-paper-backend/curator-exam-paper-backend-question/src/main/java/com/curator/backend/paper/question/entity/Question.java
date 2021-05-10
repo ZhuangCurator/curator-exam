@@ -50,8 +50,8 @@ public class Question implements Serializable {
     /**
      * 填空题答案是否有序(1-是，0-否)
      */
-    @TableField(value = "is_order")
-    private Integer order;
+    @TableField(value = "is_ordered")
+    private Integer ordered;
 
     /**
      * 创建账户 id

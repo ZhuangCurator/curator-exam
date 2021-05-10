@@ -48,9 +48,9 @@ public class FillBlankListener extends AnalysisEventListener<QuestionExcelInfo> 
             // 答案是否有序
             String flag = "是";
             if (flag.equalsIgnoreCase(excelInfo.getOrder().trim())) {
-                questionInfo.setOrder(1);
+                questionInfo.setOrdered(1);
             } else {
-                questionInfo.setOrder(0);
+                questionInfo.setOrdered(0);
             }
             // 试题难度
             if (Help.isNotEmpty(excelInfo.getDifficulty())) {
@@ -83,7 +83,7 @@ public class FillBlankListener extends AnalysisEventListener<QuestionExcelInfo> 
                         if (Help.isNotEmpty(fieldValue)) {
                             QuestionAnswerInfo answerInfo = new QuestionAnswerInfo();
                             answerInfo.setContent(fieldValue);
-                            answerInfo.setRight(1);
+                            answerInfo.setRighted(1);
                             questionAnswerInfoList.add(answerInfo);
                         }
                     } catch (IllegalAccessException e) {

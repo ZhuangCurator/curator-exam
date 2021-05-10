@@ -10,7 +10,7 @@
         <result column="question_difficulty" property="questionDifficulty"/>
         <result column="question_type" property="questionType"/>
         <result column="question_point" property="questionPoint"/>
-        <result column="is_order" property="order"/>
+        <result column="is_ordered" property="ordered"/>
         <result column="create_account_id" property="createAccountId"/>
         <result column="parent_account_id" property="parentAccountId"/>
         <result column="is_deleted" property="deleted"/>
@@ -20,12 +20,12 @@
 
     <insert id="batchAddQuestion">
         insert into question(question_id,question_stem,question_analysis,
-        question_difficulty,question_type,question_point,is_order,
+        question_difficulty,question_type,question_point,is_ordered,
         create_account_id,parent_account_id,is_deleted,create_time,update_time)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.questionId}, #{item.questionStem}, #{item.questionAnalysis}, #{item.questionDifficulty},
-            #{item.questionType},#{item.questionPoint}, #{item.order},
+            #{item.questionType},#{item.questionPoint}, #{item.ordered},
             #{item.createAccountId}, #{item.parentAccountId}, #{item.deleted}, #{item.createTime}, #{item.updateTime})
         </foreach>
     </insert>

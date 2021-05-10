@@ -43,7 +43,7 @@ public class SingleChoiceListener extends AnalysisEventListener<QuestionExcelInf
             questionInfo.setQuestionStem(excelInfo.getQuestionStem());
             questionInfo.setQuestionAnalysis(excelInfo.getAnalysis());
             questionInfo.setQuestionPoint(excelInfo.getPoint());
-            questionInfo.setOrder(0);
+            questionInfo.setOrdered(0);
             questionInfo.setQuestionType(QuestionTypeEnum.SINGLE_CHOICE.getStatus());
             // 试题难度
             if (Help.isNotEmpty(excelInfo.getDifficulty())) {
@@ -92,9 +92,9 @@ public class SingleChoiceListener extends AnalysisEventListener<QuestionExcelInf
                             QuestionAnswerInfo answerInfo = new QuestionAnswerInfo();
                             answerInfo.setContent(fieldValue);
                             if (fieldName.contains(answer)) {
-                                answerInfo.setRight(1);
+                                answerInfo.setRighted(1);
                             } else {
-                                answerInfo.setRight(0);
+                                answerInfo.setRighted(0);
                             }
                             questionAnswerInfoList.add(answerInfo);
                         }

@@ -48,7 +48,7 @@ public class QuestionInfo implements Serializable {
     /**
      * 填空题答案是否有序(1-是，0-否)
      */
-    private Integer order;
+    private Integer ordered;
 
     /**
      * 试题答案集合

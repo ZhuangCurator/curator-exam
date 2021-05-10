@@ -44,8 +44,8 @@ public class QuestionAnswer implements Serializable {
     /**
      * 答案是否正确(1-是，0-否)
      */
-    @TableField(value = "is_right")
-    private Integer right;
+    @TableField(value = "is_righted")
+    private Integer righted;
 
     /**
      * 创建账户 id

@@ -39,5 +39,5 @@ public class QuestionAnswerInfo implements Serializable {
     /**
      * 答案是否正确(1-是，0-否)
      */
-    private Integer right;
+    private Integer righted;
 }
