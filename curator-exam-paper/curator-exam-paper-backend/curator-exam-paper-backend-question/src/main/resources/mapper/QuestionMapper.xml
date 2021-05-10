@@ -4,18 +4,30 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.curator.backend.paper.question.entity.Question">
-        <id column="question_id" property="questionId" />
-        <result column="question_stem" property="questionStem" />
-        <result column="question_analysis" property="questionAnalysis" />
-        <result column="question_difficulty" property="questionDifficulty" />
-        <result column="question_type" property="questionType" />
-        <result column="question_point" property="questionPoint" />
-        <result column="is_order" property="order" />
-        <result column="create_account_id" property="createAccountId" />
-        <result column="parent_account_id" property="parentAccountId" />
-        <result column="is_deleted" property="deleted" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
+        <id column="question_id" property="questionId"/>
+        <result column="question_stem" property="questionStem"/>
+        <result column="question_analysis" property="questionAnalysis"/>
+        <result column="question_difficulty" property="questionDifficulty"/>
+        <result column="question_type" property="questionType"/>
+        <result column="question_point" property="questionPoint"/>
+        <result column="is_order" property="order"/>
+        <result column="create_account_id" property="createAccountId"/>
+        <result column="parent_account_id" property="parentAccountId"/>
+        <result column="is_deleted" property="deleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
     </resultMap>
+
+    <insert id="batchAddQuestion">
+        insert into question(question_id,question_stem,question_analysis,
+        question_difficulty,question_type,question_point,is_order,
+        create_account_id,parent_account_id,is_deleted,create_time,update_time)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.questionId}, #{item.questionStem}, #{item.questionAnalysis}, #{item.questionDifficulty},
+            #{item.questionType},#{item.questionPoint}, #{item.order},
+            #{item.createAccountId}, #{item.parentAccountId}, #{item.deleted}, #{item.createTime}, #{item.updateTime})
+        </foreach>
+    </insert>
 
 </mapper>

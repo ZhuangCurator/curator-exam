@@ -1,16 +1,35 @@
 package com.curator.backend.paper.question.controller;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelReader;
+import com.alibaba.excel.read.metadata.ReadSheet;
 import com.curator.backend.paper.question.entity.dto.QuestionDTO;
+import com.curator.backend.paper.question.entity.vo.info.QuestionExcelInfo;
 import com.curator.backend.paper.question.entity.vo.info.QuestionInfo;
 import com.curator.backend.paper.question.entity.vo.search.QuestionSearch;
+import com.curator.backend.paper.question.listener.FillBlankListener;
+import com.curator.backend.paper.question.listener.JudgmentListener;
+import com.curator.backend.paper.question.listener.MultipleChoiceListener;
+import com.curator.backend.paper.question.listener.SingleChoiceListener;
 import com.curator.backend.paper.question.service.QuestionService;
 import com.curator.common.annotation.Log;
+import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
+import com.curator.common.util.RedissonUtil;
+import com.curator.common.util.ServletUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import sun.misc.ExtensionInfo;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -19,7 +38,8 @@ import java.util.List;
  * @author Jun
  * @since 2021-05-08
  */
-@Controller
+@Slf4j
+@RestController
 @RequestMapping("/question")
 public class QuestionController {
 
@@ -96,6 +116,75 @@ public class QuestionController {
     @Log(controllerName = "QuestionController", remark = "删除试题")
     ResultResponse<String> removeQuestion(@PathVariable("id") String id) {
         return questionService.removeQuestion(id);
+    }
+
+    /**
+     * 下载试题导入模版
+     */
+    @GetMapping("/export/template")
+    void exportQuestionTemplate(HttpServletResponse response) {
+        try {
+            InputStream in = this.getClass().getResourceAsStream("/static/Question.xlsx");
+            String excelName = URLEncoder.encode("试题导入模板", "UTF-8");
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setHeader("Content-Disposition", "attachment; filename=" + excelName + ".xlsx");
+            ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copy(in, outputStream);
+            response.flushBuffer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 预校验 试题Excel
+     *
+     * @param file excel文件
+     * @return
+     */
+    @PostMapping("/preCheck")
+    ResultResponse<?> preCheckQuestionTemplate(MultipartFile file) {
+        ExcelReader excelReader = null;
+        String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+        RedissonUtil.deleteObject("QUESTION:IMPORT:OK:" + createAccountId);
+        RedissonUtil.deleteObject("QUESTION:IMPORT:WRONG:" + createAccountId);
+        try {
+            excelReader = EasyExcel.read(file.getInputStream()).build();
+            // 单选
+            ReadSheet readSheet1 =
+                    EasyExcel.readSheet(0).head(QuestionExcelInfo.class).registerReadListener(new SingleChoiceListener(createAccountId)).build();
+            // 多选
+            ReadSheet readSheet2 =
+                    EasyExcel.readSheet(1).head(QuestionExcelInfo.class).registerReadListener(new MultipleChoiceListener(createAccountId)).build();
+            // 判断
+            ReadSheet readSheet3 =
+                    EasyExcel.readSheet(2).head(QuestionExcelInfo.class).registerReadListener(new JudgmentListener(createAccountId)).build();
+            // 填空
+            ReadSheet readSheet4 =
+                    EasyExcel.readSheet(3).head(QuestionExcelInfo.class).registerReadListener(new FillBlankListener(createAccountId)).build();
+
+            excelReader.read(readSheet1, readSheet2, readSheet3, readSheet4);
+        } catch (IOException e) {
+            log.error("QuestionController#preCheckQuestionTemplate has exception: {}", e.getMessage());
+            return ResultResponse.builder().failure("试题批量导入预校验失败").build();
+        } finally {
+            if (excelReader != null) {
+                // 关闭
+                excelReader.finish();
+            }
+        }
+        List<QuestionInfo> listOk = RedissonUtil.getCacheList("QUESTION:IMPORT:OK:" + createAccountId);
+        List<ExtensionInfo> listWrong = RedissonUtil.getCacheList("QUESTION:IMPORT:WRONG:" + createAccountId);
+        return ResultResponse.<String>builder().success("正确数据: " + listOk.size() + "条,错误数据: " + listWrong.size() + "条!").build();
+    }
+
+    /**
+     * 批量上传 试题
+     * @return
+     */
+    @PostMapping("/batch/upload")
+    ResultResponse<?> batchUploadQuestion() {
+        return questionService.batchUploadQuestion();
     }
 
 }

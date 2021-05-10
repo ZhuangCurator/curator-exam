@@ -19,7 +19,7 @@ import java.util.List;
  * @author Jun
  * @since 2021-05-08
  */
-@Controller
+@RestController
 @RequestMapping("/paperGenerationRule")
 public class PaperGenerationRuleController {
 

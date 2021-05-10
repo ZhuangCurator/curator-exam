@@ -64,4 +64,10 @@ public interface QuestionService {
      */
     ResultResponse<String> removeQuestion(String id);
 
+    /**
+     * 批量上传 试题
+     * @return
+     */
+    ResultResponse<?> batchUploadQuestion();
+
 }

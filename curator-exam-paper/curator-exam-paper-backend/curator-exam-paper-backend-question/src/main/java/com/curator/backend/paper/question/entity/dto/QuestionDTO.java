@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 试题 数据传输对象
@@ -87,6 +88,11 @@ public class QuestionDTO implements Serializable {
      * 更新时间
      */
     private LocalDateTime updateTime;
+
+    /**
+     * 试题答案集合
+     */
+    private List<QuestionAnswerDTO> questionAnswerDTOList;
 
     public String getQuestionDifficultyDesc() {
         return QuestionDifficultyEnum.getDesc(questionDifficulty);

@@ -1,9 +1,5 @@
 package com.curator.common.util;
 
-import com.curator.common.support.ResultResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.util.AntPathMatcher;
 
 import java.lang.reflect.Array;
@@ -389,19 +385,16 @@ public class Help {
     /**
      * 查找指定字符串是否匹配指定字符串列表中的任意一个字符串
      *
-     * @param str 指定字符串
+     * @param str  指定字符串
      * @param strs 需要检查的字符串数组
      * @return 是否匹配
      */
-    public static boolean matches(String str, List<String> strList)
-    {
-        if (isEmpty(str) || isEmpty(strList)){
+    public static boolean matches(String str, List<String> strList) {
+        if (isEmpty(str) || isEmpty(strList)) {
             return false;
         }
-        for (String pattern : strList)
-        {
-            if (isMatch(pattern, str))
-            {
+        for (String pattern : strList) {
+            if (isMatch(pattern, str)) {
                 return true;
             }
         }
@@ -415,23 +408,12 @@ public class Help {
      * ** 表示任意层路径;
      *
      * @param pattern 匹配规则
-     * @param url 需要匹配的url
+     * @param url     需要匹配的url
      * @return 是否匹配
      */
-    public static boolean isMatch(String pattern, String url){
+    public static boolean isMatch(String pattern, String url) {
         AntPathMatcher matcher = new AntPathMatcher();
         return matcher.match(pattern, url);
-    }
-
-    public static void main(String[] args) throws JsonProcessingException {
-
-        List<String> list = Collections.singletonList("list");
-        ResultResponse<List<String>> res = ResultResponse.<List<String>>builder().success().message("xxxx").data(list).build();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String str = objectMapper.writeValueAsString(res);
-        System.out.println(str);
-        ResultResponse<List<String>> obj = objectMapper.readValue(str, new TypeReference<ResultResponse<List<String>>>() {});
-        System.out.println(obj.toString());
     }
 
 }

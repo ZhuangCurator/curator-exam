@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.env.Environment;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -89,7 +90,8 @@ public class LogAspect {
 
             // 保存数据库日志
             LogResult logInfo = new LogResult();
-            logInfo.setCreateAccountName(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_NAME));
+            String createAccountName = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_NAME);
+            logInfo.setCreateAccountName(new String(Base64Utils.decodeFromString(createAccountName)));
             logInfo.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
             logInfo.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
             // 应用名

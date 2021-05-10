@@ -57,4 +57,13 @@ public enum QuestionDifficultyEnum {
         }
         return "";
     }
+
+    public static Integer getStatus(String desc){
+        for(QuestionDifficultyEnum obj : QuestionDifficultyEnum.values()){
+            if(obj.getDesc().equals(desc)){
+                return obj.status;
+            }
+        }
+        return null;
+    }
 }

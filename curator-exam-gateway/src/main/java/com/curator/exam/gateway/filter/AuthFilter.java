@@ -24,6 +24,8 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -85,11 +87,12 @@ public class AuthFilter implements GlobalFilter {
             RedissonUtil.expire(CommonConstant.CACHE_ACCOUNT_PREFIX + token,
                     CommonConstant.TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
             // 设置用户信息到请求
+            String accountName = new String(Base64Utils.encode(accountDTO.getAccountName().getBytes(StandardCharsets.UTF_8)));
             ServerWebExchange webExchange = handleServerWebExchange(exchange);
             ServerHttpRequest mutableReq = webExchange.getRequest().mutate()
                     .header(CommonConstant.HTTP_HEADER_ACCOUNT_ID, accountDTO.getAccountId())
                     .header(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID, accountDTO.getParentAccountId())
-                    .header(CommonConstant.HTTP_HEADER_ACCOUNT_NAME, accountDTO.getAccountName())
+                    .header(CommonConstant.HTTP_HEADER_ACCOUNT_NAME, accountName)
                     .build();
             ServerWebExchange mutableExchange = webExchange.mutate().request(mutableReq).build();
             return chain.filter(mutableExchange);

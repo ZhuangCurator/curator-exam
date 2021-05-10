@@ -15,5 +15,15 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
+    <insert id="batchAddQuestionAnswer">
+        insert into question_answer(question_answer_id,question_id,content,question_point,is_right,
+        create_account_id,parent_account_id,is_deleted,create_time,update_time)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.questionAnswerId}, #{item.questionId}, #{item.content}, #{item.questionPoint}, #{item.right},
+            #{item.createAccountId}, #{item.parentAccountId}, #{item.deleted}, #{item.createTime}, #{item.updateTime})
+        </foreach>
+
+    </insert>
 
 </mapper>

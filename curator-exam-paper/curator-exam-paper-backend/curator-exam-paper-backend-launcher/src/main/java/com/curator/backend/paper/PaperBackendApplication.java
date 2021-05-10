@@ -4,6 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
+ * 考试后台服务
+ *
  * @author Jun
  * @date 2021/5/8
  */
