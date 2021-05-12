@@ -32,6 +32,11 @@ public class PaperQuestionDTO implements Serializable {
     private String questionId;
 
     /**
+     * 题干
+     */
+    private String questionStem;
+
+    /**
      * 试题类型(1-单选，2-多选，3-判断，4-填空)
      */
     private Integer questionType;

@@ -17,6 +17,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 单选题监听器
@@ -61,6 +62,7 @@ public class SingleChoiceListener extends AnalysisEventListener<QuestionExcelInf
             }
             // 试题答案内容
             List<QuestionAnswerInfo> questionAnswerInfoList = new ArrayList<>();
+            AtomicInteger order = new AtomicInteger(0);
             // 答案
             String answer = excelInfo.getAnswer().trim();
             if (Help.isEmpty(answer)) {
@@ -91,6 +93,7 @@ public class SingleChoiceListener extends AnalysisEventListener<QuestionExcelInf
                         if (Help.isNotEmpty(fieldValue)) {
                             QuestionAnswerInfo answerInfo = new QuestionAnswerInfo();
                             answerInfo.setContent(fieldValue);
+                            answerInfo.setQuestionAnswerOrder(order.incrementAndGet());
                             if (fieldName.contains(answer)) {
                                 answerInfo.setRighted(1);
                             } else {

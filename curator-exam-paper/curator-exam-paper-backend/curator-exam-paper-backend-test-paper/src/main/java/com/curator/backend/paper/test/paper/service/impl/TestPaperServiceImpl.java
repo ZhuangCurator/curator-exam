@@ -3,6 +3,10 @@ package com.curator.backend.paper.test.paper.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.curator.backend.paper.question.entity.Question;
+import com.curator.backend.paper.question.entity.QuestionAnswer;
+import com.curator.backend.paper.question.mapper.QuestionAnswerMapper;
+import com.curator.backend.paper.question.mapper.QuestionMapper;
 import com.curator.backend.paper.test.paper.entity.TestPaper;
 import com.curator.backend.paper.test.paper.entity.TestPaperQuestion;
 import com.curator.backend.paper.test.paper.entity.dto.TestPaperDTO;
@@ -34,6 +38,10 @@ public class TestPaperServiceImpl implements TestPaperService {
     private TestPaperMapper testPaperMapper;
     @Autowired
     private TestPaperQuestionMapper testPaperQuestionMapper;
+    @Autowired
+    private QuestionMapper questionMapper;
+    @Autowired
+    private QuestionAnswerMapper questionAnswerMapper;
 
     @Override
     public ResultResponse<PageResult<TestPaperDTO>> pageWithTestPaper(TestPaperSearch search) {
@@ -93,6 +101,25 @@ public class TestPaperServiceImpl implements TestPaperService {
         TestPaperQuestionDTO target = new TestPaperQuestionDTO();
         if (Help.isNotEmpty(entity)) {
             BeanUtils.copyProperties(entity, target);
+            // 获取题干
+            Question question = questionMapper.selectById(entity.getQuestionId());
+            if(Help.isNotEmpty(question)) {
+                target.setQuestionStem(question.getQuestionStem());
+            }
+            // 解析考生答案
+            if(Help.isNotEmpty(entity.getUserAnswer())) {
+                List<String> userAnswerList = Help.split2List(entity.getUserAnswer(), "\\$:\\$");
+                target.setUserAnswerList(userAnswerList);
+            }
+            // 获取试题答案内容
+            QueryWrapper<QuestionAnswer> wrapper = new QueryWrapper<>();
+            wrapper.eq("question_id", entity.getQuestionId())
+                    .orderByAsc("question_answer_order");
+            List<QuestionAnswer> questionAnswerList = questionAnswerMapper.selectList(wrapper);
+            if(Help.isNotEmpty(questionAnswerList)) {
+                List<String> answerList = questionAnswerList.stream().map(QuestionAnswer::getContent).collect(Collectors.toList());
+                target.setQuestionAnswerList(answerList);
+            }
         }
         return target;
     }

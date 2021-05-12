@@ -1,5 +1,6 @@
 package com.curator.backend.paper.test.paper.entity.dto;
 
+import com.curator.api.paper.enums.HandInTypeEnum;
 import com.curator.api.paper.enums.TestPaperStatusEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -65,7 +66,12 @@ public class TestPaperDTO implements Serializable {
     /**
      * 交卷原因
      */
-    private String handInReason;
+    private Integer handInReason;
+
+    /**
+     * 交卷原因描述
+     */
+    private String handInReasonDesc;
 
     /**
      * 1 表示删除，0 表示未删除
@@ -84,5 +90,9 @@ public class TestPaperDTO implements Serializable {
 
     public String getPaperStatusDesc() {
         return TestPaperStatusEnum.getDesc(paperStatus);
+    }
+
+    public String getHandInReasonDesc() {
+        return HandInTypeEnum.getDesc(handInReason);
     }
 }

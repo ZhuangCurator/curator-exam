@@ -5,10 +5,7 @@ import com.curator.common.annotation.Log;
 import com.curator.common.constant.CommonConstant;
 import com.curator.common.entity.LogResult;
 import com.curator.common.enums.LogStatusEnum;
-import com.curator.common.util.IpUtil;
-import com.curator.common.util.JsonUtil;
-import com.curator.common.util.MinioUtil;
-import com.curator.common.util.ServletUtil;
+import com.curator.common.util.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.aspectj.lang.JoinPoint;
@@ -91,7 +88,9 @@ public class LogAspect {
             // 保存数据库日志
             LogResult logInfo = new LogResult();
             String createAccountName = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_NAME);
-            logInfo.setCreateAccountName(new String(Base64Utils.decodeFromString(createAccountName)));
+            if(Help.isNotEmpty(createAccountName)) {
+                logInfo.setCreateAccountName(new String(Base64Utils.decodeFromString(createAccountName)));
+            }
             logInfo.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
             logInfo.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
             // 应用名

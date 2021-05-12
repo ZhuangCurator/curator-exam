@@ -17,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +44,8 @@ public class TestPaperServiceImpl implements TestPaperService {
     private PaperGenerationRuleDetailMapper generationRuleDetailMapper;
     @Autowired
     private BankQuestionMapper bankQuestionMapper;
+    @Autowired
+    private QuestionMapper questionMapper;
     @Autowired
     private QuestionAnswerMapper questionAnswerMapper;
 
@@ -100,6 +103,8 @@ public class TestPaperServiceImpl implements TestPaperService {
             || testPaper.getPaperStatus() == TestPaperStatusEnum.OLD_PAPER_RETAKE.getStatus()
             || testPaper.getPaperStatus() == TestPaperStatusEnum.DISCARD.getStatus()) {
             return ResultResponse.<PaperQuestionDTO>builder().failure("该试卷已废弃,请重新登录进行考试!").build();
+        } else if(testPaper.getPaperStatus() == TestPaperStatusEnum.UN_STARTED.getStatus()) {
+            return ResultResponse.<PaperQuestionDTO>builder().failure("请在考试口令验证成功之后再进行考试！").build();
         }
         // 首先查询缓存
         String redisKey = generateRedisKeyWithQuestion(info.getExamInfoId(), info.getTestPaperId());
@@ -113,8 +118,63 @@ public class TestPaperServiceImpl implements TestPaperService {
                 .eq("test_paper_id", info.getTestPaperId())
                 .eq("question_sort", info.getPaperQuestionSort());
         TestPaperQuestion paperQuestion = testPaperQuestionMapper.selectOne(wrapper);
+        if(Help.isEmpty(paperQuestion)) {
+            return ResultResponse.<PaperQuestionDTO>builder().failure("该试题不存在！").data(paperQuestionDTO).build();
+        }
         PaperQuestionDTO dto = cachePaperQuestion(paperQuestion);
         return ResultResponse.<PaperQuestionDTO>builder().success("试题查询成功").data(dto).build();
+    }
+
+    @Override
+    public ResultResponse<String> saveUserAnswer(TestPaperInfo info) {
+        // 说明，多个答案间使用$:$隔开，填空题每个空格必须有答案，考生没填那么答案默认为字符 null
+        // 首先判断试卷状态
+        TestPaper testPaper = testPaperMapper.selectById(info.getTestPaperId());
+        if(testPaper.getPaperStatus() == TestPaperStatusEnum.NEW_PAPER_RETAKE.getStatus()
+                || testPaper.getPaperStatus() == TestPaperStatusEnum.OLD_PAPER_RETAKE.getStatus()
+                || testPaper.getPaperStatus() == TestPaperStatusEnum.DISCARD.getStatus()) {
+            return ResultResponse.<String>builder().failure("该试卷已废弃,请重新登录进行考试!").build();
+        }
+        QueryWrapper<TestPaperQuestion> wrapper = new QueryWrapper<>();
+        wrapper.eq("exam_info_id", info.getExamInfoId())
+                .eq("test_paper_id", info.getTestPaperId())
+                .eq("question_sort", info.getPaperQuestionSort());
+        TestPaperQuestion paperQuestion = testPaperQuestionMapper.selectOne(wrapper);
+        if(Help.isEmpty(paperQuestion)) {
+            return ResultResponse.<String>builder().failure("该试题不存在!").build();
+        }
+        // 保存答案
+        paperQuestion.setHandled(1);
+        paperQuestion.setUserAnswer(info.getUserAnswer());
+        // 计算此题所获得的分数
+        if(Help.isEmpty(info.getUserAnswer())) {
+            paperQuestion.setUserPoint(new BigDecimal(0));
+        } else {
+            paperQuestion.setUserPoint(calculateQuestionPoint(paperQuestion));
+        }
+        testPaperQuestionMapper.update(paperQuestion, new UpdateWrapper<TestPaperQuestion>().eq("test_paper_question_id", paperQuestion.getTestPaperQuestionId()));
+        // 缓存试题
+        cachePaperQuestion(paperQuestion);
+        return ResultResponse.<String>builder().success("用户答案保存成功!").build();
+    }
+
+    @Override
+    public ResultResponse<String> markTestPaper(TestPaperInfo info) {
+        QueryWrapper<TestPaperQuestion> wrapper = new QueryWrapper<>();
+        wrapper.eq("exam_info_id", info.getExamInfoId())
+                .eq("test_paper_id", info.getTestPaperId())
+                .eq("is_handled", 1);
+        List<TestPaperQuestion> paperQuestionList = testPaperQuestionMapper.selectList(wrapper);
+        double score = paperQuestionList.stream().mapToDouble(paperQuestion -> paperQuestion.getUserPoint().doubleValue()).sum();
+        // 更新试卷分数
+        TestPaper testPaper = new TestPaper();
+        testPaper.setTestPaperId(info.getTestPaperId());
+        testPaper.setExamPoint(new BigDecimal(score));
+        testPaper.setHandInReason(info.getHandInReason());
+        testPaper.setHandInTime(LocalDateTime.now());
+        testPaper.setPaperStatus(TestPaperStatusEnum.OVER.getStatus());
+        testPaperMapper.updateById(testPaper);
+        return ResultResponse.<String>builder().success("阅卷成功!").data(String.valueOf(score)).build();
     }
 
     /**
@@ -127,19 +187,19 @@ public class TestPaperServiceImpl implements TestPaperService {
     private ResultResponse<String> generateTestPaper(String examInfoId, String generationRuleId) {
 
         PaperGenerationRule generationRule = generationRuleMapper.selectById(generationRuleId);
+        // 插入试卷试题
+        QueryWrapper<PaperGenerationRuleDetail> wrapper = new QueryWrapper<>();
+        wrapper.eq("generation_rule_id", generationRuleId);
+        List<PaperGenerationRuleDetail> ruleDetailList = generationRuleDetailMapper.selectList(wrapper);
+        if (Help.isEmpty(ruleDetailList)) {
+            return ResultResponse.<String>builder().failure("该试卷生成规则没有设置规则详情,无法初始化试卷!").build();
+        }
         // 插入新试卷
         TestPaper entity = new TestPaper();
         entity.setExamInfoId(examInfoId);
         entity.setTotalPoint(generationRule.getTestPaperPoint());
         entity.setPaperStatus(TestPaperStatusEnum.UN_STARTED.getStatus());
         testPaperMapper.insert(entity);
-        // 插入试卷试题
-        QueryWrapper<PaperGenerationRuleDetail> wrapper = new QueryWrapper<>();
-        wrapper.eq("generation_rule_id", generationRule);
-        List<PaperGenerationRuleDetail> ruleDetailList = generationRuleDetailMapper.selectList(wrapper);
-        if (Help.isEmpty(ruleDetailList)) {
-            return ResultResponse.<String>builder().failure("该试卷生成规则没有设置规则详情,无法初始化试卷!").build();
-        }
         // 按组卷顺序抽题
         List<TestPaperQuestion> paperQuestionList = new ArrayList<>();
         AtomicInteger serialNum = new AtomicInteger(0);
@@ -170,6 +230,8 @@ public class TestPaperServiceImpl implements TestPaperService {
                 paperQuestion.setDeleted(0);
                 paperQuestion.setCreateTime(LocalDateTime.now());
                 paperQuestion.setUpdateTime(LocalDateTime.now());
+                // 缓存试题
+                cachePaperQuestion(paperQuestion);
                 return paperQuestion;
             }).collect(Collectors.toList());
             paperQuestionList.addAll(list);
@@ -218,15 +280,77 @@ public class TestPaperServiceImpl implements TestPaperService {
     }
 
     /**
+     * 计算该试题考生所获分数
+     *
+     * @param paperQuestion 试卷试题
+     * @return
+     */
+    private BigDecimal calculateQuestionPoint(TestPaperQuestion paperQuestion){
+        Question question = questionMapper.selectById(paperQuestion.getQuestionId());
+        QueryWrapper<QuestionAnswer> wrapper = new QueryWrapper<>();
+        wrapper.eq("question_id", paperQuestion.getQuestionId())
+                .orderByAsc("question_answer_order");
+        // 试题答案集合
+        List<QuestionAnswer> questionAnswerList = questionAnswerMapper.selectList(wrapper);
+        // 考生答案集合
+        List<String> userAnswerList = Help.split2List(paperQuestion.getUserAnswer(), "\\$:\\$");
+        BigDecimal point = new BigDecimal(0);
+        if(paperQuestion.getQuestionType() == QuestionTypeEnum.FILL_BLANK.getStatus()) {
+            // 填空题直接比对答案(答对一空即有分)
+            if(question.getOrdered() == 1) {
+                // 答案有序
+                for (int i = 0; i < userAnswerList.size(); i++) {
+                    String userAnswer = userAnswerList.get(i);
+                    if(Help.isNotEmpty(userAnswer)) {
+                        if(userAnswer.equals(questionAnswerList.get(i).getContent())) {
+                            point = point.add(questionAnswerList.get(i).getQuestionPoint());
+                        }
+                    }
+                }
+            } else {
+                // 答案无序
+                List<String> questionAnswerStrList = questionAnswerList.stream().map(QuestionAnswer::getContent).collect(Collectors.toList());
+                for (int i = 0; i < userAnswerList.size(); i++) {
+                    String userAnswer = userAnswerList.get(i);
+                    if(Help.isNotEmpty(userAnswer)) {
+                        if(questionAnswerStrList.contains(userAnswer)){
+                            point = point.add(questionAnswerList.get(i).getQuestionPoint());
+                        }
+                    }
+                }
+            }
+        }else {
+            // 单选题、多选题、判断题 比对序号
+            for (QuestionAnswer questionAnswer : questionAnswerList) {
+                String answerStr = (char) ((questionAnswer.getQuestionAnswerOrder() - 1) % 26 + (int) 'A') + "";
+                if(userAnswerList.contains(answerStr)){
+                    if(questionAnswer.getRighted() == 1) {
+                        point = point.add(questionAnswer.getQuestionPoint());
+                    }else {
+                        // 选中了错误答案即一分都没有
+                        point = new BigDecimal(0);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return point;
+    }
+
+    /**
      * 缓存试题
      * @param question 数据库试题对象
      */
     private PaperQuestionDTO cachePaperQuestion(TestPaperQuestion question) {
         PaperQuestionDTO paperQuestionDTO = new PaperQuestionDTO();
         BeanUtils.copyProperties(question, paperQuestionDTO);
+        Question questionEntity = questionMapper.selectById(question.getQuestionId());
+        paperQuestionDTO.setQuestionStem(questionEntity.getQuestionStem());
         if (paperQuestionDTO.getQuestionType() != QuestionTypeEnum.FILL_BLANK.getStatus()) {
             QueryWrapper<QuestionAnswer> wrapper = new QueryWrapper<>();
-            wrapper.eq("questionId", paperQuestionDTO.getQuestionId());
+            wrapper.eq("question_id", paperQuestionDTO.getQuestionId())
+                    .orderByAsc("question_answer_order");
             List<QuestionAnswer> questionAnswerList = questionAnswerMapper.selectList(wrapper);
             List<PaperQuestionDTO.PaperQuestionAnswer> list = questionAnswerList.stream().map(questionAnswer -> {
                 PaperQuestionDTO.PaperQuestionAnswer answerDTO = new PaperQuestionDTO.PaperQuestionAnswer();

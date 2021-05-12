@@ -1,5 +1,5 @@
 server:
-  port: 9050
+  port: 9052
 spring:
   profiles:
     active: local

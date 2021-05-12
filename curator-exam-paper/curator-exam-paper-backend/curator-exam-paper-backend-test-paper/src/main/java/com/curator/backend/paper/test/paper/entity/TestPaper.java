@@ -64,7 +64,7 @@ public class TestPaper implements Serializable {
     /**
      * 交卷原因
      */
-    private String handInReason;
+    private Integer handInReason;
 
     /**
      * 1 表示删除，0 表示未删除

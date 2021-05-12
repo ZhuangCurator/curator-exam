@@ -32,6 +32,11 @@ public class QuestionAnswerDTO implements Serializable {
     private String content;
 
     /**
+     * 答案顺序
+     */
+    private Integer questionAnswerOrder;
+
+    /**
      * 该答案分数
      */
     private BigDecimal questionPoint;

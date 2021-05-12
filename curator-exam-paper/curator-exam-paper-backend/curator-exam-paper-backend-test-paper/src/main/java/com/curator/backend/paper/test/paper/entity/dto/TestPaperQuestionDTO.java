@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 试卷与试题关联
@@ -37,6 +38,16 @@ public class TestPaperQuestionDTO implements Serializable {
     private String questionId;
 
     /**
+     * 题干
+     */
+    private String questionStem;
+
+    /**
+     * 试题答案集合
+     */
+    private List<String> questionAnswerList;
+
+    /**
      * 试题类型
      */
     private Integer questionType;
@@ -52,9 +63,9 @@ public class TestPaperQuestionDTO implements Serializable {
     private Integer handled;
 
     /**
-     * 考生所填答案(多个答案用字符串$:$相隔)
+     * 考生所填答案
      */
-    private String userAnswer;
+    private List<String> userAnswerList;
 
     /**
      * 考生该题获得分数

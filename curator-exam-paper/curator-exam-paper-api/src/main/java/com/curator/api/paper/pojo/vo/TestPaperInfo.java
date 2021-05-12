@@ -37,4 +37,14 @@ public class TestPaperInfo implements Serializable {
      */
     private String paperQuestionSort;
 
+    /**
+     * 试题考生答案
+     */
+    private String userAnswer;
+
+    /**
+     * 交卷原因
+     */
+    private Integer handInReason;
+
 }

@@ -17,6 +17,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 多选题监听器
@@ -61,6 +62,7 @@ public class MultipleChoiceListener extends AnalysisEventListener<QuestionExcelI
             }
             // 试题答案内容
             List<QuestionAnswerInfo> questionAnswerInfoList = new ArrayList<>();
+            AtomicInteger order = new AtomicInteger(0);
             List<String> answerList = new ArrayList<>();
             Field[] fields = excelInfo.getClass().getDeclaredFields();
             for (Field field : fields) {
@@ -99,6 +101,7 @@ public class MultipleChoiceListener extends AnalysisEventListener<QuestionExcelI
                         if (Help.isNotEmpty(fieldValue)) {
                             QuestionAnswerInfo answerInfo = new QuestionAnswerInfo();
                             answerInfo.setContent(fieldValue);
+                            answerInfo.setQuestionAnswerOrder(order.incrementAndGet());
                             // 该选项默认为错误
                             answerInfo.setRighted(0);
                             answerList.forEach(answer -> {

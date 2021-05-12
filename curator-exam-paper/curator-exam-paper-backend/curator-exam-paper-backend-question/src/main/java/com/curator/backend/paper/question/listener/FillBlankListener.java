@@ -18,6 +18,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 填空题监听器
@@ -69,6 +70,7 @@ public class FillBlankListener extends AnalysisEventListener<QuestionExcelInfo> 
             // 试题答案内容
             List<QuestionAnswerInfo> questionAnswerInfoList = new ArrayList<>();
             Field[] fields = excelInfo.getClass().getDeclaredFields();
+            AtomicInteger order = new AtomicInteger(0);
             for (Field field : fields) {
                 // 获取原来的访问控制权限
                 boolean accessFlag = field.isAccessible();
@@ -84,6 +86,7 @@ public class FillBlankListener extends AnalysisEventListener<QuestionExcelInfo> 
                             QuestionAnswerInfo answerInfo = new QuestionAnswerInfo();
                             answerInfo.setContent(fieldValue);
                             answerInfo.setRighted(1);
+                            answerInfo.setQuestionAnswerOrder(order.incrementAndGet());
                             questionAnswerInfoList.add(answerInfo);
                         }
                     } catch (IllegalAccessException e) {

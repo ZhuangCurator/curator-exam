@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -104,6 +105,7 @@ public class QuestionServiceImpl implements QuestionService {
         entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
         questionMapper.insert(entity);
         // 保存答案
+        AtomicInteger order = new AtomicInteger(0);
         List<QuestionAnswerInfo> questionAnswerInfoList = info.getQuestionAnswerInfoList();
         // 正确答案个数
         long size = questionAnswerInfoList.stream().filter(questionAnswerInfo -> questionAnswerInfo.getRighted() == 1).count();
@@ -111,6 +113,7 @@ public class QuestionServiceImpl implements QuestionService {
         BigDecimal answerPoint = new BigDecimal(entity.getQuestionPoint()).divide(new BigDecimal(size), 2, BigDecimal.ROUND_HALF_UP);
         questionAnswerInfoList.forEach(questionAnswerInfo -> {
             QuestionAnswer answerEntity = convertInfo(questionAnswerInfo);
+            answerEntity.setQuestionAnswerOrder(order.incrementAndGet());
             answerEntity.setQuestionId(entity.getQuestionId());
             if(questionAnswerInfo.getRighted() == 1) {
                 // 正确答案设置分数

@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 判断题监听器
@@ -59,6 +60,7 @@ public class JudgmentListener extends AnalysisEventListener<QuestionExcelInfo> {
             }
             // 试题答案内容
             List<QuestionAnswerInfo> questionAnswerInfoList = new ArrayList<>();
+            AtomicInteger order = new AtomicInteger(0);
             // 答案
             String answer = excelInfo.getAnswer().trim();
             if (Help.isEmpty(answer)) {
@@ -78,6 +80,7 @@ public class JudgmentListener extends AnalysisEventListener<QuestionExcelInfo> {
             if (Help.isNotEmpty(excelInfo.getOptionsA())) {
                 QuestionAnswerInfo info = new QuestionAnswerInfo();
                 info.setContent(excelInfo.getOptionsA());
+                info.setQuestionAnswerOrder(order.incrementAndGet());
                 String option = "A";
                 if (answer.equals(option)) {
                     info.setRighted(1);
