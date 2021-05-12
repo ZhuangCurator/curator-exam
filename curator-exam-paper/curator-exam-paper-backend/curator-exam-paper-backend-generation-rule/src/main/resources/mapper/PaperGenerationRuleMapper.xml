@@ -7,6 +7,7 @@
         <id column="generation_rule_id" property="generationRuleId" />
         <result column="question_bank_id" property="questionBankId" />
         <result column="generation_rule_name" property="generationRuleName" />
+        <result column="test_paper_point" property="testPaperPoint" />
         <result column="summary" property="summary" />
         <result column="create_account_id" property="createAccountId" />
         <result column="parent_account_id" property="parentAccountId" />

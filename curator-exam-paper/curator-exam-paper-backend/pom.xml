@@ -17,6 +17,7 @@
         <module>curator-exam-paper-backend-question</module>
         <module>curator-exam-paper-backend-question-bank</module>
         <module>curator-exam-paper-backend-generation-rule</module>
+        <module>curator-exam-paper-backend-test-paper</module>
     </modules>
 
     <properties>

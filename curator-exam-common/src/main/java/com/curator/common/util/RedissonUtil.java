@@ -213,4 +213,16 @@ public class RedissonUtil {
         return new HashMap<>(rBucket);
     }
 
+    /**
+     * 获得缓存的Map
+     *
+     * @param name 对象名
+     * @param key 缓存键值
+     * @return 缓存键值对应的数据
+     */
+    public static <T> T getCacheMap(final String name, final String key){
+        RMap<String, T> rBucket = redissonClient.getMap(name);
+        return rBucket.get(key);
+    }
+
 }

@@ -33,6 +33,21 @@ public class BankQuestion implements Serializable {
     private String questionId;
 
     /**
+     * 试题类型(1-单选，2-多选，3-判断，4-填空)
+     */
+    private Integer questionType;
+
+    /**
+     * 试题难度(1-初级，2-中级，3-高级)
+     */
+    private Integer questionDifficulty;
+
+    /**
+     * 单个试题分数
+     */
+    private Integer questionPoint;
+
+    /**
      * 创建账户 id
      */
     private String createAccountId;

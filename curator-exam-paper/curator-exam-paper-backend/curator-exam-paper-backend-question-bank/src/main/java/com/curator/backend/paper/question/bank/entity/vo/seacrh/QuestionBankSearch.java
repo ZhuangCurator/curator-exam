@@ -19,6 +19,6 @@ public class QuestionBankSearch extends BaseSearch {
     /**
      * 试题库名
      */
-    private Integer questionBankName;
+    private String questionBankName;
 
 }

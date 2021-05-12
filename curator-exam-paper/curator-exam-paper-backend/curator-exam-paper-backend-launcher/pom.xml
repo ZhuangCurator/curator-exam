@@ -32,6 +32,11 @@
             <artifactId>curator-exam-paper-backend-generation-rule</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.curator</groupId>
+            <artifactId>curator-exam-paper-backend-test-paper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration  scan="true" scanPeriod="60 seconds" debug="false">
+    <contextName>curator-paper-core</contextName>
+    <property name="log.path" value="/data/com/curator/log/curator-paper-core" />
+    <!--输出到控制台-->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 临界值过滤 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %green(%contextName) [%thread] %highlight(%-5level) %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--输出到文件-->
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/curator-paper-core.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/curator-paper-core.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- 日志保存周期 -->
+            <maxHistory>30</maxHistory>
+            <!-- 总大小 -->
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %green(%contextName) [%thread] %highlight(%-5level) %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="console" />
+        <appender-ref ref="file" />
+    </root>
+
+    <springProfile name="local">
+        <!-- cn.lubanol包下的日志于控制台和文件中都保存 -->
+        <logger name="com.curator"/>
+        <logger name="com.alibaba.nacos" level="OFF"/>
+    </springProfile>
+
+    <springProfile name="dev,prod">
+        <!-- com.alibaba.nacos包下的日志文件中都保存 -->
+        <logger name="com.alibaba.nacos.client" level="info" additivity="false">
+            <appender-ref ref="file" />
+        </logger>
+        <!-- cn.lubanol包下的日志于控制台和文件中都保存 -->
+        <logger name="com.curator"/>
+    </springProfile>
+</configuration>

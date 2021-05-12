@@ -30,6 +30,11 @@ public class PaperGenerationRuleDetailInfo implements Serializable {
     private Integer questionType;
 
     /**
+     * 试题难度(1-初级，2-中级，3-高级)
+     */
+    private Integer questionDifficulty;
+
+    /**
      * 试题个数
      */
     private Integer questionNumber;

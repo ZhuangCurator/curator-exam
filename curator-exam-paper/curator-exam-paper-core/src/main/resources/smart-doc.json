@@ -1,0 +1,14 @@
+{
+  "serverUrl": "http://127.0.0.1/examPaperCore", // 设置服务器地址,非必须
+  "isStrict": false, //是否开启严格模式
+  "allInOne": true,  //是否将文档合并到一个文件中，一般推荐为true
+  "outPath": "/home/jun/Desktop", //指定文档的输出路径
+  "coverOld": true,  //是否覆盖旧的文件，主要用于mardown文件覆盖
+  "packageFilters": "",//controller包过滤，多个包用英文逗号隔开
+  "md5EncryptedHtmlName": false,//只有每个controller生成一个html文件是才使用
+  "projectName": "curator-exam-paper-backend",//配置自己的项目名称
+  "requestFieldToUnderline":false, //自动将驼峰入参字段在文档中转为下划线格式,//@since 1.8.7 版本开始
+  "responseFieldToUnderline":false,//自动将驼峰入参字段在文档中转为下划线格式,//@since 1.8.7 版本开始
+  "inlineEnum":true,//设置为true会将枚举详情展示到参数表中，默认关闭，//@since 1.8.8版本开始
+  "recursionLimit":7 // 设置允许递归执行的次数用于避免栈溢出，默认是7，正常为3次以内，//@since 1.8.8版本开始
+}

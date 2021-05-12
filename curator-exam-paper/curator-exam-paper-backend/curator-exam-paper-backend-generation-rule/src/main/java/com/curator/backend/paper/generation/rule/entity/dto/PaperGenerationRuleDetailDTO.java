@@ -1,5 +1,6 @@
 package com.curator.backend.paper.generation.rule.entity.dto;
 
+import com.curator.api.paper.enums.QuestionDifficultyEnum;
 import com.curator.api.paper.enums.QuestionTypeEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -35,6 +36,16 @@ public class PaperGenerationRuleDetailDTO implements Serializable {
      * 试题类型描述
      */
     private String questionTypeDesc;
+
+    /**
+     * 试题难度(1-初级，2-中级，3-高级)
+     */
+    private Integer questionDifficulty;
+
+    /**
+     * 试题难度描述
+     */
+    private String questionDifficultyDesc;
 
     /**
      * 试题个数
@@ -83,5 +94,9 @@ public class PaperGenerationRuleDetailDTO implements Serializable {
 
     public String getQuestionTypeDesc() {
         return QuestionTypeEnum.getDesc(questionType);
+    }
+
+    public String getQuestionDifficultyDesc() {
+        return QuestionDifficultyEnum.getDesc(questionDifficulty);
     }
 }

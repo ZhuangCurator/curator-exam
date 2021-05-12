@@ -12,6 +12,7 @@ import com.curator.backend.paper.question.bank.entity.vo.seacrh.QuestionBankSear
 import com.curator.backend.paper.question.bank.mapper.BankQuestionMapper;
 import com.curator.backend.paper.question.bank.mapper.QuestionBankMapper;
 import com.curator.backend.paper.question.bank.service.QuestionBankService;
+import com.curator.backend.paper.question.entity.Question;
 import com.curator.backend.paper.question.entity.dto.QuestionDTO;
 import com.curator.backend.paper.question.entity.vo.search.QuestionSearch;
 import com.curator.backend.paper.question.service.QuestionService;
@@ -118,12 +119,18 @@ public class QuestionBankServiceImpl implements QuestionBankService {
         String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
         String parentAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID);
         questionIdList.forEach(questionId -> {
-            BankQuestion bankQuestion = new BankQuestion();
-            bankQuestion.setQuestionBankId(info.getQuestionBankId());
-            bankQuestion.setQuestionId(questionId);
-            bankQuestion.setCreateAccountId(createAccountId);
-            bankQuestion.setParentAccountId(parentAccountId);
-            bankQuestionMapper.insert(bankQuestion);
+            QuestionDTO questionDTO = questionService.getQuestion(questionId).getData();
+            if(Help.isNotEmpty(questionDTO)) {
+                BankQuestion bankQuestion = new BankQuestion();
+                bankQuestion.setQuestionBankId(info.getQuestionBankId());
+                bankQuestion.setQuestionId(questionId);
+                bankQuestion.setQuestionType(questionDTO.getQuestionType());
+                bankQuestion.setQuestionPoint(questionDTO.getQuestionPoint());
+                bankQuestion.setQuestionDifficulty(questionDTO.getQuestionDifficulty());
+                bankQuestion.setCreateAccountId(createAccountId);
+                bankQuestion.setParentAccountId(parentAccountId);
+                bankQuestionMapper.insert(bankQuestion);
+            }
         });
         return ResultResponse.builder().success("试题成功添加至试题库中!").build();
     }

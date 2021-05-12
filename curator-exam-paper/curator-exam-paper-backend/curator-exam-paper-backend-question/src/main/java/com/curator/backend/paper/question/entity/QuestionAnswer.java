@@ -1,15 +1,12 @@
 package com.curator.backend.paper.question.entity;
 
-import java.math.BigDecimal;
-
 import com.baomidou.mybatisplus.annotation.*;
-
-import java.time.LocalDateTime;
-
-import java.io.Serializable;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * 试题答案
@@ -75,7 +72,5 @@ public class QuestionAnswer implements Serializable {
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
-
-
 
 }

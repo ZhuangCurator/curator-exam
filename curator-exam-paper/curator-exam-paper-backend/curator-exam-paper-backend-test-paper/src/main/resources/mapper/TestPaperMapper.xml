@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.curator.backend.paper.test.paper.mapper.TestPaperMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.curator.backend.paper.test.paper.entity.TestPaper">
+        <id column="test_paper_id" property="testPaperId" />
+        <result column="exam_info_id" property="examInfoId" />
+        <result column="total_point" property="totalPoint" />
+        <result column="exam_point" property="examPoint" />
+        <result column="paper_status" property="paperStatus" />
+        <result column="paper_start_time" property="paperStartTime" />
+        <result column="paper_end_time" property="paperEndTime" />
+        <result column="hand_in_time" property="handInTime" />
+        <result column="hand_in_reason" property="handInReason" />
+        <result column="is_deleted" property="deleted" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+</mapper>

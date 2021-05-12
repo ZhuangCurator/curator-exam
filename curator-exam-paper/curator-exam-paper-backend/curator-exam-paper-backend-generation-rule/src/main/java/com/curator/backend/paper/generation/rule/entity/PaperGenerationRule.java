@@ -33,6 +33,11 @@ public class PaperGenerationRule implements Serializable {
     private String generationRuleName;
 
     /**
+     * 生成的试卷总分
+     */
+    private Integer testPaperPoint;
+
+    /**
      * 规则简介
      */
     private String summary;

@@ -2,10 +2,12 @@ package com.curator.backend.paper.generation.rule.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.curator.backend.paper.generation.rule.entity.PaperGenerationRule;
 import com.curator.backend.paper.generation.rule.entity.PaperGenerationRuleDetail;
 import com.curator.backend.paper.generation.rule.entity.dto.PaperGenerationRuleDetailDTO;
 import com.curator.backend.paper.generation.rule.entity.vo.info.PaperGenerationRuleDetailInfo;
 import com.curator.backend.paper.generation.rule.mapper.PaperGenerationRuleDetailMapper;
+import com.curator.backend.paper.generation.rule.mapper.PaperGenerationRuleMapper;
 import com.curator.backend.paper.generation.rule.service.PaperGenerationRuleDetailService;
 import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.ResultResponse;
@@ -29,6 +31,8 @@ public class PaperGenerationRuleDetailServiceImpl implements PaperGenerationRule
 
     @Autowired
     private PaperGenerationRuleDetailMapper generationRuleDetailMapper;
+    @Autowired
+    private PaperGenerationRuleMapper generationRuleMapper;
 
     @Override
     public ResultResponse<List<PaperGenerationRuleDetailDTO>> listWithPaperGenerationRuleDetail(String generationRuleId) {
@@ -54,6 +58,8 @@ public class PaperGenerationRuleDetailServiceImpl implements PaperGenerationRule
         entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
         entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
         generationRuleDetailMapper.insert(entity);
+        // 同时更新试卷生成规则中的试卷总分
+        updateTestPaperPoint(entity.getGenerationRuleId());
         return ResultResponse.<PaperGenerationRuleDetailDTO>builder().success("试卷生成规则详情添加成功").data(convertEntity(entity)).build();
     }
 
@@ -61,13 +67,34 @@ public class PaperGenerationRuleDetailServiceImpl implements PaperGenerationRule
     public ResultResponse<PaperGenerationRuleDetailDTO> putPaperGenerationRuleDetail(PaperGenerationRuleDetailInfo info) {
         PaperGenerationRuleDetail entity = convertInfo(info);
         generationRuleDetailMapper.update(entity, new UpdateWrapper<PaperGenerationRuleDetail>().eq("generation_rule_detail_id", info.getGenerationRuleDetailId()));
+        // 同时更新试卷生成规则中的试卷总分
+        updateTestPaperPoint(entity.getGenerationRuleId());
         return ResultResponse.<PaperGenerationRuleDetailDTO>builder().success("试卷生成规则详情更新成功").data(convertEntity(entity)).build();
     }
 
     @Override
     public ResultResponse<String> removePaperGenerationRuleDetail(String id) {
+        PaperGenerationRuleDetail detail = generationRuleDetailMapper.selectById(id);
         generationRuleDetailMapper.deleteById(id);
+        // 同时更新试卷生成规则中的试卷总分
+        updateTestPaperPoint(detail.getGenerationRuleId());
         return ResultResponse.<String>builder().success("试卷生成规则详情删除成功").data(id).build();
+    }
+
+    /**
+     * 同时更新试卷生成规则中的试卷总分
+     *
+     * @param generationRuleId 试卷生成规则id
+     */
+    private void updateTestPaperPoint(String generationRuleId) {
+        QueryWrapper<PaperGenerationRuleDetail> detailQueryWrapper = new QueryWrapper<>();
+        detailQueryWrapper.eq("generation_rule_id", generationRuleId);
+        List<PaperGenerationRuleDetail> detailList = generationRuleDetailMapper.selectList(detailQueryWrapper);
+        Integer testPaperPoint = detailList.stream().mapToInt(detail -> detail.getQuestionNumber() * detail.getQuestionPoint()).sum();
+        PaperGenerationRule rule = new PaperGenerationRule();
+        rule.setGenerationRuleId(generationRuleId);
+        rule.setTestPaperPoint(testPaperPoint);
+        generationRuleMapper.updateById(rule);
     }
 
     /**

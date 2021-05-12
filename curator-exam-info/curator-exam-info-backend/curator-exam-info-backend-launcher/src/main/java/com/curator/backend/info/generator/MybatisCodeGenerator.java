@@ -242,6 +242,6 @@ public class MybatisCodeGenerator {
                 .packageName("com.curator.backend.paper")
                 .build();
         //根据表生成后台代码
-        codeGenerator.code("question","question_answer","question_bank", "test_paper", "test_paper_question", "paper_generation_rule", "paper_generation_rule_detail", "bank_question");
+        codeGenerator.code( "test_paper", "test_paper_question");
     }
 }

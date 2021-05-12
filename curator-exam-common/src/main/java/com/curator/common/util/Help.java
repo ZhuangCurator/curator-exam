@@ -369,7 +369,7 @@ public class Help {
      * 将字符串分解为集合
      *
      * @param src     字符串
-     * @param splitor 分离标志
+     * @param split 分离标志
      * @return 集合
      */
     public static List<String> split2List(String src, String split) {

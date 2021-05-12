@@ -48,7 +48,7 @@ public class Question implements Serializable {
     private Integer questionPoint;
 
     /**
-     * 填空题答案是否有序(1-是，0-否)
+     * 答案是否有序(1-是，0-否)
      */
     @TableField(value = "is_ordered")
     private Integer ordered;
