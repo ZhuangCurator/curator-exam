@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.curator.backend.register.exam.classroom.mapper.ExamClassroomMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.curator.backend.register.exam.classroom.entity.ExamClassroom">
+        <id column="exam_classroom_id" property="examClassroomId" />
+        <result column="exam_site_id" property="examSiteId" />
+        <result column="exam_classroom_name" property="examClassroomName" />
+        <result column="number_limit" property="numberLimit" />
+        <result column="address" property="address" />
+        <result column="create_account_id" property="createAccountId" />
+        <result column="parent_account_id" property="parentAccountId" />
+        <result column="is_deleted" property="deleted" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+</mapper>

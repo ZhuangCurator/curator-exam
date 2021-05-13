@@ -1,0 +1,15 @@
+server:
+  port: 9054
+spring:
+  profiles:
+    active: local
+  application:
+    name: curator-exam-register-backend
+
+# 配置监控
+management:
+  endpoints:
+    web:
+      exposure:
+        # spring boot actuator 监控所有端点
+        include: '*'
