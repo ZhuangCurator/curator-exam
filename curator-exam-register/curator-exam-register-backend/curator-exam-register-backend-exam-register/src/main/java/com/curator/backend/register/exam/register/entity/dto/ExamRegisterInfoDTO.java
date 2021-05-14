@@ -1,32 +1,28 @@
-package com.curator.backend.register.exam.register.entity;
-
-import java.math.BigDecimal;
+package com.curator.backend.register.exam.register.entity.dto;
 
 import com.baomidou.mybatisplus.annotation.*;
-
-import java.time.LocalDateTime;
-
-import java.io.Serializable;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 /**
- * 考试报名信息
+ * 考试报名信息 数据传输对象
  *
  * @author Jun
  * @since 2021-05-13
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class ExamRegisterInfo implements Serializable {
+public class ExamRegisterInfoDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * 考试报名信息id
      */
-    @TableId(value = "exam_register_info_id", type = IdType.ASSIGN_ID)
     private String examRegisterInfoId;
 
     /**
@@ -102,20 +98,16 @@ public class ExamRegisterInfo implements Serializable {
     /**
      * 1 表示删除，0 表示未删除
      */
-    @TableLogic
-    @TableField(value = "is_deleted", fill = FieldFill.INSERT)
     private Integer deleted;
 
     /**
      * 插入时间
      */
-    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
 }
