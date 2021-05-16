@@ -1,6 +1,5 @@
 package com.curator.backend.register.exam.register.entity.dto;
 
-import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -93,7 +92,7 @@ public class ExamRegisterInfoDTO implements Serializable {
     /**
      * 是否及格, 1:是 0:否
      */
-    private Integer isPassed;
+    private Integer passed;
 
     /**
      * 1 表示删除，0 表示未删除

@@ -22,6 +22,6 @@ public class TestPaperSearch extends BaseSearch {
     /**
      * 考生报考信息ID
      */
-    private String examInfoId;
+    private String examRegisterInfoId;
 
 }

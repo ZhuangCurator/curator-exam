@@ -5,7 +5,7 @@
     <resultMap id="BaseResultMap" type="com.curator.core.paper.entity.TestPaperQuestion">
         <id column="test_paper_question_id" property="testPaperQuestionId" />
         <result column="test_paper_id" property="testPaperId" />
-        <result column="exam_info_id" property="examInfoId" />
+        <result column="exam_register_info_id" property="examRegisterInfoId" />
         <result column="question_id" property="questionId" />
         <result column="question_type" property="questionType" />
         <result column="question_sort" property="questionSort" />
@@ -18,11 +18,11 @@
     </resultMap>
 
     <insert id="batchAddPaperQuestion">
-        insert into test_paper_question(test_paper_question_id,test_paper_id,exam_info_id,
+        insert into test_paper_question(test_paper_question_id,test_paper_id,exam_register_info_id,
         question_id,question_type,question_sort,is_deleted,create_time,update_time)
         values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.testPaperQuestionId}, #{item.testPaperId}, #{item.examInfoId}, #{item.questionId},
+            (#{item.testPaperQuestionId}, #{item.testPaperId}, #{item.examRegisterInfoId}, #{item.questionId},
             #{item.questionType},#{item.questionSort}, #{item.deleted}, #{item.createTime}, #{item.updateTime})
         </foreach>
     </insert>

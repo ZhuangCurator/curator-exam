@@ -26,7 +26,7 @@ public class TestPaper implements Serializable {
     /**
      * 考生报考信息ID
      */
-    private String examInfoId;
+    private String examRegisterInfoId;
 
     /**
      * 试卷总分

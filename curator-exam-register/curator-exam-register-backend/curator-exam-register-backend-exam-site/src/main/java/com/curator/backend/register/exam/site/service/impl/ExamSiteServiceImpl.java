@@ -86,6 +86,10 @@ public class ExamSiteServiceImpl implements ExamSiteService {
 
     @Override
     public ResultResponse<ExamSiteDTO> saveExamSite(ExamSiteInfo info) {
+        ResultResponse<ExamSiteDTO> res = checkExamSite(info);
+        if(!res.getSucceeded()) {
+            return res;
+        }
         ExamSite entity = convertInfo(info);
         entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
         entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
@@ -95,6 +99,10 @@ public class ExamSiteServiceImpl implements ExamSiteService {
 
     @Override
     public ResultResponse<ExamSiteDTO> putExamSite(ExamSiteInfo info) {
+        ResultResponse<ExamSiteDTO> res = checkExamSite(info);
+        if(!res.getSucceeded()) {
+            return res;
+        }
         ExamSite entity = convertInfo(info);
         examSiteMapper.update(entity, new UpdateWrapper<ExamSite>().eq("exam_site_id", info.getExamSiteId()));
         return ResultResponse.<ExamSiteDTO>builder().success("考点更新成功").data(convertEntity(entity)).build();
@@ -104,6 +112,27 @@ public class ExamSiteServiceImpl implements ExamSiteService {
     public ResultResponse<String> removeExamSite(String id) {
         examSiteMapper.deleteById(id);
         return ResultResponse.<String>builder().success("考点删除成功").data(id).build();
+    }
+
+    /**
+     * 检查考点
+     *
+     * @param info 考点页面信息
+     * @return
+     */
+    private ResultResponse<ExamSiteDTO> checkExamSite(ExamSiteInfo info) {
+        // 验证考点名称是否已存在
+        QueryWrapper<ExamSite> wrapper = new QueryWrapper<>();
+        wrapper.eq("exam_site_name", info.getExamSiteName());
+        if(Help.isNotEmpty(info.getExamSiteId())) {
+            wrapper.ne("exam_site_id", info.getExamSiteId());
+        }
+        ExamSite entity = examSiteMapper.selectOne(wrapper);
+        if(Help.isNotEmpty(entity)) {
+            return ResultResponse.<ExamSiteDTO>builder().failure("考点: " +
+                    entity.getExamSiteName() + "已存在!").build();
+        }
+        return ResultResponse.<ExamSiteDTO>builder().success().build();
     }
 
     /**

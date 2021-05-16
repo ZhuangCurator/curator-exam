@@ -53,7 +53,7 @@ public class TestPaperServiceImpl implements TestPaperService {
     public ResultResponse<String> initTestPaper(TestPaperInfo info) {
         // 首先判断该考生是否已考过试了
         QueryWrapper<TestPaper> paperWrapper = new QueryWrapper<>();
-        paperWrapper.eq("exam_info_id", info.getExamInfoId())
+        paperWrapper.eq("exam_register_info_id", info.getExamRegisterInfoId())
                 .eq("paper_status", TestPaperStatusEnum.OVER.getStatus());
         Integer count = testPaperMapper.selectCount(paperWrapper);
         if (count != null && count > 0) {
@@ -61,7 +61,7 @@ public class TestPaperServiceImpl implements TestPaperService {
         }
         // 接着判断该用户是否拥有未开考或考试进行中的试卷,若有,则返回
         paperWrapper = new QueryWrapper<>();
-        paperWrapper.eq("exam_info_id", info.getExamInfoId())
+        paperWrapper.eq("exam_register_info_id", info.getExamRegisterInfoId())
                 .and(w -> w.eq("paper_status", TestPaperStatusEnum.UN_STARTED.getStatus())
                         .or()
                         .eq("paper_status", TestPaperStatusEnum.PROCESSING.getStatus())
@@ -72,7 +72,7 @@ public class TestPaperServiceImpl implements TestPaperService {
         }
         // 接着判断该用户是否拥有 考试需原卷重考 的试卷,若有,复制一份试卷作为新试卷返回
         paperWrapper = new QueryWrapper<>();
-        paperWrapper.eq("exam_info_id", info.getExamInfoId())
+        paperWrapper.eq("exam_register_info_id", info.getExamRegisterInfoId())
                 .eq("paper_status", TestPaperStatusEnum.OLD_PAPER_RETAKE.getStatus());
         testPaper = testPaperMapper.selectOne(paperWrapper);
         if (Help.isNotEmpty(testPaper)) {
@@ -81,7 +81,7 @@ public class TestPaperServiceImpl implements TestPaperService {
         }
         // 接着判断该用户是否拥有 考试需新卷重考 的试卷,若有,初始化一份新试卷返回
         paperWrapper = new QueryWrapper<>();
-        paperWrapper.eq("exam_info_id", info.getExamInfoId())
+        paperWrapper.eq("exam_register_info_id", info.getExamRegisterInfoId())
                 .eq("paper_status", TestPaperStatusEnum.NEW_PAPER_RETAKE.getStatus());
         testPaper = testPaperMapper.selectOne(paperWrapper);
         if (Help.isNotEmpty(testPaper)) {
@@ -89,10 +89,10 @@ public class TestPaperServiceImpl implements TestPaperService {
             testPaper.setPaperStatus(TestPaperStatusEnum.DISCARD.getStatus());
             testPaperMapper.update(testPaper, new UpdateWrapper<TestPaper>().eq("test_paper_id", testPaper.getTestPaperId()));
             // 生成新试卷
-            return generateTestPaper(info.getExamInfoId(), info.getGenerationRuleId());
+            return generateTestPaper(info.getExamRegisterInfoId(), info.getGenerationRuleId());
         }
         // 若都没有上述试卷,生成新试卷即可
-        return generateTestPaper(info.getExamInfoId(), info.getGenerationRuleId());
+        return generateTestPaper(info.getExamRegisterInfoId(), info.getGenerationRuleId());
     }
 
     @Override
@@ -107,14 +107,14 @@ public class TestPaperServiceImpl implements TestPaperService {
             return ResultResponse.<PaperQuestionDTO>builder().failure("请在考试口令验证成功之后再进行考试！").build();
         }
         // 首先查询缓存
-        String redisKey = generateRedisKeyWithQuestion(info.getExamInfoId(), info.getTestPaperId());
+        String redisKey = generateRedisKeyWithQuestion(info.getExamRegisterInfoId(), info.getTestPaperId());
         PaperQuestionDTO paperQuestionDTO = RedissonUtil.getCacheMap(redisKey, String.valueOf(info.getPaperQuestionSort()));
         if(Help.isNotEmpty(paperQuestionDTO)) {
             return ResultResponse.<PaperQuestionDTO>builder().success("试题查询成功").data(paperQuestionDTO).build();
         }
         // 缓存不存在则查询数据库
         QueryWrapper<TestPaperQuestion> wrapper = new QueryWrapper<>();
-        wrapper.eq("exam_info_id", info.getExamInfoId())
+        wrapper.eq("exam_register_info_id", info.getExamRegisterInfoId())
                 .eq("test_paper_id", info.getTestPaperId())
                 .eq("question_sort", info.getPaperQuestionSort());
         TestPaperQuestion paperQuestion = testPaperQuestionMapper.selectOne(wrapper);
@@ -136,7 +136,7 @@ public class TestPaperServiceImpl implements TestPaperService {
             return ResultResponse.<String>builder().failure("该试卷已废弃,请重新登录进行考试!").build();
         }
         QueryWrapper<TestPaperQuestion> wrapper = new QueryWrapper<>();
-        wrapper.eq("exam_info_id", info.getExamInfoId())
+        wrapper.eq("exam_register_info_id", info.getExamRegisterInfoId())
                 .eq("test_paper_id", info.getTestPaperId())
                 .eq("question_sort", info.getPaperQuestionSort());
         TestPaperQuestion paperQuestion = testPaperQuestionMapper.selectOne(wrapper);
@@ -161,7 +161,7 @@ public class TestPaperServiceImpl implements TestPaperService {
     @Override
     public ResultResponse<String> markTestPaper(TestPaperInfo info) {
         QueryWrapper<TestPaperQuestion> wrapper = new QueryWrapper<>();
-        wrapper.eq("exam_info_id", info.getExamInfoId())
+        wrapper.eq("exam_register_info_id", info.getExamRegisterInfoId())
                 .eq("test_paper_id", info.getTestPaperId())
                 .eq("is_handled", 1);
         List<TestPaperQuestion> paperQuestionList = testPaperQuestionMapper.selectList(wrapper);
@@ -180,11 +180,11 @@ public class TestPaperServiceImpl implements TestPaperService {
     /**
      * 初始化新试卷
      *
-     * @param examInfoId       考生信息ID
+     * @param examRegisterInfoId       考生信息ID
      * @param generationRuleId 试卷生成规则ID
      * @return
      */
-    private ResultResponse<String> generateTestPaper(String examInfoId, String generationRuleId) {
+    private ResultResponse<String> generateTestPaper(String examRegisterInfoId, String generationRuleId) {
 
         PaperGenerationRule generationRule = generationRuleMapper.selectById(generationRuleId);
         // 插入试卷试题
@@ -196,7 +196,7 @@ public class TestPaperServiceImpl implements TestPaperService {
         }
         // 插入新试卷
         TestPaper entity = new TestPaper();
-        entity.setExamInfoId(examInfoId);
+        entity.setExamRegisterInfoId(examRegisterInfoId);
         entity.setTotalPoint(generationRule.getTestPaperPoint());
         entity.setPaperStatus(TestPaperStatusEnum.UN_STARTED.getStatus());
         testPaperMapper.insert(entity);
@@ -222,7 +222,7 @@ public class TestPaperServiceImpl implements TestPaperService {
             List<TestPaperQuestion> list = bankQuestionList.parallelStream().map(bankQuestion -> {
                 TestPaperQuestion paperQuestion = new TestPaperQuestion();
                 paperQuestion.setTestPaperQuestionId(snowflake.nextIdStr());
-                paperQuestion.setExamInfoId(examInfoId);
+                paperQuestion.setExamRegisterInfoId(examRegisterInfoId);
                 paperQuestion.setTestPaperId(entity.getTestPaperId());
                 paperQuestion.setQuestionId(bankQuestion.getQuestionId());
                 paperQuestion.setQuestionType(bankQuestion.getQuestionType());
@@ -252,7 +252,7 @@ public class TestPaperServiceImpl implements TestPaperService {
         testPaperMapper.update(oldPaper, new UpdateWrapper<TestPaper>().eq("test_paper_id", oldPaper.getTestPaperId()));
         // 插入新试卷
         TestPaper entity = new TestPaper();
-        entity.setExamInfoId(oldPaper.getExamInfoId());
+        entity.setExamRegisterInfoId(oldPaper.getExamRegisterInfoId());
         entity.setTotalPoint(oldPaper.getTotalPoint());
         entity.setPaperStatus(TestPaperStatusEnum.UN_STARTED.getStatus());
         testPaperMapper.insert(entity);
@@ -265,7 +265,7 @@ public class TestPaperServiceImpl implements TestPaperService {
             paperQuestion.setTestPaperQuestionId(snowflake.nextIdStr());
             paperQuestion.setQuestionId(question.getQuestionId());
             paperQuestion.setTestPaperId(entity.getTestPaperId());
-            paperQuestion.setExamInfoId(question.getExamInfoId());
+            paperQuestion.setExamRegisterInfoId(question.getExamRegisterInfoId());
             paperQuestion.setQuestionSort(question.getQuestionSort());
             paperQuestion.setQuestionType(question.getQuestionType());
             paperQuestion.setDeleted(0);
@@ -363,7 +363,7 @@ public class TestPaperServiceImpl implements TestPaperService {
             List<String> userAnswerList = Help.split2List(question.getUserAnswer(), "\\$:\\$");
             paperQuestionDTO.setUserAnswerList(userAnswerList);
         }
-        String redisKey = generateRedisKeyWithQuestion(paperQuestionDTO.getExamInfoId(), paperQuestionDTO.getTestPaperId());
+        String redisKey = generateRedisKeyWithQuestion(paperQuestionDTO.getExamRegisterInfoId(), paperQuestionDTO.getTestPaperId());
         RedissonUtil.setCacheMap(redisKey, new HashMap<String, PaperQuestionDTO>(8){{put(String.valueOf(paperQuestionDTO.getQuestionSort()), paperQuestionDTO);}});
         RedissonUtil.expire(redisKey, 60, TimeUnit.MINUTES);
         return paperQuestionDTO;
@@ -372,11 +372,11 @@ public class TestPaperServiceImpl implements TestPaperService {
     /**
      * 构建试题缓存 键
      *
-     * @param examInfoId 考生信息ID
+     * @param examRegisterInfoId 考生信息ID
      * @param testPaperId 试卷ID
      * @return
      */
-    private String generateRedisKeyWithQuestion(String examInfoId, String testPaperId) {
-        return "EXAMINFOID:TESTPAPERID:" + examInfoId + ":" + testPaperId;
+    private String generateRedisKeyWithQuestion(String examRegisterInfoId, String testPaperId) {
+        return "EXAMINFOID:TESTPAPERID:" + examRegisterInfoId + ":" + testPaperId;
     }
 }

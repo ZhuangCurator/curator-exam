@@ -40,4 +40,9 @@ public class ExamRegisterInfoSearch extends BaseSearch {
      */
     private String accountName;
 
+    /**
+     * 是否及格（1-是，0-否）
+     */
+    private Integer passed;
+
 }

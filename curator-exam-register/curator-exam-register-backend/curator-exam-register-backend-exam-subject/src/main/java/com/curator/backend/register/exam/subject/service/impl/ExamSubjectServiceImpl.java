@@ -193,14 +193,32 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
         } else if (info.getExamStartTime().isAfter(info.getExamEndTime())) {
             return ResultResponse.<ExamSubjectDTO>builder().failure("考试开始时间不能大于结束时间").build();
         }
+        // 验证科目名称是否已存在
         QueryWrapper<ExamSubject> wrapper = new QueryWrapper<>();
-        wrapper.eq("exam_category_id", info.getExamCategoryId())
-                .ge( "exam_start_time", info.getExamStartTime())
-                .le( "exam_end_time", info.getExamEndTime());
+        wrapper.eq("exam_subject_name", info.getExamSubjectName())
+                .eq("exam_category_id", info.getExamCategoryId());
         if(Help.isNotEmpty(info.getExamSubjectId())) {
             wrapper.ne("exam_subject_id", info.getExamSubjectId());
         }
         ExamSubject subject = examSubjectMapper.selectOne(wrapper);
+        if(Help.isNotEmpty(subject)) {
+            return ResultResponse.<ExamSubjectDTO>builder().failure("该考试类型下,科目: " +
+                    subject.getExamSubjectName() + "已存在!").build();
+        }
+        // 验证科目考试时间是否合理(统一考试类型下 各科目的考试时间不能重叠)
+        wrapper = new QueryWrapper<>();
+        wrapper.eq("exam_category_id", info.getExamCategoryId())
+                .and(w -> w.ge( "exam_end_time", info.getExamStartTime())
+                        .le( "exam_end_time", info.getExamEndTime())
+                        .or(wr ->  wr.le( "exam_start_time", info.getExamStartTime())
+                                .ge( "exam_end_time", info.getExamEndTime()))
+                        .or(wr ->  wr.ge( "exam_start_time", info.getExamStartTime())
+                                .le( "exam_start_time", info.getExamEndTime()))
+                );
+        if(Help.isNotEmpty(info.getExamSubjectId())) {
+            wrapper.ne("exam_subject_id", info.getExamSubjectId());
+        }
+        subject = examSubjectMapper.selectOne(wrapper);
         if(Help.isNotEmpty(subject)) {
             return ResultResponse.<ExamSubjectDTO>builder().failure("该考试时间段内,科目: " +
                     subject.getExamSubjectName() + "将进行考试,请修改您的考试时间!").build();

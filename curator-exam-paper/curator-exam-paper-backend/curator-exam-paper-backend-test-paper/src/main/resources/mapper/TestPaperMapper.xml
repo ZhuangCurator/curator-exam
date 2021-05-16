@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.curator.backend.paper.test.paper.entity.TestPaper">
         <id column="test_paper_id" property="testPaperId" />
-        <result column="exam_info_id" property="examInfoId" />
+        <result column="exam_register_info_id" property="examRegisterInfoId" />
         <result column="total_point" property="totalPoint" />
         <result column="exam_point" property="examPoint" />
         <result column="paper_status" property="paperStatus" />

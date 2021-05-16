@@ -49,7 +49,7 @@ public class TestPaperServiceImpl implements TestPaperService {
         QueryWrapper<TestPaper> wrapper = new QueryWrapper<>();
 
         wrapper.eq(Help.isNotEmpty(search.getTestPaperId()), "test_paper_id", search.getTestPaperId())
-                .eq(Help.isNotEmpty(search.getExamInfoId()), "exam_info_id", search.getExamInfoId())
+                .eq(Help.isNotEmpty(search.getExamRegisterInfoId()), "exam_register_info_id", search.getExamRegisterInfoId())
                 .orderByDesc("create_time");
         IPage<TestPaper> iPage = testPaperMapper.selectPage(page, wrapper);
         List<TestPaperDTO> resultList = iPage.getRecords().stream()

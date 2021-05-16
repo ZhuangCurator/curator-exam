@@ -1,5 +1,7 @@
 package com.curator.backend.register.exam.subject.controller;
 
+import com.curator.api.paper.pojo.dto.PaperGenerationRuleDTO;
+import com.curator.api.paper.provider.PaperGenerationRuleProvider;
 import com.curator.backend.register.exam.subject.entity.dto.ExamSubjectDTO;
 import com.curator.backend.register.exam.subject.entity.dto.ExamSubjectSiteDTO;
 import com.curator.backend.register.exam.subject.entity.vo.info.ExamSubjectInfo;
@@ -10,6 +12,7 @@ import com.curator.backend.register.exam.subject.service.ExamSubjectService;
 import com.curator.common.annotation.Log;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +30,8 @@ public class ExamSubjectController {
 
     @Autowired
     private ExamSubjectService examSubjectService;
+    @DubboReference
+    private PaperGenerationRuleProvider generationRuleProvider;
 
     /**
      * 考试科目分页查询
@@ -98,6 +103,18 @@ public class ExamSubjectController {
     @Log(controllerName = "ExamSubjectController", remark = "删除考试科目")
     ResultResponse<String> removeExamSubject(@PathVariable("id") String id) {
         return examSubjectService.removeExamSubject(id);
+    }
+
+    /**
+     * 试卷生成规则列表查询
+     *
+     * @param ruleName 规则名称
+     * @return {@link ResultResponse}
+     */
+    @GetMapping("/generationRule/list")
+    @Log(controllerName = "ExamSubjectController", remark = "试卷生成规则列表查询")
+    ResultResponse<List<PaperGenerationRuleDTO>> listWithGenerationRule(String ruleName) {
+        return generationRuleProvider.listWithPaperGenerationRule(ruleName);
     }
 
     /**

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.curator.core.register.mapper.ExamRegisterInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.curator.core.register.entity.ExamRegisterInfo">
+        <id column="exam_register_info_id" property="examRegisterInfoId" />
+        <result column="exam_category_id" property="examCategoryId" />
+        <result column="exam_subject_id" property="examSubjectId" />
+        <result column="exam_site_id" property="examSiteId" />
+        <result column="exam_classroom_id" property="examClassroomId" />
+        <result column="seat_number" property="seatNumber" />
+        <result column="exam_password" property="examPassword" />
+        <result column="account_id" property="accountId" />
+        <result column="account_name" property="accountName" />
+        <result column="exam_status" property="examStatus" />
+        <result column="admission_ticket_url" property="admissionTicketUrl" />
+        <result column="admission_number" property="admissionNumber" />
+        <result column="start_time" property="startTime" />
+        <result column="score" property="score" />
+        <result column="is_passed" property="passed" />
+        <result column="is_deleted" property="deleted" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+</mapper>

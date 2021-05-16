@@ -41,6 +41,11 @@ public class ExamSubjectSiteDTO implements Serializable {
     private String examSiteName;
 
     /**
+     * 报名人数
+     */
+    private Integer registerNumber;
+
+    /**
      * 省(代码)
      */
     private String province;

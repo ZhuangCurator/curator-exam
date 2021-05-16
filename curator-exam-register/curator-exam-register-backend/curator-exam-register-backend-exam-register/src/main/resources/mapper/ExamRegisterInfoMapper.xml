@@ -18,12 +18,43 @@
         <result column="admission_number" property="admissionNumber" />
         <result column="start_time" property="startTime" />
         <result column="score" property="score" />
-        <result column="is_passed" property="isPassed" />
-        <result column="create_account_id" property="createAccountId" />
-        <result column="parent_account_id" property="parentAccountId" />
+        <result column="is_passed" property="passed" />
         <result column="is_deleted" property="deleted" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
+    <update id="batchUpdateExamPassword">
+        update exam_register_info set exam_password = #{examPassword}, update_time = #{now}
+        WHERE exam_register_info_id in
+        <foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <update id="batchAssignClassroom">
+        update exam_register_info
+        <trim prefix="set" suffixOverrides=",">
+            update_time = #{now},
+            <trim prefix="exam_classroom_id =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                        when exam_register_info_id=#{item.examRegisterInfoId}
+                        then #{item.examClassroomId}
+                </foreach>
+            </trim>
+            <trim prefix="seat_number =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                        when exam_register_info_id=#{item.examRegisterInfoId}
+                        then #{item.seatNumber}
+                </foreach>
+            </trim>
+        </trim>
+        where exam_register_info_id in
+        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+            #{item.examRegisterInfoId}
+        </foreach>
+    </update>
+    <update id="updateExamStatusAndScoreAndPassed">
+         update exam_register_info set exam_statue = 0, score = 0, is_passed = 0 , update_time = #{now}
+         where exam_register_info_id = #{examRegisterInfoId}
+    </update>
 
 </mapper>

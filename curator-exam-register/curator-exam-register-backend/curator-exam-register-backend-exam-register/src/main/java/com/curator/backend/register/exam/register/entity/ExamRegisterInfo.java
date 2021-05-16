@@ -97,7 +97,8 @@ public class ExamRegisterInfo implements Serializable {
     /**
      * 是否及格, 1:是 0:否
      */
-    private Integer isPassed;
+    @TableField(value = "is_passed")
+    private Integer passed;
 
     /**
      * 1 表示删除，0 表示未删除

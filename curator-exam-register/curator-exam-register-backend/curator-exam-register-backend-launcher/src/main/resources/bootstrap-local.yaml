@@ -16,6 +16,22 @@ spring:
     port: 6379
     password: LIUjun033453!
 
+dubbo:
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    # 挂载到 注册中心
+    address: nacos://127.0.0.1:9005
+    group: ${spring.profiles.active}-registry
+  cloud:
+    subscribed-services: curator-exam-paper-core
+  consumer:
+    # 启动时是否检查依赖的服务
+    check: false
+    # 消费服务分组
+    group: ${spring.profiles.active}
+
 # rocketmq 配置
 rocketmq:
   logAspect: true

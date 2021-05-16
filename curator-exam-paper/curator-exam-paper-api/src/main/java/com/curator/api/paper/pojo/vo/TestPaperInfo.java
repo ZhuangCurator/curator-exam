@@ -25,7 +25,7 @@ public class TestPaperInfo implements Serializable {
     /**
      * 考生报考信息ID
      */
-    private String examInfoId;
+    private String examRegisterInfoId;
 
     /**
      * 生成试卷规则ID

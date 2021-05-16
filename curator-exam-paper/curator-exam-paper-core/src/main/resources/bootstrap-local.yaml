@@ -28,3 +28,23 @@ minio:
   accessKey: minioadmin
   secretKey: minioadmin
   bucketName: log-bucket
+
+# dubbo 提供者配置
+dubbo:
+  scan:
+    base-packages: com.curator.core.paper.**.provider
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    address: nacos://127.0.0.1:9005
+    group: ${spring.profiles.active}-registry
+  application:
+    name: ${spring.application.name}
+    id: ${spring.application.name}
+  provider:
+    # 提供服务分组
+    group: ${spring.profiles.active}
+    timeout: 5000
+  cloud:
+    subscribed-services: ''
