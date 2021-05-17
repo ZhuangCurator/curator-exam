@@ -1,6 +1,8 @@
 package com.curator.core.register.provider;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.curator.api.register.enums.ExamStatusTypeEnum;
 import com.curator.api.register.pojo.dto.ExamRegisterInfoDTO;
 import com.curator.api.register.provider.ExamRegisterInfoProvider;
 import com.curator.common.support.ResultResponse;
@@ -29,6 +31,33 @@ public class ExamRegisterInfoProviderImpl implements ExamRegisterInfoProvider {
     private ExamRegisterInfoMapper registerInfoMapper;
     @Autowired
     private ExamSubjectMapper examSubjectMapper;
+
+    @Override
+    public ResultResponse<ExamRegisterInfoDTO> accountLogin(String accountName, String admissionNumber) {
+        QueryWrapper<ExamRegisterInfo> wrapper = new QueryWrapper<>();
+        wrapper.eq("account_name", accountName)
+                .eq("admission_number",admissionNumber);
+        ExamRegisterInfo entity = registerInfoMapper.selectOne(wrapper);
+        if(Help.isEmpty(entity)) {
+            return ResultResponse.<ExamRegisterInfoDTO>builder().failure("不存在该考生报名信息,请检查输入的账户名称和准考证号!").build();
+        } else if(entity.getExamStatus() == ExamStatusTypeEnum.ALREADY_OVER.getStatus()){
+            return ResultResponse.<ExamRegisterInfoDTO>builder().failure("该科目考试您已完成,不允许在进行考试!").build();
+        } else if(entity.getExamStatus() == ExamStatusTypeEnum.MISSED_EXAM.getStatus()){
+            return ResultResponse.<ExamRegisterInfoDTO>builder().failure("该科目考试您已缺考,不允许在进行考试!").build();
+        }
+        ExamSubject examSubject = examSubjectMapper.selectById(entity.getExamSubjectId());
+        // 科目考试时间可以提前十分钟考试
+        LocalDateTime startTime = examSubject.getExamStartTime().minusMinutes(10);
+        if(LocalDateTime.now().isBefore(startTime)) {
+            return ResultResponse.<ExamRegisterInfoDTO>builder().failure("还未到考试开始时间,请先等待!").build();
+        } else if(LocalDateTime.now().isAfter(examSubject.getExamEndTime())) {
+            return ResultResponse.<ExamRegisterInfoDTO>builder().failure("科目考试已结束!").build();
+        }
+        ExamRegisterInfoDTO dto = new ExamRegisterInfoDTO();
+        dto.setExamRegisterInfoId(entity.getExamRegisterInfoId());
+        dto.setGenerationRuleId(examSubject.getGenerationRuleId());
+        return ResultResponse.<ExamRegisterInfoDTO>builder().success("考生登录成功!").data(dto).build();
+    }
 
     @Override
     public ResultResponse<ExamRegisterInfoDTO> checkExamPassword(String examRegisterInfoId, String examPassword) {

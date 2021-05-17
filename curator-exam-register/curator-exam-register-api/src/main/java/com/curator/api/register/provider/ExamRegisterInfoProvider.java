@@ -13,7 +13,14 @@ import java.math.BigDecimal;
  */
 public interface ExamRegisterInfoProvider {
 
-//    ResultResponse<ExamRegisterInfoDTO> accountLogin();
+    /**
+     * 考生账号登录
+     *
+     * @param accountName 考生账号名
+     * @param admissionNumber 准考证编号
+     * @return
+     */
+    ResultResponse<ExamRegisterInfoDTO> accountLogin(String accountName, String admissionNumber);
 
     /**
      * 校验考试口令

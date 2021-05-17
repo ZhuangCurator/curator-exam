@@ -193,6 +193,9 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
         } else if (info.getExamStartTime().isAfter(info.getExamEndTime())) {
             return ResultResponse.<ExamSubjectDTO>builder().failure("考试开始时间不能大于结束时间").build();
         }
+        if(info.getRegisterEndTime().isAfter(info.getExamStartTime())) {
+            return ResultResponse.<ExamSubjectDTO>builder().failure("报名结束时间不能大于考试开始时间").build();
+        }
         // 验证科目名称是否已存在
         QueryWrapper<ExamSubject> wrapper = new QueryWrapper<>();
         wrapper.eq("exam_subject_name", info.getExamSubjectName())

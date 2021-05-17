@@ -1,6 +1,5 @@
-package com.curator.core.register.entity;
+package com.curator.api.register.pojo.dto;
 
-import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -8,21 +7,20 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 考试科目
+ * 考试科目 数据传输对象
  *
  * @author Jun
  * @since 2021-05-13
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class ExamSubject implements Serializable {
+public class ExamSubjectDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * 考试科目ID
      */
-    @TableId(value = "exam_subject_id", type = IdType.ASSIGN_ID)
     private String examSubjectId;
 
     /**
@@ -34,11 +32,6 @@ public class ExamSubject implements Serializable {
      * 考试类别ID
      */
     private String examCategoryId;
-
-    /**
-     * 试卷生成规则ID
-     */
-    private String generationRuleId;
 
     /**
      * 报名开始时间
@@ -71,33 +64,8 @@ public class ExamSubject implements Serializable {
     private Integer passingScore;
 
     /**
-     * 创建账户 id
+     * 报名人数
      */
-    private String createAccountId;
-
-    /**
-     * 创建账户父账户 id
-     */
-    private String parentAccountId;
-
-    /**
-     * 1 表示删除，0 表示未删除
-     */
-    @TableLogic
-    @TableField(value = "is_deleted", fill = FieldFill.INSERT)
-    private Integer deleted;
-
-    /**
-     * 插入时间
-     */
-    @TableField(fill = FieldFill.INSERT)
-    private LocalDateTime createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime updateTime;
-
+    private Integer registerNumber;
 
 }
