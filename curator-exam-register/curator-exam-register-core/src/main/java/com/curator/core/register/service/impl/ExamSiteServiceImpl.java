@@ -8,7 +8,6 @@ import com.curator.common.util.Help;
 import com.curator.core.register.entity.ExamSite;
 import com.curator.core.register.entity.ExamSubjectSite;
 import com.curator.core.register.mapper.ExamSiteMapper;
-import com.curator.core.register.mapper.ExamSubjectMapper;
 import com.curator.core.register.mapper.ExamSubjectSiteMapper;
 import com.curator.core.register.service.ExamSiteService;
 import org.springframework.beans.BeanUtils;
@@ -27,8 +26,6 @@ public class ExamSiteServiceImpl implements ExamSiteService {
 
     @Autowired
     private ExamSubjectSiteMapper examSubjectSiteMapper;
-    @Autowired
-    private ExamSubjectMapper examSubjectMapper;
     @Autowired
     private ExamSiteMapper examSiteMapper;
 
@@ -61,6 +58,13 @@ public class ExamSiteServiceImpl implements ExamSiteService {
         List<ExamSiteDTO> resultList = examSiteList.stream().map(this::convertEntity).peek(site -> {
             site.setExamCategoryId(search.getExamCategoryId());
             site.setExamSubjectId(search.getExamSubjectId());
+            // 查询已报人数
+            QueryWrapper<ExamSubjectSite> subjectSiteWrapper = new QueryWrapper<>();
+            subjectSiteWrapper.eq("exam_category_id", search.getExamCategoryId())
+                            .eq("exam_subject_id", search.getExamSubjectId())
+                            .eq("exam_site_id", site.getExamSiteId());
+            ExamSubjectSite subjectSite  = examSubjectSiteMapper.selectOne(subjectSiteWrapper);
+            site.setRegisterNumber(subjectSite.getRegisterNumber());
         }).collect(Collectors.toList());
         return ResultResponse.<List<ExamSiteDTO>>builder().success("考点列表查询成功!").data(resultList).build();
     }
@@ -74,7 +78,6 @@ public class ExamSiteServiceImpl implements ExamSiteService {
     private ExamSiteDTO convertEntity(ExamSite entity) {
         ExamSiteDTO target = new ExamSiteDTO();
         if (Help.isNotEmpty(entity)) {
-
             BeanUtils.copyProperties(entity, target);
         }
         return target;

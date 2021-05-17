@@ -131,9 +131,9 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
         QueryWrapper<ExamSubjectSite> wrapper = new QueryWrapper<>();
 
         wrapper.eq(Help.isNotEmpty(search.getExamSubjectId()), "exam_subject_id", search.getExamSubjectId())
-                .ge(Help.isNotEmpty(search.getProvince()), "province", search.getProvince())
-                .le(Help.isNotEmpty(search.getCity()), "city", search.getCity())
-                .ge(Help.isNotEmpty(search.getDistrict()), "district", search.getDistrict())
+                .eq(Help.isNotEmpty(search.getProvince()), "province", search.getProvince())
+                .eq(Help.isNotEmpty(search.getCity()), "city", search.getCity())
+                .eq(Help.isNotEmpty(search.getDistrict()), "district", search.getDistrict())
                 .orderByDesc("create_time");
         IPage<ExamSubjectSite> iPage = subjectSiteMapper.selectPage(page, wrapper);
         List<ExamSubjectSiteDTO> resultList = iPage.getRecords().stream()

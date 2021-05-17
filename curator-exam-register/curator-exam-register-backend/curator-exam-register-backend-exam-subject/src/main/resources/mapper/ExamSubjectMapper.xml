@@ -14,7 +14,6 @@
         <result column="exam_end_time" property="examEndTime" />
         <result column="exam_duration" property="examDuration" />
         <result column="passing_score" property="passingScore" />
-        <result column="register_number" property="registerNumber" />
         <result column="create_account_id" property="createAccountId" />
         <result column="parent_account_id" property="parentAccountId" />
         <result column="is_deleted" property="deleted" />

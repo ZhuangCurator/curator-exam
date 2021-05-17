@@ -6,7 +6,9 @@ import com.curator.api.register.pojo.dto.ExamSubjectDTO;
 import com.curator.api.register.pojo.vo.search.ExamSubjectSearch;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
+import com.curator.core.register.entity.ExamRegisterInfo;
 import com.curator.core.register.entity.ExamSubject;
+import com.curator.core.register.mapper.ExamRegisterInfoMapper;
 import com.curator.core.register.mapper.ExamSubjectMapper;
 import com.curator.core.register.service.ExamSubjectService;
 import org.springframework.beans.BeanUtils;
@@ -28,12 +30,14 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
 
     @Autowired
     private ExamSubjectMapper examSubjectMapper;
+    @Autowired
+    private ExamRegisterInfoMapper registerInfoMapper;
     
     @Override
     public ResultResponse<List<ExamSubjectDTO>> listWithExamSubject(ExamSubjectSearch search) {
         // 查询考试科目
         QueryWrapper<ExamSubject> subjectWrapper = new QueryWrapper<>();
-        subjectWrapper.eq("exam_subject_id", search.getExamCategoryId())
+        subjectWrapper.eq("exam_category_id", search.getExamCategoryId())
                 .orderByDesc("create_time");
         List<ExamSubject> subjectList = examSubjectMapper.selectList(subjectWrapper);
         if(Help.isEmpty(subjectList)) {
@@ -59,6 +63,14 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
         ExamSubjectDTO target = new ExamSubjectDTO();
         if (Help.isNotEmpty(entity)) {
             BeanUtils.copyProperties(entity, target);
+            target.setRegisterNumber(0);
+            QueryWrapper<ExamRegisterInfo> wrapper = new QueryWrapper<>();
+            wrapper.eq("exam_subject_id", entity.getExamSubjectId());
+            Integer count = registerInfoMapper.selectCount(wrapper);
+            if(count != null) {
+                target.setRegisterNumber(count);
+            }
+
         }
         return target;
     }
