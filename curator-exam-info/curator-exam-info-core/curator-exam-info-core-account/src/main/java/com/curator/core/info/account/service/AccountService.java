@@ -1,5 +1,7 @@
 package com.curator.core.info.account.service;
 
+import com.curator.api.info.pojo.dto.AccountDTO;
+import com.curator.api.info.pojo.vo.AccountInfo;
 import com.curator.common.support.ResultResponse;
 
 import java.util.Set;
@@ -17,4 +19,20 @@ public interface AccountService {
      * @return
      */
     ResultResponse<Set<String>> getAccountAllPerms(String accountId);
+
+    /**
+     * 普通账户注册
+     *
+     * @param info 账户信息
+     * @return {@link ResultResponse}
+     */
+    ResultResponse<AccountDTO> saveInfoAccount(AccountInfo info);
+
+    /**
+     * 修改账户密码或邮箱
+     *
+     * @param info 账户信息
+     * @return
+     */
+    ResultResponse<?> updateAccount(AccountInfo info);
 }

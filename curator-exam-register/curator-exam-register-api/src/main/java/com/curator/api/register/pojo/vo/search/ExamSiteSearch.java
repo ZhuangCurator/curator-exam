@@ -27,4 +27,19 @@ public class ExamSiteSearch implements Serializable {
      */
     private String examSubjectId;
 
+    /**
+     * 省(代码)
+     */
+    private String province;
+
+    /**
+     * 市(代码)
+     */
+    private String city;
+
+    /**
+     * 区(代码)
+     */
+    private String district;
+
 }

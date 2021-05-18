@@ -1,9 +1,14 @@
 package com.curator.core.info.account.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.curator.api.info.enums.InfoAccountStatusEnum;
+import com.curator.api.info.pojo.dto.AccountDTO;
+import com.curator.api.info.pojo.vo.AccountInfo;
 import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
+import com.curator.common.util.SecurityUtil;
 import com.curator.core.info.account.entity.InfoAccount;
 import com.curator.core.info.account.entity.InfoAccountPower;
 import com.curator.core.info.account.mapper.InfoAccountMapper;
@@ -17,6 +22,7 @@ import com.curator.core.info.role.entity.InfoRole;
 import com.curator.core.info.role.entity.InfoRolePowerGroup;
 import com.curator.core.info.role.mapper.InfoRoleMapper;
 import com.curator.core.info.role.mapper.InfoRolePowerGroupMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,8 +56,8 @@ public class AccountServiceImpl implements AccountService {
         Set<String> permsSet = new HashSet<>();
         InfoAccount account = accountMapper.selectById(accountId);
         InfoRole infoRole = roleMapper.selectById(account.getRoleId());
-        if(Help.isNotEmpty(infoRole)) {
-            if(CommonConstant.DEFAULT_SUPER_ADMIN_ROLE.equals(infoRole.getRoleName())) {
+        if (Help.isNotEmpty(infoRole)) {
+            if (CommonConstant.DEFAULT_SUPER_ADMIN_ROLE.equals(infoRole.getRoleName())) {
                 // 是超级管理员
                 permsSet.add("*:*:*");
             } else {
@@ -92,6 +98,53 @@ public class AccountServiceImpl implements AccountService {
         return ResultResponse.<Set<String>>builder().success("账户权限标识查询成功").data(permsSet).build();
     }
 
+    @Override
+    public ResultResponse<AccountDTO> saveInfoAccount(AccountInfo info) {
+        InfoAccount entity = convertInfo(info);
+        // 判断账户名是否重复
+        QueryWrapper<InfoAccount> wrapper = new QueryWrapper<>();
+        wrapper.eq("account_name", info.getAccountName());
+        InfoAccount infoAccount = accountMapper.selectOne(wrapper);
+        if (Help.isNotEmpty(infoAccount)) {
+            // 数据库已存在该账户名
+            return ResultResponse.<AccountDTO>builder().failure("该账户名已被使用!").build();
+        }
+        // 判断手机号码是否重复
+        wrapper = new QueryWrapper<>();
+        wrapper.eq("phone", info.getPhone());
+        infoAccount = accountMapper.selectOne(wrapper);
+        if (Help.isNotEmpty(infoAccount)) {
+            // 数据库已存在该手机号码
+            return ResultResponse.<AccountDTO>builder().failure("该手机号已被绑定!").build();
+        }
+        String salt = RandomUtil.randomString(RandomUtil.randomInt(10, 15));
+        // 普通账户密码默认为 123456
+        String encryptPassword = SecurityUtil.encryptPassword("123456", salt);
+        entity.setAccountPassword(encryptPassword);
+        entity.setSalt(salt);
+        // 新账户状态为正常
+        entity.setAccountStatus(InfoAccountStatusEnum.NORMAL.getStatus());
+        accountMapper.insert(entity);
+        return ResultResponse.<AccountDTO>builder().success("账户添加成功").data(convertEntity(entity)).build();
+    }
+
+    @Override
+    public ResultResponse<?> updateAccount(AccountInfo info) {
+        if (Help.isEmpty(info.getAccountPassword()) && Help.isEmpty(info.getPhone()) && Help.isEmpty(info.getEmail())) {
+            return ResultResponse.builder().failure("请填写需要修改的账户信息!").build();
+        }
+        InfoAccount entity = new InfoAccount();
+        if (Help.isNotEmpty(info.getAccountPassword())) {
+            String salt = RandomUtil.randomString(RandomUtil.randomInt(10, 15));
+            String encryptPassword = SecurityUtil.encryptPassword(info.getAccountPassword(), salt);
+            entity.setAccountPassword(encryptPassword);
+        }
+        entity.setEmail(info.getEmail());
+        entity.setPhone(info.getPhone());
+        accountMapper.updateById(entity);
+        return ResultResponse.builder().success("账户信息修改成功!").build();
+    }
+
     /**
      * 查询权限集合的权限
      *
@@ -106,5 +159,33 @@ public class AccountServiceImpl implements AccountService {
             return powerList.stream().map(InfoPower::getPowerPerms).collect(Collectors.toSet());
         }
         return null;
+    }
+
+    /**
+     * 将 {@link InfoAccount} 转为 {@link AccountDTO}
+     *
+     * @param entity 账户数据库信息
+     * @return {@link AccountDTO}
+     */
+    private AccountDTO convertEntity(InfoAccount entity) {
+        AccountDTO target = new AccountDTO();
+        if (Help.isNotEmpty(entity)) {
+            BeanUtils.copyProperties(entity, target);
+        }
+        return target;
+    }
+
+    /**
+     * 将 {@link AccountInfo} 转为 {@link InfoAccount}
+     *
+     * @param info 账户 页面信息
+     * @return {@link InfoAccount}
+     */
+    private InfoAccount convertInfo(AccountInfo info) {
+        InfoAccount target = new InfoAccount();
+        if (Help.isNotEmpty(info)) {
+            BeanUtils.copyProperties(info, target);
+        }
+        return target;
     }
 }

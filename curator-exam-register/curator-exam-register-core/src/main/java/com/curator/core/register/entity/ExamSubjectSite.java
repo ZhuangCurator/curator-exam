@@ -38,11 +38,6 @@ public class ExamSubjectSite implements Serializable {
     private String examSiteId;
 
     /**
-     * 报名人数
-     */
-    private Integer registerNumber;
-
-    /**
      * 省(代码)
      */
     private String province;

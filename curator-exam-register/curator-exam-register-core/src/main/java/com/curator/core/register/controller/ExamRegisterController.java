@@ -6,6 +6,7 @@ import com.curator.common.support.ResultResponse;
 import com.curator.core.register.service.ExamRegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +31,7 @@ public class ExamRegisterController {
      */
     @PostMapping("/register")
     @Log(controllerName = "ExamRegisterController", remark = "考生报名")
-    ResultResponse<String> accountRegister(ExamRegisterInfoInfo info) {
+    ResultResponse<String> accountRegister(@RequestBody ExamRegisterInfoInfo info) {
         return examRegisterService.accountRegister(info);
     }
 }

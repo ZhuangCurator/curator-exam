@@ -225,4 +225,26 @@ public class RedissonUtil {
         return rBucket.get(key);
     }
 
+    /**
+     * 获取可重入锁
+     *
+     * @param name  锁名
+     * @param timeout 过期时间(毫秒)
+     */
+    public static void lock(final String name, final long timeout) {
+        RLock lock = redissonClient.getLock(name);
+        lock.lock(timeout, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * 解除可重入锁
+     *
+     * @param name 锁名
+     */
+    public static void unlock(String name) {
+        RLock lock = redissonClient.getLock(name);
+        if (lock.isLocked() && lock.isHeldByCurrentThread()) {
+            lock.unlock();
+        }
+    }
 }
