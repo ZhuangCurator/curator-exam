@@ -2,6 +2,7 @@ package com.curator.core.auth.captcha.processor;
 
 import cn.hutool.core.util.IdUtil;
 import com.curator.api.auth.pojo.dto.CaptchaDTO;
+import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.common.util.RedissonUtil;
@@ -103,7 +104,7 @@ public abstract class AbstractCaptchaProcessor implements CaptchaProcessor {
      * @return
      */
     private String getRedisCacheKey(String uuid) {
-        return CAPTCHA_CACHE_KEY + uuid;
+        return CommonConstant.CAPTCHA_CACHE_KEY + uuid;
     }
 
 }

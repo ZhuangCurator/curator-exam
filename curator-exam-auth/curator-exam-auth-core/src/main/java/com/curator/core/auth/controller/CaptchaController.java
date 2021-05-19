@@ -1,7 +1,10 @@
 package com.curator.core.auth.controller;
 
 import com.curator.common.annotation.Log;
+import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.ResultResponse;
+import com.curator.common.util.Help;
+import com.curator.common.util.RedissonUtil;
 import com.curator.core.auth.captcha.holder.CaptchaProcessorHolder;
 import com.curator.core.auth.captcha.processor.CaptchaProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +39,8 @@ public class CaptchaController {
      * @param generator 处理器简称： chinese或者number
      * @throws Exception
      */
-    @Log(controllerName = "CaptchaController", remark = "验证码生成")
     @GetMapping(value = { "/captcha/{type}", "/captcha/{type}/{generator}" })
+    @Log(controllerName = "CaptchaController", remark = "验证码生成")
     public ResultResponse<HashMap<String,Object>> createCode(HttpServletRequest request, HttpServletResponse response,
             @PathVariable("type") String type,  @PathVariable(value = "generator", required = false) String generator) throws Exception{
         return captchaProcessorHolder.findValidateCodeProcessor(type).create(request, response, generator);
@@ -53,5 +56,28 @@ public class CaptchaController {
     public ResultResponse<?> exception(HttpServletRequest request) {
         String message = (String) request.getAttribute("message");
         return ResultResponse.builder().failure(message).build();
+    }
+
+    /**
+     * 单独校验短信验证码
+     *
+     * @param uuid 唯一标识
+     * @param captcha 验证码
+     * @return
+     */
+    @GetMapping("/check/smsCode")
+    @Log(controllerName = "CaptchaController", remark = "单独校验短信验证码")
+    public ResultResponse<?> checkSmsCode(String uuid, String captcha) {
+        String redisKey = CommonConstant.CAPTCHA_CACHE_KEY + uuid;
+        String codeInRedis = RedissonUtil.getCacheObject(redisKey);
+        if (Help.isEmpty(codeInRedis)) {
+            return ResultResponse.builder().failure("验证码已过期!").build();
+        } else if (!codeInRedis.equals(captcha)) {
+            return ResultResponse.builder().failure("请输入正确的验证码!").build();
+        } else {
+            // 校验成功 删除缓存中的验证码
+            RedissonUtil.deleteObject(redisKey);
+        }
+        return ResultResponse.builder().success("短信验证码校验成功!").build();
     }
 }

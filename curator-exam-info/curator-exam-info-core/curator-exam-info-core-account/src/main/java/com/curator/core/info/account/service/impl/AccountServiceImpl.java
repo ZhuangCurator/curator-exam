@@ -124,6 +124,8 @@ public class AccountServiceImpl implements AccountService {
         entity.setSalt(salt);
         // 新账户状态为正常
         entity.setAccountStatus(InfoAccountStatusEnum.NORMAL.getStatus());
+        entity.setCreateAccountId("0");
+        entity.setParentAccountId("0");
         accountMapper.insert(entity);
         return ResultResponse.<AccountDTO>builder().success("账户添加成功").data(convertEntity(entity)).build();
     }

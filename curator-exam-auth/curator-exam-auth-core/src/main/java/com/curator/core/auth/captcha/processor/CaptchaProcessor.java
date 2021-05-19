@@ -12,8 +12,6 @@ import java.util.HashMap;
  */
 public interface CaptchaProcessor {
 
-    String CAPTCHA_CACHE_KEY = "captcha:cache:";
-
     /**
      * 创建验证码
      *

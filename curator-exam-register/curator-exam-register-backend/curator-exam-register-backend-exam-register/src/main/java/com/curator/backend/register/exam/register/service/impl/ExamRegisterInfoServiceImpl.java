@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -119,8 +120,7 @@ public class ExamRegisterInfoServiceImpl implements ExamRegisterInfoService {
         } else if(examSubject.getExamEndTime().isBefore(LocalDateTime.now())) {
             return ResultResponse.builder().failure("教室分配失败,当前考试科目已结束考试！").build();
         }
-        // 保存分配好教室的考生
-        List<ExamRegisterInfo> resultList = new ArrayList<>(infoList.size());
+
         int size = infoList.size();
         // 将考生打乱顺序
         for (int i = size - 1; i >= 1; i--) {
@@ -140,21 +140,21 @@ public class ExamRegisterInfoServiceImpl implements ExamRegisterInfoService {
             return ResultResponse.builder().failure("教室分配失败,考生数量超过了当前考点下所有考场所能容纳的人数！").build();
         }
         // 为考生分配教室和座位号
+        AtomicInteger sort = new AtomicInteger(0);
         for (ExamClassroom examClassroom : classroomList) {
-            if(Help.isNotEmpty(infoList)) {
-                Integer numberLimit = examClassroom.getNumberLimit();
-                for (int i = 0; i < numberLimit; i++) {
-                    ExamRegisterInfo registerInfo = infoList.remove(i);
-                    registerInfo.setExamClassroomId(examClassroom.getExamClassroomId());
-                    registerInfo.setSeatNumber(i + 1);
-                    resultList.add(registerInfo);
+            Integer numberLimit = examClassroom.getNumberLimit();
+            int startNum = sort.get();
+            for (int i = startNum; i < size; i++) {
+                ExamRegisterInfo registerInfo = infoList.get(i);
+                registerInfo.setExamClassroomId(examClassroom.getExamClassroomId());
+                registerInfo.setSeatNumber(sort.incrementAndGet());
+                if(sort.get() == numberLimit) {
+                    // 当前教室的座位分配完了
+                    break;
                 }
-            } else {
-                // 考生已分配完了，剩下来的考场不进行分配
-                break;
             }
         }
-        examRegisterInfoMapper.batchAssignClassroom(resultList, LocalDateTime.now());
+        examRegisterInfoMapper.batchAssignClassroom(infoList, LocalDateTime.now());
         return ResultResponse.builder().success("教室分配成功").build();
     }
 

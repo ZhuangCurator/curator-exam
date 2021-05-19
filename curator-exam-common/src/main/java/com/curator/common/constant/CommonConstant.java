@@ -9,6 +9,11 @@ package com.curator.common.constant;
 public class CommonConstant {
 
     /**
+     * 验证码 缓存前缀
+     */
+    public static final String CAPTCHA_CACHE_KEY = "captcha:cache:";
+
+    /**
      * 令牌 有效期(毫秒)
      */
     public static final long TOKEN_EXPIRE_TIME = 8 * 60 * 60 * 1000;
