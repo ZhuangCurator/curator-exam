@@ -97,6 +97,8 @@ public class LoginServiceImpl implements LoginService {
                 .accountId(account.getAccountId())
                 .parentAccountId(account.getParentAccountId())
                 .accountName(account.getAccountName())
+                .province(account.getProvince())
+                .city(account.getCity())
                 .loginTime(loginTime)
                 .expireTime(loginTime + CommonConstant.TOKEN_EXPIRE_TIME)
                 .build();
@@ -106,6 +108,7 @@ public class LoginServiceImpl implements LoginService {
             // 权限标识
             ResultResponse<Set<String>> permsRes = accountProvider.getAccountAllPerms(account.getAccountId());
             accountDTO.setRoleName(Boolean.TRUE.equals(roleNameRes.getSucceeded()) ? roleNameRes.getData() : "角色不存在");
+            accountDTO.setRoleType(account.getRoleType());
             accountDTO.setPerms(Boolean.TRUE.equals(permsRes.getSucceeded()) ? permsRes.getData() : new HashSet<>());
         }
         // 保存或更新用户token

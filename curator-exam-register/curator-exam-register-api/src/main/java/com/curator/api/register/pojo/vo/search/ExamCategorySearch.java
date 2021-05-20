@@ -27,9 +27,4 @@ public class ExamCategorySearch implements Serializable {
      */
     private String city;
 
-    /**
-     * 区(代码)
-     */
-    private String district;
-
 }

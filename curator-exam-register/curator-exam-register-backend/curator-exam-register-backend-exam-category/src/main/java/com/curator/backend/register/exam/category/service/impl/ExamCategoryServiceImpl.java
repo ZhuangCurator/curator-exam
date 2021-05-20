@@ -39,9 +39,7 @@ public class ExamCategoryServiceImpl implements ExamCategoryService {
         Page<ExamCategory> page = new Page<>(search.getCurrent(), search.getPageSize());
         QueryWrapper<ExamCategory> wrapper = new QueryWrapper<>();
         if (Boolean.FALSE.equals(search.getSuperAdmin())) {
-            String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
-            wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
-                    .or(w -> w.eq("parent_account_id", createAccountId)));
+            generateWrapper(wrapper);
         }
         wrapper.like(Help.isNotEmpty(search.getExamCategoryName()), "exam_category_name", search.getExamCategoryName())
                 .ge(Help.isNotEmpty(search.getExamStartTime()), "exam_start_time", search.getExamStartTime())
@@ -64,9 +62,7 @@ public class ExamCategoryServiceImpl implements ExamCategoryService {
         wrapper.like(Help.isNotEmpty(search.getExamCategoryName()), "exam_category_name", search.getExamCategoryName())
                 .orderByDesc("create_time");
         if (Boolean.FALSE.equals(search.getSuperAdmin())) {
-            String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
-            wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
-                    .or(w -> w.eq("parent_account_id", createAccountId)));
+            generateWrapper(wrapper);
         }
         List<ExamCategory> list = examCategoryMapper.selectList(wrapper);
         List<ExamCategoryDTO> resultList = list.stream().map(this::convertEntity).collect(Collectors.toList());
@@ -87,6 +83,8 @@ public class ExamCategoryServiceImpl implements ExamCategoryService {
             return res;
         }
         ExamCategory entity = convertInfo(info);
+        entity.setProvince(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PROVINCE));
+        entity.setCity(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_CITY));
         entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
         entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
         examCategoryMapper.insert(entity);
@@ -108,6 +106,22 @@ public class ExamCategoryServiceImpl implements ExamCategoryService {
     public ResultResponse<String> removeExamCategory(String id) {
         examCategoryMapper.deleteById(id);
         return ResultResponse.<String>builder().success("考试类别删除成功").data(id).build();
+    }
+
+    /**
+     * 构件查询wrapper
+     *
+     * @param wrapper
+     */
+    private void generateWrapper(QueryWrapper<ExamCategory> wrapper) {
+        String province = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PROVINCE);
+        String city = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_CITY);
+        // 省级管理员能看到全省的和超级管理员创建的，市级管理员能看到全市的和省级管理员以及超级管理员创建的
+        String defaultCode = "0";
+        wrapper.and(wr -> wr.eq("province", defaultCode).eq("city", defaultCode)
+                .or(w -> w.eq("province", province).eq("city", defaultCode))
+                .or(city.equals(defaultCode), w -> w.eq("province", province))
+                .or(!city.equals(defaultCode), w -> w.eq("province", province).eq("city", city)));
     }
 
     /**

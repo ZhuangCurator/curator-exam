@@ -34,6 +34,16 @@ public class LoginAccountDTO implements Serializable {
     private String accountName;
 
     /**
+     * 省(代码)
+     */
+    private String province;
+
+    /**
+     * 市(代码)
+     */
+    private String city;
+
+    /**
      * 登录唯一标识
      */
     private String token;
@@ -42,6 +52,11 @@ public class LoginAccountDTO implements Serializable {
      * 角色名
      */
     private String roleName;
+
+    /**
+     * 角色类型
+     */
+    private Integer roleType;
 
     /**
      * 权限列表

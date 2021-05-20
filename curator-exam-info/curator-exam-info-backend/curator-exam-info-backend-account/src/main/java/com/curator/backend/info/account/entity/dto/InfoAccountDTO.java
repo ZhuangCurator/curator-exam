@@ -1,6 +1,8 @@
 package com.curator.backend.info.account.entity.dto;
 
 import com.curator.api.info.enums.InfoAccountStatusEnum;
+import com.curator.api.info.enums.InfoRoleTypeEnum;
+import com.curator.common.util.Help;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -62,6 +64,11 @@ public class InfoAccountDTO implements Serializable {
     private Integer roleType;
 
     /**
+     * 角色类型描述
+     */
+    private String roleTypeDesc;
+
+    /**
      * 省(代码)
      */
     private String province;
@@ -113,5 +120,9 @@ public class InfoAccountDTO implements Serializable {
 
     public String getAccountStatusDesc() {
         return InfoAccountStatusEnum.getDesc(accountStatus);
+    }
+
+    public String getRoleTypeDesc() {
+        return Help.isEmpty(roleType) ? "" : InfoRoleTypeEnum.getDesc(roleType);
     }
 }

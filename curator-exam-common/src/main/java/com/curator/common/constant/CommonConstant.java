@@ -69,6 +69,16 @@ public class CommonConstant {
     public static final String HTTP_HEADER_ACCOUNT_NAME = "accountName";
 
     /**
+     * 账户省份
+     */
+    public static final String HTTP_HEADER_ACCOUNT_PROVINCE = "province";
+
+    /**
+     * 账户地市
+     */
+    public static final String HTTP_HEADER_ACCOUNT_CITY = "city";
+
+    /**
      * 前后分离时 发送到前端的验证码图片经过base64加密后 加上此前缀
      */
     public static final String BASE64_IMAGE_PREFIX = "data:image/jpeg;base64,";

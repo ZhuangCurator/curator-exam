@@ -233,11 +233,15 @@ public class InfoAccountServiceImpl implements InfoAccountService {
         InfoAccountDTO target = new InfoAccountDTO();
         if (Help.isNotEmpty(entity)) {
             BeanUtils.copyProperties(entity, target);
-            InfoRole infoRole = roleMapper.selectById(entity.getRoleId());
-            if(Help.isEmpty(infoRole)) {
-                target.setRoleName("该角色已被删除");
+            if(Help.isNotEmpty(entity.getRoleId())) {
+                InfoRole infoRole = roleMapper.selectById(entity.getRoleId());
+                if (Help.isEmpty(infoRole)) {
+                    target.setRoleName("该角色已被删除");
+                } else {
+                    target.setRoleName(infoRole.getRoleName());
+                }
             } else {
-                target.setRoleName(infoRole.getRoleName());
+                target.setRoleName("该账户没有分配角色");
             }
         }
         return target;
