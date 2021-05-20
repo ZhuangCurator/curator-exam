@@ -2,6 +2,7 @@ package com.curator.backend.info.role.entity.dto;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.curator.api.info.enums.InfoRoleStatusEnum;
+import com.curator.api.info.enums.InfoRoleTypeEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -43,6 +44,16 @@ public class InfoRoleDTO implements Serializable {
     private String roleStatusDesc;
 
     /**
+     * 角色类型 1:超级管理员,2:超级管理员子账号,3:省级管理员,4:省级管理员子账号,5:市级管理员,6:市级管理员子账号
+     */
+    private Integer roleType;
+
+    /**
+     * 角色类型描述
+     */
+    private String roleTypeDesc;
+
+    /**
      * 备注
      */
     private String roleRemark;
@@ -74,5 +85,9 @@ public class InfoRoleDTO implements Serializable {
 
     public String getRoleStatusDesc() {
         return InfoRoleStatusEnum.getDesc(roleStatus);
+    }
+
+    public String getRoleTypeDesc() {
+        return InfoRoleTypeEnum.getDesc(roleType);
     }
 }

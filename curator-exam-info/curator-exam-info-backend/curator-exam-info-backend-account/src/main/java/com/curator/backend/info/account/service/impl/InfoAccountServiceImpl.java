@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.curator.api.info.enums.InfoAccountStatusEnum;
 import com.curator.api.info.enums.InfoRoleStatusEnum;
+import com.curator.api.info.enums.InfoRoleTypeEnum;
 import com.curator.backend.info.account.entity.InfoAccount;
 import com.curator.backend.info.account.entity.dto.InfoAccountDTO;
 import com.curator.backend.info.account.entity.vo.info.InfoAccountInfo;
@@ -20,11 +21,11 @@ import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.common.util.SecurityUtil;
+import com.curator.common.util.ServletUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,14 +46,14 @@ public class InfoAccountServiceImpl implements InfoAccountService {
     private InfoRoleMapper roleMapper;
 
     @Override
-    public ResultResponse<PageResult<InfoAccountDTO>> pageWithInfoAccount(InfoAccountSearch search, HttpServletRequest request) {
+    public ResultResponse<PageResult<InfoAccountDTO>> pageWithInfoAccount(InfoAccountSearch search) {
         Page<InfoAccount> page = new Page<>(search.getCurrent(), search.getPageSize());
         QueryWrapper<InfoAccount> wrapper = new QueryWrapper<>();
         wrapper.like(Help.isNotEmpty(search.getAccountName()), "account_name", search.getAccountName())
                 .eq(Help.isNotEmpty(search.getAccountStatus()), "account_status", search.getAccountStatus())
                 .orderByDesc("create_time");
         if (Boolean.FALSE.equals(search.getSuperAdmin())) {
-            String createAccountId = request.getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+            String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
             wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
                     .or(w -> w.eq("parent_account_id", createAccountId)));
         }
@@ -68,14 +69,14 @@ public class InfoAccountServiceImpl implements InfoAccountService {
     }
 
     @Override
-    public ResultResponse<List<InfoAccountDTO>> listWithInfoAccount(InfoAccountSearch search, HttpServletRequest request) {
+    public ResultResponse<List<InfoAccountDTO>> listWithInfoAccount(InfoAccountSearch search) {
 
         QueryWrapper<InfoAccount> wrapper = new QueryWrapper<>();
         wrapper.like(Help.isNotEmpty(search.getAccountName()), "account_name", search.getAccountName())
                 .eq("account_status", InfoAccountStatusEnum.NORMAL.getStatus())
                 .orderByDesc("create_time");
         if (Boolean.FALSE.equals(search.getSuperAdmin())) {
-            String createAccountId = request.getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+            String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
             wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
                     .or(w -> w.eq("parent_account_id", createAccountId)));
         }
@@ -92,27 +93,55 @@ public class InfoAccountServiceImpl implements InfoAccountService {
     }
 
     @Override
-    public ResultResponse<InfoAccountDTO> saveInfoAccount(InfoAccountInfo info, HttpServletRequest request) {
-        InfoAccount entity = convertInfo(info);
-        // 判断账户名是否重复
-        QueryWrapper<InfoAccount> wrapper = new QueryWrapper<>();
-        wrapper.eq("account_name", entity.getAccountName());
-        InfoAccount infoAccount = accountMapper.selectOne(wrapper);
-        if (Help.isNotEmpty(infoAccount)) {
-            // 数据库已存在该账户名
-            return ResultResponse.<InfoAccountDTO>builder().failure("该账户名已被使用!").build();
+    public ResultResponse<InfoAccountDTO> saveInfoAccount(InfoAccountInfo info) {
+        String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+        InfoAccount account = accountMapper.selectById(createAccountId);
+        if(account.getRoleType() == InfoRoleTypeEnum.CITY_ADMIN.getStatus() ||
+                account.getRoleType() == InfoRoleTypeEnum.CITY_ADMIN_SON.getStatus() ||
+                account.getRoleType() == InfoRoleTypeEnum.PROVINCE_ADMIN_SON.getStatus() ||
+                account.getRoleType() == InfoRoleTypeEnum.SUPER_ADMIN_SON.getStatus()) {
+            // 市级管理员和各级管理员子账号 不能创建下级管理员账号
+            return ResultResponse.<InfoAccountDTO>builder().failure("当前账户级别不允许创建管理员账户!").build();
         }
+        // 校验账户信息
+        ResultResponse<InfoAccountDTO> res = checkInfoAccount(info);
+        if (!res.getSucceeded()) {
+            return res;
+        }
+        InfoAccount entity = convertInfo(info);
         String salt = RandomUtil.randomString(RandomUtil.randomInt(10, 15));
-        String encryptPassword = SecurityUtil.encryptPassword(entity.getAccountPassword(), salt);
+        String encryptPassword = SecurityUtil.encryptPassword("123456", salt);
         entity.setAccountPassword(encryptPassword);
         entity.setSalt(salt);
         // 新用户状态为正常
         entity.setAccountStatus(InfoAccountStatusEnum.NORMAL.getStatus());
-        entity.setParentId(request.getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
-        entity.setCreateAccountId(request.getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
-        entity.setParentAccountId(request.getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
+        entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
+        entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
         accountMapper.insert(entity);
         return ResultResponse.<InfoAccountDTO>builder().success("账户添加成功").data(convertEntity(entity)).build();
+    }
+
+    @Override
+    public ResultResponse<InfoAccountDTO> saveSonInfoAccount(InfoAccountInfo info) {
+        // 校验账户信息
+        ResultResponse<InfoAccountDTO> res = checkInfoAccount(info);
+        if (!res.getSucceeded()) {
+            return res;
+        }
+        InfoAccount entity = convertInfo(info);
+        // 新用户状态为正常
+        entity.setAccountStatus(InfoAccountStatusEnum.NORMAL.getStatus());
+        entity.setParentId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
+        entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
+        entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
+        // 加密盐
+        String salt = RandomUtil.randomString(RandomUtil.randomInt(10, 15));
+        String encryptPassword = SecurityUtil.encryptPassword("123456", salt);
+        entity.setSalt(salt);
+        entity.setAccountPassword(encryptPassword);
+
+        accountMapper.insert(entity);
+        return ResultResponse.<InfoAccountDTO>builder().success("子账户添加成功").data(convertEntity(entity)).build();
     }
 
     @Override
@@ -167,11 +196,31 @@ public class InfoAccountServiceImpl implements InfoAccountService {
         infoAccount.setEmail("curator@qq.com");
         infoAccount.setPhone("123456");
         infoAccount.setParentId("0");
+        infoAccount.setRemark("超级管理员账号");
         infoAccount.setCreateAccountId("0");
         infoAccount.setParentAccountId("0");
         infoAccount.setRoleId(infoRole.getRoleId());
         accountMapper.insert(infoAccount);
         return ResultResponse.<InfoAccountDTO>builder().success("超级管理员创建成功").data(convertEntity(infoAccount)).build();
+    }
+
+    /**
+     * 检查账户信息
+     *
+     * @param info 账户页面信息
+     * @return
+     */
+    private ResultResponse<InfoAccountDTO> checkInfoAccount(InfoAccountInfo info) {
+        // 判断账户名是否重复
+        QueryWrapper<InfoAccount> wrapper = new QueryWrapper<>();
+        wrapper.eq("account_name", info.getAccountName());
+        InfoAccount infoAccount = accountMapper.selectOne(wrapper);
+        if (Help.isNotEmpty(infoAccount)) {
+            // 数据库已存在该账户名
+            return ResultResponse.<InfoAccountDTO>builder().failure("该账户名已被使用!").build();
+        }
+
+        return ResultResponse.<InfoAccountDTO>builder().success().build();
     }
 
     /**

@@ -8,10 +8,8 @@ import com.curator.common.annotation.Log;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -37,8 +35,8 @@ public class InfoRoleController {
      */
     @GetMapping("/page")
     @Log(controllerName = "InfoRoleController", remark = "角色分页查询")
-    ResultResponse<PageResult<InfoRoleDTO>> pageWithInfoRole(InfoRoleSearch search, HttpServletRequest request) {
-        return roleService.pageWithInfoRole(search, request);
+    ResultResponse<PageResult<InfoRoleDTO>> pageWithInfoRole(InfoRoleSearch search) {
+        return roleService.pageWithInfoRole(search);
     }
 
     /**
@@ -49,8 +47,8 @@ public class InfoRoleController {
      */
     @GetMapping("/list")
     @Log(controllerName = "InfoRoleController", remark = "角色列表查询")
-    ResultResponse<List<InfoRoleDTO>> listWithInfoRole(InfoRoleSearch search, HttpServletRequest request) {
-        return roleService.listWithInfoRole(search, request);
+    ResultResponse<List<InfoRoleDTO>> listWithInfoRole(InfoRoleSearch search) {
+        return roleService.listWithInfoRole(search);
     }
 
     /**
@@ -73,8 +71,8 @@ public class InfoRoleController {
      */
     @PostMapping
     @Log(controllerName = "InfoRoleController", remark = "添加角色")
-    ResultResponse<InfoRoleDTO> saveInfoRole(@RequestBody InfoRoleInfo info, HttpServletRequest request) {
-        return roleService.saveInfoRole(info, request);
+    ResultResponse<InfoRoleDTO> saveInfoRole(@RequestBody InfoRoleInfo info) {
+        return roleService.saveInfoRole(info);
     }
 
     /**

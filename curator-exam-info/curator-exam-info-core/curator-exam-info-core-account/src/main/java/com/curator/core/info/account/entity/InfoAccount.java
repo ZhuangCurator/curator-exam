@@ -63,9 +63,34 @@ public class InfoAccount implements Serializable {
     private String roleId;
 
     /**
+     * 角色类型
+     */
+    private Integer roleType;
+
+    /**
+     * 省(代码)
+     */
+    private String province;
+
+    /**
+     * 市(代码)
+     */
+    private String city;
+
+    /**
+     * 角色名称
+     */
+    private String roleName;
+
+    /**
      * 父账号id
      */
     private String parentId;
+
+    /**
+     * 备注
+     */
+    private String remark;
 
     /**
      * 创建账户 id

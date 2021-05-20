@@ -7,15 +7,9 @@ import com.curator.backend.info.account.service.InfoAccountService;
 import com.curator.common.annotation.Log;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
-import com.curator.common.util.JsonUtil;
-import com.curator.common.util.RedissonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,7 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/infoAccount")
 public class InfoAccountController {
-    
+
     @Autowired
     private InfoAccountService accountService;
 
@@ -41,8 +35,8 @@ public class InfoAccountController {
      */
     @GetMapping("/page")
     @Log(controllerName = "InfoAccountController", remark = "账户分页查询")
-    ResultResponse<PageResult<InfoAccountDTO>> pageWithInfoAccount(InfoAccountSearch search, HttpServletRequest request) {
-        return accountService.pageWithInfoAccount(search, request);
+    ResultResponse<PageResult<InfoAccountDTO>> pageWithInfoAccount(InfoAccountSearch search) {
+        return accountService.pageWithInfoAccount(search);
     }
 
     /**
@@ -53,8 +47,8 @@ public class InfoAccountController {
      */
     @GetMapping("/list")
     @Log(controllerName = "InfoAccountController", remark = "账户列表查询")
-    ResultResponse<List<InfoAccountDTO>> listWithInfoAccount(InfoAccountSearch search, HttpServletRequest request) {
-        return accountService.listWithInfoAccount(search, request);
+    ResultResponse<List<InfoAccountDTO>> listWithInfoAccount(InfoAccountSearch search) {
+        return accountService.listWithInfoAccount(search);
     }
 
     /**
@@ -70,15 +64,27 @@ public class InfoAccountController {
     }
 
     /**
-     * 添加账户
+     * 添加下一级管理员账户
      *
      * @param info 账户信息
      * @return {@link ResultResponse}
      */
     @PostMapping
-    @Log(controllerName = "InfoAccountController", remark = "添加账户")
-    ResultResponse<InfoAccountDTO> saveInfoAccount(@RequestBody InfoAccountInfo info, HttpServletRequest request) {
-        return accountService.saveInfoAccount(info, request);
+    @Log(controllerName = "InfoAccountController", remark = "添加下一级管理员账户")
+    ResultResponse<InfoAccountDTO> saveInfoAccount(@RequestBody InfoAccountInfo info) {
+        return accountService.saveInfoAccount(info);
+    }
+
+    /**
+     * 添加子账户
+     *
+     * @param info 账户信息
+     * @return {@link ResultResponse}
+     */
+    @PostMapping("/sonAccount/add")
+    @Log(controllerName = "InfoAccountController", remark = "添加子账户")
+    ResultResponse<InfoAccountDTO> saveSonInfoAccount(@RequestBody InfoAccountInfo info) {
+        return accountService.saveSonInfoAccount(info);
     }
 
     /**

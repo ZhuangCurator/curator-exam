@@ -1,6 +1,5 @@
 package com.curator.backend.info.account.entity.dto;
 
-import com.baomidou.mybatisplus.annotation.*;
 import com.curator.api.info.enums.InfoAccountStatusEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,7 +9,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- *  账户信息 数据传输信息
+ * 账户信息 数据传输信息
  * </p>
  *
  * @author Jun
@@ -58,6 +57,21 @@ public class InfoAccountDTO implements Serializable {
     private String roleId;
 
     /**
+     * 角色类型
+     */
+    private Integer roleType;
+
+    /**
+     * 省(代码)
+     */
+    private String province;
+
+    /**
+     * 市(代码)
+     */
+    private String city;
+
+    /**
      * 角色名称
      */
     private String roleName;
@@ -66,6 +80,11 @@ public class InfoAccountDTO implements Serializable {
      * 父账号id
      */
     private String parentId;
+
+    /**
+     * 备注
+     */
+    private String remark;
 
     /**
      * 创建账户 id

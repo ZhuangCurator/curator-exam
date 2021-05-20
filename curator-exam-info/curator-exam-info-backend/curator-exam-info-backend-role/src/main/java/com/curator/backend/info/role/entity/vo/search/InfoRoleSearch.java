@@ -24,4 +24,9 @@ public class InfoRoleSearch extends BaseSearch {
      */
     private Integer roleStatus;
 
+    /**
+     * 角色类型 1:超级管理员,2:超级管理员子账号,3:省级管理员,4:省级管理员子账号,5:市级管理员,6:市级管理员子账号
+     */
+    private Integer roleType;
+
 }

@@ -33,4 +33,14 @@ public class ExamCategorySearch extends BaseSearch {
      */
     private LocalDateTime examEndTime;
 
+    /**
+     * 省(代码)
+     */
+    private String province;
+
+    /**
+     * 市(代码)
+     */
+    private String city;
+
 }
