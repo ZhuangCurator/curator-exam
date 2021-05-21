@@ -1,0 +1,65 @@
+{
+  "id": "2140433",
+  "name": "curator-ui",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1013201",
+      "name": "角色",
+      "font_class": "role",
+      "unicode": "e6bf",
+      "unicode_decimal": 59071
+    },
+    {
+      "icon_id": "3546184",
+      "name": "菜单",
+      "font_class": "caidan",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "3977831",
+      "name": "系统",
+      "font_class": "xitong",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "5121532",
+      "name": "部门",
+      "font_class": "bumen",
+      "unicode": "e64e",
+      "unicode_decimal": 58958
+    },
+    {
+      "icon_id": "10995776",
+      "name": "验证码",
+      "font_class": "yanzhengma",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "2170514",
+      "name": "用户",
+      "font_class": "yonghu",
+      "unicode": "e700",
+      "unicode_decimal": 59136
+    },
+    {
+      "icon_id": "5920503",
+      "name": "用户",
+      "font_class": "user",
+      "unicode": "e7ff",
+      "unicode_decimal": 59391
+    },
+    {
+      "icon_id": "15686582",
+      "name": "密码",
+      "font_class": "mima",
+      "unicode": "e6cb",
+      "unicode_decimal": 59083
+    }
+  ]
+}

@@ -1,0 +1,439 @@
+<template>
+  <div class="role_container">
+    <!-- 面包屑导航区域 -->
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>角色管理</el-breadcrumb-item>
+      <el-breadcrumb-item>角色列表</el-breadcrumb-item>
+    </el-breadcrumb>
+
+    <!-- 卡片视图区域-->
+    <el-card class="box-card">
+      <!--  搜索与添加区域 -->
+      <el-form :model="queryForm" ref="queryFormRef" :inline="true" label-width="68px">
+        <el-form-item label="角色名称">
+          <el-input
+            v-model="queryForm.roleName"
+            placeholder="请输入角色名称"
+            clearable
+            size="small"
+            style="width: 240px"
+            @keyup.enter.native="getRolePage"
+          />
+        </el-form-item>
+        <el-form-item label="角色状态">
+          <el-select v-model="queryForm.status" placeholder="请选择角色状态" size="small">
+            <el-option :key="0" label="启用" :value="0"></el-option>
+            <el-option :key="1" label="禁用" :value="1"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="info" icon="el-icon-search" size="small" @click="getRolePage">搜索</el-button>
+          <el-button type="warning" icon="el-icon-refresh" size="small" @click="resetQueryForm">重置</el-button>
+        </el-form-item>
+      </el-form>
+      <el-row :gutter="20">
+        <el-col :span="6">
+          <el-button type="primary" size="mini" v-has-perm="['system:role:add']" @click="addDialogVisible = true">添加角色</el-button>
+        </el-col>
+      </el-row>
+
+      <!--  角色列表区域 -->
+      <el-table :data="roleList" border stripe>
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" class="table-expand">
+              <el-form-item label="创建时间">
+                <span>{{ props.row.createTime }}</span>
+              </el-form-item>
+              <el-form-item label="更新时间">
+                <span>{{ props.row.updateTime }}</span>
+              </el-form-item>
+              <el-form-item label="备注">
+                <span>{{ props.row.remark }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column label="角色名" prop="roleName" align="center"></el-table-column>
+        <el-table-column label="权限字符" prop="roleKey" align="center"></el-table-column>
+        <el-table-column label="状态" align="center">
+          <template slot-scope="props">
+            <el-switch v-model="props.row.status" active-text="启用" :active-value="0" inactive-text="禁用" :inactive-value="1"
+                       @change="changeRoleStatus(props.row)"></el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
+          <template slot-scope="scope">
+            <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['system:role:update']" @click="showEditDialog(scope.row.roleId)">编辑</el-button>
+            <el-button type="info" icon="el-icon-setting" size="mini" v-has-perm="['system:role:bind']" @click="showAuthDialog(scope.row)">菜单权限</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['system:role:deleted']" @click="deleteRole(scope.row.roleId)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- 分页区域 -->
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="queryForm.current"
+        :page-sizes="[1, 2, 20, 50]"
+        :page-size="queryForm.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
+      </el-pagination>
+    </el-card>
+
+    <!-- 添加角色对话框 -->
+    <el-dialog title="添加角色" :visible.sync="addDialogVisible" width="30%" @close="handleAddDialogClose">
+      <!-- 对话框主题区域 -->
+      <el-form ref="addFormRef" :model="addForm" :rules="dialogFormRules" label-width="80px">
+        <el-form-item label="角色名" prop="roleName">
+          <el-input v-model="addForm.roleName"></el-input>
+        </el-form-item>
+        <el-form-item label="权限字符" prop="roleKey">
+          <el-input v-model="addForm.roleKey"></el-input>
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-radio-group v-model="addForm.status">
+            <el-radio :label="0">启用</el-radio>
+            <el-radio :label="1">禁用</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input type="textarea" :rows="2" v-model="addForm.remark"></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 底部按钮区域 -->
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="addDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="addRole">确 定</el-button>
+  </span>
+    </el-dialog>
+
+    <!-- 修改角色对话框 -->
+    <el-dialog title="编辑角色" :visible.sync="editDialogVisible" width="30%" @close="handleEditDialogClose">
+      <!-- 对话框主题区域 -->
+      <el-form ref="editFormRef" :model="editForm" :rules="dialogFormRules" label-width="80px">
+        <el-form-item label="角色名" prop="roleName">
+          <el-input v-model="editForm.roleName"></el-input>
+        </el-form-item>
+        <el-form-item label="权限字符" prop="roleKey">
+          <el-input v-model="editForm.roleKey"></el-input>
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-radio-group v-model="editForm.status">
+            <el-radio :label="0">启用</el-radio>
+            <el-radio :label="1">禁用</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input type="textarea" :rows="2" v-model="editForm.remark"></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 底部按钮区域 -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editRole">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 修改角色数据权限对话框 -->
+    <el-dialog title="分配菜单权限" :visible.sync="authDialogVisible" width="30%" @close="handleAuthDialogClose">
+      <!-- 对话框主题区域 -->
+      <el-form ref="authFormRef" :model="authForm" :rules="dialogFormRules" label-width="80px">
+        <el-form-item label="角色名">
+          <el-input v-model="authForm.roleName" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="权限字符">
+          <el-input v-model="authForm.roleKey" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="菜单权限">
+          <el-tree :data="menuOptions" :default-checked-keys="authForm.menuIdList" :props="defaultProps" ref="menuTree" node-key="id" show-checkbox></el-tree>
+        </el-form-item>
+      </el-form>
+      <!-- 底部按钮区域 -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="authDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAuthDialogConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import { handleAddRole, handleDeleteRole, handleUpdateRole, handleRolePage, handleRoleQuery, handleBindMenuWithRole } from '@/apis/role'
+import { handleMenuList } from '@/apis/menu'
+import { showElement } from '@/utils/show'
+
+export default {
+  name: 'RolePage',
+  data () {
+    return {
+      columnShow: true,
+      // 启用的菜单列表
+      menuOptions: [],
+      defaultProps: {
+        children: 'children',
+        label: 'label',
+        isLeaf: 'leaf'
+      },
+      // 查询表单参数
+      queryForm: {
+        // 角色名
+        roleName: undefined,
+        // 角色状态
+        status: undefined,
+        // 当前页
+        current: 1,
+        // 当前页大小
+        pageSize: 20
+      },
+      // 角色列表
+      roleList: [],
+      // 角色总数
+      total: 0,
+      // 控制添加角色对话框的显示
+      addDialogVisible: false,
+      // 添加角色表单数据
+      addForm: {
+        roleName: undefined,
+        roleKey: undefined,
+        status: 0,
+        remark: undefined
+      },
+      // 控制修改角色对话框的显示
+      editDialogVisible: false,
+      // 修改角色表单数据
+      editForm: {
+        roleId: undefined,
+        roleName: undefined,
+        roleKey: undefined,
+        status: undefined,
+        remark: undefined
+      },
+      // 修改角色表单校验规则
+      dialogFormRules: {
+        roleName: [
+          {
+            required: true,
+            message: '请输入角色名',
+            trigger: 'blur'
+          },
+          {
+            min: 3,
+            max: 10,
+            message: '角色名长度在3~10字符之间',
+            trigger: 'blur'
+          }
+        ],
+        roleKey: [
+          {
+            required: true,
+            message: '请输入角色权限字符',
+            trigger: 'blur'
+          },
+          {
+            min: 3,
+            max: 10,
+            message: '权限字符长度在3~15字符之间',
+            trigger: 'blur'
+          }
+        ]
+      },
+      // 控制分配权限对话框的显示
+      authDialogVisible: false,
+      // 分配权限表单数据
+      authForm: {
+        roleId: undefined,
+        roleName: undefined,
+        roleKey: undefined,
+        status: 0,
+        remark: undefined,
+        parentId: undefined
+      }
+    }
+  },
+  created () {
+    this.getRolePage()
+  },
+  updated () {
+    this.showTableColumn()
+  },
+  methods: {
+    // 根据权限数据展示操作列
+    showTableColumn () {
+      this.columnShow = showElement(['system:role:update', 'system:role:deleted', 'system:role:bind'])
+    },
+    // 查询表单重置
+    resetQueryForm () {
+      this.queryForm.roleName = undefined
+      this.queryForm.status = undefined
+      this.queryForm.current = 1
+      this.queryForm.pageSize = 20
+      this.getRolePage()
+    },
+    // 得到角色分页数据
+    async getRolePage () {
+      const { data: res } = await handleRolePage(this.queryForm)
+      console.log(res.data)
+      if (res.status !== '2000') return this.$message.error(res.message)
+      this.roleList = res.data.records
+      this.total = res.data.total
+    },
+    // 处理当前页大小改变
+    handleSizeChange (newSize) {
+      this.queryForm.pageSize = newSize
+      this.getRolePage()
+    },
+    // 处理当前页码改变
+    handleCurrentChange (newCurrent) {
+      this.queryForm.current = newCurrent
+      this.getRolePage()
+    },
+    // 监听switch变化，改变角色状态
+    async changeRoleStatus (roleInfo) {
+      const str = roleInfo.status === 0 ? '启用' : '禁用'
+      this.$confirm('此操作将' + str + '该角色, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        const param = {}
+        param.roleId = roleInfo.roleId
+        param.status = roleInfo.status
+
+        const { data: res } = await handleUpdateRole(param)
+        if (res.status !== '2000') {
+          // 更新失败的话，将页面的状态修改回去
+          roleInfo.status = str === '启用' ? 1 : 0
+          return this.$message.error(res.message)
+        }
+        this.$message.success('角色' + str + '成功!')
+      }).catch(() => {
+        // 取消修改的话，将页面的状态修改回去
+        roleInfo.status = str === '启用' ? 1 : 0
+        this.$message({
+          type: 'info',
+          message: '已取消' + str + '该角色'
+        })
+      })
+    },
+    // 监听 添加角色对话框关闭事件
+    handleAddDialogClose () {
+      // 清空字段
+      this.$refs.addFormRef.resetFields()
+    },
+    // 添加角色
+    addRole () {
+      this.$refs.addFormRef.validate(async valid => {
+        if (valid) {
+          const { data: res } = await handleAddRole(this.addForm)
+          if (res.status !== '2000') return this.$message.error(res.message)
+          this.$message.success(res.message)
+          this.addDialogVisible = false
+          await this.getRolePage()
+        }
+      })
+    },
+    // 展示编辑角色对话框
+    async showEditDialog (roleId) {
+      const { data: res } = await handleRoleQuery(roleId)
+      console.log(res)
+      if (res.status !== '2000') {
+        return this.$message.error(res.message)
+      }
+      // 查询出角色 在展示编辑框
+      this.editDialogVisible = true
+      this.editForm = res.data
+    },
+    // 监听 编辑角色对话框关闭事件
+    handleEditDialogClose () {
+      // 清空字段
+      this.$refs.editFormRef.resetFields()
+    },
+    // 确定编辑角色
+    editRole () {
+      this.$refs.editFormRef.validate(async valid => {
+        if (valid) {
+          const { data: res } = await handleUpdateRole(this.editForm)
+          if (res.status !== '2000') return this.$message.error(res.message)
+          this.$message.success(res.message)
+          this.editDialogVisible = false
+          await this.getRolePage()
+        }
+      })
+    },
+    // 删除角色
+    deleteRole (roleId) {
+      this.$confirm('此操作将删除该角色, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        const { data: res } = await handleDeleteRole(roleId)
+        if (res.status !== '2000') {
+          return this.$message.error(res.message)
+        }
+        this.$message({
+          type: 'success',
+          message: res.message
+        })
+        await this.getRolePage()
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    // 展示分配权限对话框
+    async showAuthDialog (role) {
+      const query = { menuName: undefined, status: 0 }
+      const { data: res } = await handleMenuList(query)
+      const result = this.formatMenuList(res.data)
+      this.menuOptions = result
+      this.authDialogVisible = true
+      this.authForm = role
+    },
+    // 递归遍历菜单树,得到新的树
+    formatMenuList (arr) {
+      const result = []
+      for (let i = 0; i < arr.length; i++) {
+        const item = arr[i]
+        const node = { id: item.menuId, label: item.menuName }
+        result.push(node)
+        if (item.children) {
+          node.leaf = false
+          node.children = this.formatMenuList(item.children)
+        } else {
+          node.leaf = true
+        }
+      }
+      return result
+    },
+    // 监听 分配权限对话框关闭事件
+    handleAuthDialogClose () {
+      // 清空字段
+      this.$refs.authFormRef.resetFields()
+      this.menuOptions = []
+    },
+    // 处理分配权限对话框确定按钮
+    async handleAuthDialogConfirm () {
+      this.authForm.menuIdList = this.$refs.menuTree.getCheckedKeys(true)
+      const { data: res } = await handleBindMenuWithRole(this.authForm)
+      if (res.status !== '2000') return this.$message.error(res.message)
+      this.$message.success(res.message)
+      this.authDialogVisible = false
+      await this.getRolePage()
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.el-tree {
+  border: solid 1px #e7e1cd;
+}
+</style>

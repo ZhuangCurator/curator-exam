@@ -1,0 +1,53 @@
+/*全局样式表*/
+html, body, #app {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/*面包屑导航全局样式*/
+.el-breadcrumb {
+    margin-bottom: 15px;
+    font-size: 13px;
+}
+
+/*卡片视图全局样式*/
+.el-card {
+    /*覆盖卡片视图阴影特效*/
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
+}
+
+.el-table {
+    margin-top: 15px;
+    font-size: 12px;
+}
+
+.el-pagination {
+    margin-top: 15px;
+}
+
+/* 表单项 label字体粗细 */
+label {
+    font-weight: 700;
+}
+
+/* 解决表头和内容列不对齐 */
+.el-table th.gutter {
+    display: table-cell !important;
+
+}
+
+/* 表单展开栏 数据行样式 */
+.table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 100%;
+}
+
+/* 表单展开栏 数据行label样式 */
+.table-expand label {
+    width: 70px;
+    color: #99a9bf;
+}
+
+
