@@ -73,6 +73,11 @@ public class ExamSubject implements Serializable {
     private Integer passingScore;
 
     /**
+     * 考试类目下的序列号
+     */
+    private Integer serialNum;
+
+    /**
      * 创建账户 id
      */
     private String createAccountId;

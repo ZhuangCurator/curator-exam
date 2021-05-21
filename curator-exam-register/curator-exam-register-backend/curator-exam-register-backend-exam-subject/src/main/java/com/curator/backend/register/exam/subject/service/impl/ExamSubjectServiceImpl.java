@@ -102,6 +102,11 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
             return res;
         }
         ExamSubject entity = convertInfo(info);
+        // 查询当前考试类目下科目的最大序列号
+        Integer serialNum = examSubjectMapper.selectMaxSerialNum(entity.getExamCategoryId());
+        if(serialNum != null) {
+            entity.setSerialNum(serialNum + 1);
+        }
         entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
         entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
         examSubjectMapper.insert(entity);

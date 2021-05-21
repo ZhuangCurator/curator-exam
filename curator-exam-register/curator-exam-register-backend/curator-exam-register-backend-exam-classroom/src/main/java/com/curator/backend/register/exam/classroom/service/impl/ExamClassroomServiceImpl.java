@@ -93,6 +93,11 @@ public class ExamClassroomServiceImpl implements ExamClassroomService {
             return res;
         }
         ExamClassroom entity = convertInfo(info);
+        // 查询当前考试类目下科目的最大序列号
+        Integer serialNum = examClassroomMapper.selectMaxSerialNum(entity.getExamSiteId());
+        if(serialNum != null) {
+            entity.setSerialNum(serialNum + 1);
+        }
         entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
         entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
         examClassroomMapper.insert(entity);

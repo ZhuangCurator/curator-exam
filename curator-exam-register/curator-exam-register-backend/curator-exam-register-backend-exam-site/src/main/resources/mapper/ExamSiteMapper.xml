@@ -16,5 +16,8 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
+    <select id="selectMaxSerialNum" resultType="java.lang.Integer">
+        select max(serial_num) from exam_site where district = #{district} and is_deleted = 0
+    </select>
 
 </mapper>

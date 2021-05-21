@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.curator.backend.register.exam.subject.entity.ExamSubject">
         <id column="exam_subject_id" property="examSubjectId" />
-        <result column="exam_category_name" property="examCategoryName" />
+        <result column="exam_subject_name" property="examSubjectName" />
         <result column="exam_category_id" property="examCategoryId" />
         <result column="generation_rule_id" property="generationRuleId" />
         <result column="register_start_time" property="registerStartTime" />
@@ -20,5 +20,9 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
+
+    <select id="selectMaxSerialNum" resultType="java.lang.Integer">
+        select max(serial_num) from exam_subject where exam_category_id = #{examCategoryId} and is_deleted = 0
+    </select>
 
 </mapper>

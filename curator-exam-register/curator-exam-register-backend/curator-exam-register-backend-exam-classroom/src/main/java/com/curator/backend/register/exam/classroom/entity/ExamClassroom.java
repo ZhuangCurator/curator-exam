@@ -46,6 +46,11 @@ public class ExamClassroom implements Serializable {
     private String address;
 
     /**
+     * 考点下教室的序列号
+     */
+    private Integer serialNum;
+
+    /**
      * 创建账户 id
      */
     private String createAccountId;

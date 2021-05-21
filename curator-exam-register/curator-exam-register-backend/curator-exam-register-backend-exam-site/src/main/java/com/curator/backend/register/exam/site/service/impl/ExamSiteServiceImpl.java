@@ -91,6 +91,11 @@ public class ExamSiteServiceImpl implements ExamSiteService {
             return res;
         }
         ExamSite entity = convertInfo(info);
+        // 查询当前地区下考点的最大序列号
+        Integer serialNum = examSiteMapper.selectMaxSerialNum(entity.getDistrict());
+        if(serialNum != null) {
+            entity.setSerialNum(serialNum + 1);
+        }
         entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
         entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
         examSiteMapper.insert(entity);

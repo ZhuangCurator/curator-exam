@@ -29,11 +29,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -127,6 +125,8 @@ public class ExamRegisterInfoServiceImpl implements ExamRegisterInfoService {
             int randomPos = new Random().nextInt(i);
             Collections.swap(infoList, i, randomPos);
         }
+        // 查询考点
+        ExamSite examSite = examSiteMapper.selectById(info.getExamSiteId());
         // 查询考点下的教室
         QueryWrapper<ExamClassroom> classroomQueryWrapper = new QueryWrapper<>();
         classroomQueryWrapper.eq("exam_site_id", info.getExamSiteId());
@@ -141,13 +141,29 @@ public class ExamRegisterInfoServiceImpl implements ExamRegisterInfoService {
         }
         // 为考生分配教室和座位号
         AtomicInteger sort = new AtomicInteger(0);
+        StringJoiner joiner = new StringJoiner("");
+        // 年份
+        String year = String.valueOf(LocalDate.now().getYear()).substring(2);
+        // 考点区代码
+        String district =  examSite.getDistrict();
+        // 考试科目的序列号
+        String serialNumWithExamSubject = String.format("%03d",  examSubject.getSerialNum());
+        // 考点的序列号
+        String serialNumWithExamSite = String.format("%03d",  examSite.getSerialNum());
+        joiner.add(year).add(serialNumWithExamSubject).add(district).add(serialNumWithExamSite);
         for (ExamClassroom examClassroom : classroomList) {
             Integer numberLimit = examClassroom.getNumberLimit();
+            // 考点下教室的序列号
+            String serialNumWithClassroom = String.format("%03d",  examClassroom.getSerialNum());
+            joiner.add(serialNumWithClassroom);
             int startNum = sort.get();
             for (int i = startNum; i < size; i++) {
                 ExamRegisterInfo registerInfo = infoList.get(i);
                 registerInfo.setExamClassroomId(examClassroom.getExamClassroomId());
                 registerInfo.setSeatNumber(sort.incrementAndGet());
+                joiner.add(String.format("%03d",  registerInfo.getSeatNumber()));
+                // 准考证编号
+                registerInfo.setAdmissionNumber(joiner.toString());
                 if(sort.get() == numberLimit) {
                     // 当前教室的座位分配完了
                     break;
@@ -198,6 +214,8 @@ public class ExamRegisterInfoServiceImpl implements ExamRegisterInfoService {
         }
         return resultList;
     }
+
+
 
     /**
      * 将 数据库对象 转为 数据传输对象
