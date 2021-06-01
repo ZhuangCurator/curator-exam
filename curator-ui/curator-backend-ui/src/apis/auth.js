@@ -18,9 +18,14 @@ export function handleLogin (params) {
   })
 }
 
-// 处理用户短信验证码登录
+// 处理账户短信验证码登录
 export function handleMobileLogin (params) {
   return post('/auth/login/mobile', qs.stringify(params), {
     'Content-Type': 'application/x-www-form-urlencoded'
   })
+}
+
+// 获取登录账户信息
+export function handleLoginAccountQuery () {
+  return get('/examAuthCore/loginAccount')
 }

@@ -10,38 +10,39 @@ export function getToken () {
   return token
 }
 
-// 存储用户权限
+// 存储账户权限
 export function setPermissions (permissions) {
   window.sessionStorage.setItem('permissions', permissions)
 }
 
-// 获取用户权限
+// 获取账户权限
 export function getPermissions () {
   const permissions = window.sessionStorage.getItem('permissions')
   if (!permissions) return ''
   return permissions
 }
 
-// 存储用户名
-export function setUsername (username) {
+// 存储账户名
+export function setAccountName (username) {
   window.sessionStorage.setItem('username', username)
 }
 
-// 获取用户名
-export function getUsername () {
+// 获取账户名
+export function getAccountName () {
   const username = window.sessionStorage.getItem('username')
   if (!username) return ''
   return username
 }
 
-// 存储用户头像
-export function setAvatar (avatar) {
-  window.sessionStorage.setItem('avatar', avatar)
+// 存储是否是超级管理员
+export function setSuperAdmin (roleType) {
+  const superAdmin = roleType === 1 ? 1 : 0
+  window.sessionStorage.setItem('superAdmin', superAdmin.toString())
 }
 
-// 获取用户头像
-export function getAvatar () {
-  const avatar = window.sessionStorage.getItem('avatar')
-  if (!avatar) return ''
-  return avatar
+// 获取是否是超级管理员
+export function getSuperAdmin () {
+  const superAdmin = window.sessionStorage.getItem('superAdmin')
+  if (!superAdmin) return 0
+  return superAdmin
 }

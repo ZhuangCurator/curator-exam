@@ -1,10 +1,8 @@
-@font-face {font-family: "iconfont";
-  src: url('iconfont.eot?t=1603267153116'); /* IE9 */
-  src: url('iconfont.eot?t=1603267153116#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url('data:application/x-font-woff2;charset=utf-8;base64,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') format('woff2'),
-  url('iconfont.woff?t=1603267153116') format('woff'),
-  url('iconfont.ttf?t=1603267153116') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
-  url('iconfont.svg?t=1603267153116#iconfont') format('svg'); /* iOS 4.1- */
+@font-face {
+  font-family: "iconfont"; /* Project id 2585167 */
+  src: url('iconfont.woff2?t=1622551047968') format('woff2'),
+       url('iconfont.woff?t=1622551047968') format('woff'),
+       url('iconfont.ttf?t=1622551047968') format('truetype');
 }
 
 .iconfont {
@@ -15,35 +13,19 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-system:before {
+  content: "\e67c";
+}
+
 .icon-role:before {
-  content: "\e6bf";
+  content: "\e62d";
 }
 
-.icon-caidan:before {
-  content: "\e606";
+.icon-power:before {
+  content: "\e6c8";
 }
 
-.icon-xitong:before {
-  content: "\e617";
-}
-
-.icon-bumen:before {
-  content: "\e64e";
-}
-
-.icon-yanzhengma:before {
-  content: "\e60d";
-}
-
-.icon-yonghu:before {
-  content: "\e700";
-}
-
-.icon-user:before {
-  content: "\e7ff";
-}
-
-.icon-mima:before {
-  content: "\e6cb";
+.icon-account:before {
+  content: "\e607";
 }
 

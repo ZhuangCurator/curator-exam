@@ -1,65 +1,37 @@
 {
-  "id": "2140433",
-  "name": "curator-ui",
+  "id": "2585167",
+  "name": "curator-backend-ui",
   "font_family": "iconfont",
   "css_prefix_text": "icon-",
   "description": "",
   "glyphs": [
     {
-      "icon_id": "1013201",
-      "name": "角色",
-      "font_class": "role",
-      "unicode": "e6bf",
-      "unicode_decimal": 59071
-    },
-    {
-      "icon_id": "3546184",
-      "name": "菜单",
-      "font_class": "caidan",
-      "unicode": "e606",
-      "unicode_decimal": 58886
-    },
-    {
-      "icon_id": "3977831",
+      "icon_id": "1137788",
       "name": "系统",
-      "font_class": "xitong",
-      "unicode": "e617",
-      "unicode_decimal": 58903
+      "font_class": "system",
+      "unicode": "e67c",
+      "unicode_decimal": 59004
     },
     {
-      "icon_id": "5121532",
-      "name": "部门",
-      "font_class": "bumen",
-      "unicode": "e64e",
-      "unicode_decimal": 58958
+      "icon_id": "11121397",
+      "name": "角色管理",
+      "font_class": "role",
+      "unicode": "e62d",
+      "unicode_decimal": 58925
     },
     {
-      "icon_id": "10995776",
-      "name": "验证码",
-      "font_class": "yanzhengma",
-      "unicode": "e60d",
-      "unicode_decimal": 58893
+      "icon_id": "20587147",
+      "name": "权限",
+      "font_class": "power",
+      "unicode": "e6c8",
+      "unicode_decimal": 59080
     },
     {
-      "icon_id": "2170514",
-      "name": "用户",
-      "font_class": "yonghu",
-      "unicode": "e700",
-      "unicode_decimal": 59136
-    },
-    {
-      "icon_id": "5920503",
-      "name": "用户",
-      "font_class": "user",
-      "unicode": "e7ff",
-      "unicode_decimal": 59391
-    },
-    {
-      "icon_id": "15686582",
-      "name": "密码",
-      "font_class": "mima",
-      "unicode": "e6cb",
-      "unicode_decimal": 59083
+      "icon_id": "11459722",
+      "name": "账户",
+      "font_class": "account",
+      "unicode": "e607",
+      "unicode_decimal": 58887
     }
   ]
 }

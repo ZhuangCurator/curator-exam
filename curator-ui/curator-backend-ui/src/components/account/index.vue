@@ -3,44 +3,45 @@
     <!-- 面包屑导航区域 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
+      <el-breadcrumb-item>账户管理</el-breadcrumb-item>
+      <el-breadcrumb-item>账户列表</el-breadcrumb-item>
     </el-breadcrumb>
 
     <!-- 卡片视图区域-->
     <el-card class="box-card">
       <!--  搜索与添加区域 -->
       <el-form :model="queryForm" ref="queryFormRef" :inline="true" label-width="68px">
-        <el-form-item label="用户名称">
+        <el-form-item label="账户名称">
           <el-input
-            v-model="queryForm.userName"
-            placeholder="请输入用户名称"
+            v-model="queryForm.accountName"
+            placeholder="请输入账户名称"
             clearable
             size="small"
             style="width: 240px"
-            @keyup.enter.native="getUserPage"
+            @keyup.enter.native="getAccountPage"
           />
         </el-form-item>
-        <el-form-item label="用户状态">
-          <el-select v-model="queryForm.status" placeholder="请选择用户状态" size="small">
-            <el-option :key="0" label="启用" :value="0"></el-option>
-            <el-option :key="1" label="禁用" :value="1"></el-option>
+        <el-form-item label="账户状态">
+          <el-select v-model="queryForm.status" placeholder="请选择账户状态" size="small">
+            <el-option :key="1" label="正常" :value="1"></el-option>
+            <el-option :key="2" label="冻结" :value="2"></el-option>
+            <el-option :key="3" label="注销" :value="3"></el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item>
-          <el-button type="info" icon="el-icon-search" size="small" @click="getUserPage">搜索</el-button>
+          <el-button type="info" icon="el-icon-search" size="small" @click="getAccountPage">搜索</el-button>
           <el-button type="warning" icon="el-icon-refresh" size="small" @click="resetQueryForm">重置</el-button>
         </el-form-item>
       </el-form>
       <el-row :gutter="20">
         <el-col :span="6">
-          <el-button type="primary" @click="addDialogVisible = true" v-has-perm="['system:user:add']">添加用户</el-button>
+          <el-button type="primary" @click="showAddDialog" v-has-perm="['system:account:add']">添加账户</el-button>
         </el-col>
       </el-row>
 
-      <!--  用户列表区域 -->
-      <el-table :data="userList" border stripe>
+      <!--  账户列表区域 -->
+      <el-table :data="accountList" border stripe>
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" class="table-expand">
@@ -50,11 +51,8 @@
               <el-form-item label="更新时间">
                 <span>{{ props.row.updateTime }}</span>
               </el-form-item>
-              <el-form-item label="头像地址">
-                <span>{{ props.row.avatar }}</span>
-              </el-form-item>
               <el-form-item label="状态">
-                <span>{{ props.row.statusDesc }}</span>
+                <span>{{ props.row.accountStatusDesc }}</span>
               </el-form-item>
               <el-form-item label="备注">
                 <span>{{ props.row.remark }}</span>
@@ -62,23 +60,16 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column label="用户名" prop="userName" align="center"></el-table-column>
+        <el-table-column label="账户名" prop="accountName" align="center"></el-table-column>
         <el-table-column label="邮箱" prop="email" align="center"></el-table-column>
         <el-table-column label="电话" prop="phone" align="center"></el-table-column>
-        <el-table-column label="性别" prop="sexDesc" align="center"></el-table-column>
-        <el-table-column label="状态" align="center">
-          <template slot-scope="props">
-            <el-switch v-model="props.row.status" active-text="启用" :active-value="0" inactive-text="禁用" :inactive-value="1"
-                       @change="changeUserStatus(props.row)"></el-switch>
-          </template>
-        </el-table-column>
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['system:user:update']" @click="showEditDialog(scope.row.userId)">编辑
+            <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['system:account:update']" @click="showEditDialog(scope.row.accountId)">编辑
             </el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['system:user:deleted']" @click="deleteUser(scope.row.userId)">删除
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['system:account:deleted']" @click="deleteAccount(scope.row.accountId)">删除
             </el-button>
-            <el-button type="warning" icon="el-icon-setting" size="mini" v-has-perm="['system:user:bind']" @click="showAssignRoleDialog(scope.row)">分配角色</el-button>
+            <el-button type="warning" icon="el-icon-setting" size="mini" v-has-perm="['system:account:bind']" @click="showAssignRoleDialog(scope.row)">分配角色</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -95,15 +86,12 @@
       </el-pagination>
     </el-card>
 
-    <!-- 添加用户对话框 -->
-    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="30%" @close="handleAddDialogClose">
+    <!-- 添加账户对话框 -->
+    <el-dialog title="添加账户" :visible.sync="addDialogVisible" width="30%" @close="handleAddDialogClose">
       <!-- 对话框主题区域 -->
       <el-form ref="addFormRef" :model="addForm" :rules="addFormRules" label-width="80px">
-        <el-form-item label="用户名" prop="userName">
-          <el-input v-model="addForm.userName"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="addForm.password" type="password"></el-input>
+        <el-form-item label="账户名" prop="accountName">
+          <el-input v-model="addForm.accountName"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="addForm.email"></el-input>
@@ -111,15 +99,26 @@
         <el-form-item label="电话" prop="phone">
           <el-input v-model="addForm.phone"></el-input>
         </el-form-item>
-        <el-form-item label="性别" prop="sex">
-          <el-radio-group v-model="addForm.sex">
-            <el-radio :label="0">男</el-radio>
-            <el-radio :label="1">女</el-radio>
-          </el-radio-group>
+        <el-form-item label="角色" prop="roleIdList">
+          <el-select v-model="addForm.roleId" placeholder="请选择角色">
+            <el-option
+              v-for="item in roleList"
+              :key="item.roleId"
+              :label="item.roleName"
+              :value="item.roleId"
+            ></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="头像" prop="avatar">
-          <el-input v-model="addForm.avatar"></el-input>
-        </el-form-item>
+        <template v-if="superAdmin === '1'">
+          <el-form-item label="省份" prop="province">
+            <v-distpicker only-province @province="onChangeProvince"></v-distpicker>
+          </el-form-item>
+        </template>
+        <template v-else>
+          <el-form-item label="地市" prop="province">
+            <v-distpicker hide-area @province="onChangeProvince"  @city="onChangeCity"></v-distpicker>
+          </el-form-item>
+        </template>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="addForm.remark"></el-input>
         </el-form-item>
@@ -127,31 +126,22 @@
       <!-- 底部按钮区域 -->
       <span slot="footer" class="dialog-footer">
     <el-button @click="addDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="addUser">确 定</el-button>
+    <el-button type="primary" @click="addAccount">确 定</el-button>
   </span>
     </el-dialog>
 
-    <!-- 修改用户对话框 -->
-    <el-dialog title="编辑用户" :visible.sync="editDialogVisible" width="30%" @close="handleEditDialogClose">
+    <!-- 修改账户对话框 -->
+    <el-dialog title="编辑账户" :visible.sync="editDialogVisible" width="30%" @close="handleEditDialogClose">
       <!-- 对话框主题区域 -->
       <el-form ref="editFormRef" :model="editForm" :rules="editFormRules" label-width="80px">
-        <el-form-item label="用户名" prop="userName">
-          <el-input v-model="editForm.userName" :disabled="true"></el-input>
+        <el-form-item label="账户名" prop="accountName">
+          <el-input v-model="editForm.accountName" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="editForm.email"></el-input>
         </el-form-item>
         <el-form-item label="电话" prop="phone">
           <el-input v-model="editForm.phone"></el-input>
-        </el-form-item>
-        <el-form-item label="性别" prop="sex">
-          <el-radio-group v-model="editForm.sex">
-            <el-radio :label="0">男</el-radio>
-            <el-radio :label="1">女</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="头像" prop="avatar">
-          <el-input v-model="editForm.avatar"></el-input>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="editForm.remark"></el-input>
@@ -160,7 +150,7 @@
       <!-- 底部按钮区域 -->
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editUser">确 定</el-button>
+        <el-button type="primary" @click="editAccount">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -168,8 +158,8 @@
     <el-dialog title="分配角色" :visible.sync="assignRoleDialogVisible" width="30%" @close="handleAssignRoleDialogClose">
       <!-- 对话框主题区域 -->
       <el-form ref="assignRoleFormRef" :model="assignRoleForm" :rules="assignRoleFormRules" label-width="80px">
-        <el-form-item label="用户名" prop="userName">
-          <el-input v-model="assignRoleForm.userName" :disabled="true"></el-input>
+        <el-form-item label="账户名" prop="accountName">
+          <el-input v-model="assignRoleForm.accountName" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="角色" prop="roleIdList">
           <el-select v-model="assignRoleForm.roleIdList" multiple placeholder="请选择角色">
@@ -192,11 +182,12 @@
 </template>
 
 <script>
-import { handleUpdateUser, handleUserQuery, handleUserPage, handleAddUser, handleDeleteUser, handleBindRoleWithUser } from '@/apis/user'
-import { handleRolePage } from '@/apis/role'
+import { handleUpdateAccount, handleAccountQuery, handleAccountPage, handleAddAccount, handleDeleteAccount, handleBindRoleWithAccount } from '@/apis/account'
+import { handleRoleList } from '@/apis/role'
 import { showElement } from '@/utils/show'
+import { getSuperAdmin } from '@/utils/storage'
 export default {
-  name: 'Users',
+  name: 'AccountPage',
   data () {
     // 自定义邮箱校验规则
     const checkEmail = (rule, value, callback) => {
@@ -217,61 +208,51 @@ export default {
     }
     return {
       columnShow: true,
+      // 是否是超级管理员
+      superAdmin: 0,
+      // 角色名
+      roleName: undefined,
       // 角色列表
       roleList: [],
       // 查询表单参数
       queryForm: {
-        // 用户名
-        userName: undefined,
-        // 用户状态
-        status: undefined,
+        // 账户名
+        accountName: undefined,
+        // 账户状态
+        accountStatus: undefined,
         // 当前页
         current: 1,
         // 当前页大小
         pageSize: 20
       },
-      // 用户列表
-      userList: [],
-      // 用户总数
+      // 账户列表
+      accountList: [],
+      // 账户总数
       total: 0,
-      // 控制添加用户对话框的显示
+      // 控制添加账户对话框的显示
       addDialogVisible: false,
-      // 添加用户表单数据
+      // 添加账户表单数据
       addForm: {
-        userName: undefined,
-        password: undefined,
-        roleIdList: [],
+        accountName: undefined,
         email: undefined,
         phone: undefined,
-        sex: undefined,
-        avatar: undefined,
+        roleId: undefined,
+        province: undefined,
+        city: undefined,
         remark: undefined
       },
-      // 添加用户表单校验规则
+      // 添加账户表单校验规则
       addFormRules: {
-        userName: [
+        accountName: [
           {
             required: true,
-            message: '请输入用户名',
+            message: '请输入账户名',
             trigger: 'blur'
           },
           {
             min: 3,
-            max: 10,
-            message: '用户名长度在3~10字符之间',
-            trigger: 'blur'
-          }
-        ],
-        password: [
-          {
-            required: true,
-            message: '请输入密码',
-            trigger: 'blur'
-          },
-          {
-            min: 5,
             max: 20,
-            message: '密码长度在5~20字符之间',
+            message: '账户名长度在3~20字符之间',
             trigger: 'blur'
           }
         ],
@@ -297,46 +278,37 @@ export default {
             trigger: 'blur'
           }
         ],
-        sex: [
+        province: [
           {
             required: true,
-            message: '请选择性别',
-            trigger: 'change'
-          }
-        ],
-        avatar: [
-          {
-            required: true,
-            message: '请上传头像',
+            message: '请选择省份',
             trigger: 'blur'
           }
         ]
       },
-      // 控制修改用户对话框的显示
+      // 控制修改账户对话框的显示
       editDialogVisible: false,
-      // 修改用户表单数据
+      // 修改账户表单数据
       editForm: {
-        userId: undefined,
-        userName: undefined,
+        accountId: undefined,
+        accountName: undefined,
         roleIdList: undefined,
         email: undefined,
         phone: undefined,
-        sex: undefined,
-        avatar: undefined,
         remark: undefined
       },
-      // 修改用户表单校验规则
+      // 修改账户表单校验规则
       editFormRules: {
-        userName: [
+        accountName: [
           {
             required: true,
-            message: '请输入用户名',
+            message: '请输入账户名',
             trigger: 'blur'
           },
           {
             min: 3,
-            max: 10,
-            message: '用户名长度在3~10字符之间',
+            max: 20,
+            message: '账户名长度在3~20字符之间',
             trigger: 'blur'
           }
         ],
@@ -359,20 +331,6 @@ export default {
           },
           {
             validator: checkPhone,
-            trigger: 'blur'
-          }
-        ],
-        sex: [
-          {
-            required: true,
-            message: '请选择性别',
-            trigger: 'change'
-          }
-        ],
-        avatar: [
-          {
-            required: true,
-            message: '请上传头像',
             trigger: 'blur'
           }
         ]
@@ -381,8 +339,8 @@ export default {
       assignRoleDialogVisible: false,
       // 分配角色表单数据
       assignRoleForm: {
-        userId: undefined,
-        userName: undefined,
+        accountId: undefined,
+        accountName: undefined,
         roleIdList: undefined
       },
       // 分配角色表单验证规则
@@ -394,7 +352,8 @@ export default {
     }
   },
   created () {
-    this.getUserPage()
+    this.superAdmin = getSuperAdmin()
+    this.getAccountPage()
   },
   updated () {
     this.showTableColumn()
@@ -402,116 +361,122 @@ export default {
   methods: {
     // 根据权限数据展示操作列
     showTableColumn () {
-      this.columnShow = showElement(['system:user:update', 'system:user:deleted', 'system:user:bind'])
+      this.columnShow = showElement(['info:account:update', 'info:account:deleted', 'system:account:bind'])
     },
     // 查询表单重置
     resetQueryForm () {
-      this.queryForm.userName = undefined
+      this.queryForm.accountName = undefined
       this.queryForm.status = undefined
       this.queryForm.current = 1
       this.queryForm.pageSize = 20
       // this.$refs.queryFormRef.resetFields()
-      this.getUserPage()
+      this.getAccountPage()
     },
-    // 得到用户分页数据
-    async getUserPage () {
-      const { data: res } = await handleUserPage(this.queryForm)
+    // 得到账户分页数据
+    async getAccountPage () {
+      this.queryForm.superAdmin = this.superAdmin
+      const { data: res } = await handleAccountPage(this.queryForm)
       console.log(res.data)
       if (res.status !== '2000') return this.$message.error(res.message)
-      this.userList = res.data.records
+      this.accountList = res.data.records
       this.total = res.data.total
     },
     // 处理当前页大小改变
     handleSizeChange (newSize) {
       this.queryForm.pageSize = newSize
-      this.getUserPage()
+      this.getAccountPage()
     },
     // 处理当前页码改变
     handleCurrentChange (newCurrent) {
       this.queryForm.current = newCurrent
-      this.getUserPage()
+      this.getAccountPage()
     },
-    // 监听switch变化，改变用户状态
-    async changeUserStatus (userInfo) {
-      const str = userInfo.status === 0 ? '启用' : '禁用'
-      this.$confirm('此操作将' + str + '该用户, 是否继续?', '提示', {
+    // 监听switch变化，改变账户状态
+    async changeAccountStatus (accountInfo) {
+      const str = accountInfo.status === 0 ? '启用' : '禁用'
+      this.$confirm('此操作将' + str + '该账户, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
         const param = {}
-        param.userId = userInfo.userId
-        param.status = userInfo.status
+        param.accountId = accountInfo.accountId
+        param.status = accountInfo.status
 
-        const { data: res } = await handleUpdateUser(param)
+        const { data: res } = await handleUpdateAccount(param)
         if (res.status !== '2000') {
           // 更新失败的话，将页面的状态修改回去
-          userInfo.status = str === '启用' ? 1 : 0
+          accountInfo.status = str === '启用' ? 1 : 0
           return this.$message.error(res.message)
         }
-        this.$message.success('用户' + str + '成功!')
+        this.$message.success('账户' + str + '成功!')
       }).catch(() => {
         // 取消修改的话，将页面的状态修改回去
-        userInfo.status = str === '启用' ? 1 : 0
+        accountInfo.status = str === '启用' ? 1 : 0
         this.$message({
           type: 'info',
-          message: '已取消' + str + '该用户'
+          message: '已取消' + str + '该账户'
         })
       })
     },
-    // 监听 添加用户对话框关闭事件
+    // 监听 添加账户对话框关闭事件
     handleAddDialogClose () {
       // 清空字段
       this.$refs.addFormRef.resetFields()
     },
-    // 添加用户
-    addUser () {
+    // 展示添加账户对话框
+    showAddDialog () {
+      this.showRoleList()
+      this.addDialogVisible = true
+    },
+    // 添加账户
+    addAccount () {
       this.$refs.addFormRef.validate(async valid => {
         if (valid) {
-          const { data: res } = await handleAddUser(this.addForm)
+          const { data: res } = await handleAddAccount(this.addForm)
           if (res.status !== '2000') return this.$message.error(res.message)
           this.$message.success(res.message)
           this.addDialogVisible = false
-          await this.getUserPage()
+          await this.getAccountPage()
         }
       })
     },
-    // 展示编辑用户对话框
-    async showEditDialog (userId) {
-      const { data: res } = await handleUserQuery(userId)
+    // 展示编辑账户对话框
+    async showEditDialog (accountId) {
+      const { data: res } = await handleAccountQuery(accountId)
       console.log(res)
       if (res.status !== '2000') {
         return this.$message.error(res.message)
       }
-      // 查询出用户 在展示编辑框
+      // 查询出账户 在展示编辑框
       this.editDialogVisible = true
       this.editForm = res.data
     },
-    // 监听 编辑用户对话框关闭事件
+    // 监听 编辑账户对话框关闭事件
     handleEditDialogClose () {
       // 清空字段
       this.$refs.editFormRef.resetFields()
     },
-    // 确定编辑用户
-    editUser () {
+    // 确定编辑账户
+    editAccount () {
       this.$refs.editFormRef.validate(async valid => {
         if (valid) {
-          const { data: res } = await handleUpdateUser(this.editForm)
+          const { data: res } = await handleUpdateAccount(this.editForm)
           if (res.status !== '2000') return this.$message.error(res.message)
           this.$message.success(res.message)
           this.editDialogVisible = false
-          await this.getUserPage()
+          await this.getAccountPage()
         }
       })
     },
-    // 删除用户
-    deleteUser (userId) {
-      this.$confirm('此操作将删除该用户, 是否继续?', '提示', {
+    // 删除账户
+    deleteAccount (accountId) {
+      this.$confirm('此操作将删除该账户, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        const { data: res } = await handleDeleteUser(userId)
+        const { data: res } = await handleDeleteAccount(accountId)
         if (res.status !== '2000') {
           return this.$message.error(res.message)
         }
@@ -519,7 +484,7 @@ export default {
           type: 'success',
           message: res.message
         })
-        await this.getUserPage()
+        await this.getAccountPage()
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -527,31 +492,47 @@ export default {
         })
       })
     },
+    // 获取角色列表
+    async showRoleList (roleName) {
+      const query = { roleName: roleName }
+      query.superAdmin = this.superAdmin
+      const { data: result } = await handleRoleList(query)
+      if (result.status !== '2000') {
+        return this.$message.error(result.message)
+      }
+      this.roleList = result.data
+    },
     // 展示分配角色对话框
-    async showAssignRoleDialog (user) {
+    async showAssignRoleDialog (account) {
       // 获取角色列表
       const query = { status: 0 }
-      const { data: result } = await handleRolePage(query)
+      const { data: result } = await handleRoleList(query)
       if (result.status !== '2000') {
         return this.$message.error(result.message)
       }
       this.roleList = result.data.records
       console.log(this.roleList)
       this.assignRoleDialogVisible = true
-      this.assignRoleForm = user
+      this.assignRoleForm = account
     },
     // 分配角色对话框确定按钮
     async handleAssignRole () {
-      const { data: res } = await handleBindRoleWithUser(this.assignRoleForm)
+      const { data: res } = await handleBindRoleWithAccount(this.assignRoleForm)
       if (res.status !== '2000') return this.$message.error(res.message)
       this.$message.success(res.message)
       this.assignRoleDialogVisible = false
-      await this.getUserPage()
+      await this.getAccountPage()
     },
     // 监听 分配角色对话框关闭事件
     handleAssignRoleDialogClose () {
       // 清空字段
       this.$refs.assignRoleFormRef.resetFields()
+    },
+    onChangeProvince (data) {
+      this.addForm.province = data.code
+    },
+    onChangeCity (data) {
+      this.addForm.city = data.code
     }
   }
 }

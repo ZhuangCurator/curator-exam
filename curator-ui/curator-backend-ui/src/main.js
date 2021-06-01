@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import './plugins/element.js'
 import directive from '@/directive/index'
+import VDistpicker from 'v-distpicker'
 
 // 引入字体图标
 import './assets/font/iconfont.css'
@@ -12,6 +13,7 @@ import './assets/css/global.css'
 
 Vue.config.productionTip = false
 Vue.use(directive)
+Vue.component('v-distpicker', VDistpicker)
 
 new Vue({
   router,

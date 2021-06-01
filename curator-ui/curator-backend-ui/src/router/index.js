@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import { getToken } from '@/utils/storage'
+import { getToken, setAccountName, setPermissions, setSuperAdmin } from '@/utils/storage'
 import store from '@/store'
 import routes from './router'
 
@@ -20,12 +20,19 @@ router.beforeEach((to, from, next) => {
     return next('/login')
   } else {
     if (store.getters.routers.length === 0) {
-      // 路由为空,获取动态菜单
-      store.dispatch('queryMenuTree').then(accessRoutes => {
-        // 根据roles权限生成可访问的路由表
-        console.log('accessRoutes: ' + JSON.stringify(accessRoutes))
-        router.addRoutes(accessRoutes) // 动态添加可访问路由表
-        next()
+      // 首先查询登录帐号
+      store.dispatch('queryLoginAccount').then(loginAccount => {
+        console.log('loginAccount: ' + JSON.stringify(loginAccount))
+        setAccountName(loginAccount.accountName)
+        setSuperAdmin(loginAccount.roleType)
+        setPermissions(loginAccount.perms)
+        // 获取动态路由
+        store.dispatch('queryRouter').then(accessRoutes => {
+          // 根据roles权限生成可访问的路由表
+          console.log('accessRoutes: ' + JSON.stringify(accessRoutes))
+          router.addRoutes(accessRoutes) // 动态添加可访问路由表
+          next()
+        })
       })
     } else {
       next()

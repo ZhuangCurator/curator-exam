@@ -1,27 +1,31 @@
 import { get, put, post, deleted } from '@/http/axios'
 
-// 获取角色列表
+// 获取角色分页数据
 export function handleRolePage (params) {
-  return get('/system/sysRole/page', params)
+  return get('/examInfoBackend/infoRole/page', params)
+}
+// 获取角色列表
+export function handleRoleList (params) {
+  return get('/examInfoBackend/infoRole/list', params)
 }
 // 根据ID获取角色
 export function handleRoleQuery (params) {
-  return get('/system/sysRole/' + params)
+  return get('/examInfoBackend/infoRole' + params)
 }
 
 // 修改角色信息
 export function handleUpdateRole (params) {
-  return put('/system/sysRole', params)
+  return put('/examInfoBackend/infoRole', params)
 }
 
 // 添加角色信息
 export function handleAddRole (params) {
-  return post('/system/sysRole', params)
+  return post('/examInfoBackend/infoRole', params)
 }
 
 // 删除角色
 export function handleDeleteRole (params) {
-  return deleted('/system/sysRole/' + params)
+  return deleted('/examInfoBackend/infoRole' + params)
 }
 
 // 角色绑定权限信息

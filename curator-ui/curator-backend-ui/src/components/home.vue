@@ -8,21 +8,16 @@
             <span>Curator-Cloud管理系统</span>
           </div>
         </el-col>
-        <el-col :span="15">
-          <el-dropdown class="header_avatar">
+        <el-col :span="16">
+          <el-dropdown class="header_name">
             <span class="el-dropdown-link">
-              <el-avatar shape="square" :size="45" fit="contain" :src="avatar"></el-avatar>
+              <span>{{ userName }}</span>
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item >个人中心</el-dropdown-item>
               <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
-        </el-col>
-        <el-col :span="1">
-          <div class="header_user_name">
-            <span>{{ userName }}</span>
-          </div>
         </el-col>
       </el-row>
     </el-header>
@@ -50,11 +45,11 @@
                 </template>
               </el-menu-item>
             </el-submenu>
-            <!-- 没有子菜单的一级菜单 -->
-            <el-menu-item :index="item.path" :key="item.path" v-else>
-              <i :class="item.meta.icon"></i>
-              <span>{{ item.meta.title }}</span>
-            </el-menu-item>
+<!--            &lt;!&ndash; 没有子菜单的一级菜单 &ndash;&gt;-->
+<!--            <el-menu-item :index="item.path" :key="item.path" v-else>-->
+<!--              <i :class="item.meta.icon"></i>-->
+<!--              <span>{{ item.meta.title }}</span>-->
+<!--            </el-menu-item>-->
           </template>
         </el-menu>
       </el-aside>
@@ -69,7 +64,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { handleMenuList } from '@/apis/menu'
-import { getAvatar, getUsername } from '@/utils/storage'
+import { getAccountName } from '@/utils/storage'
 
 export default {
   name: 'Home',
@@ -81,8 +76,7 @@ export default {
       isCollapse: false,
       // 菜单栏被激活的二级菜单
       activePath: '',
-      userName: '',
-      avatar: ''
+      userName: ''
     }
   },
   computed: {
@@ -121,8 +115,7 @@ export default {
   },
   created () {
     this.activePath = window.sessionStorage.getItem('activePath')
-    this.userName = getUsername()
-    this.avatar = getAvatar()
+    this.userName = getAccountName()
   }
 }
 </script>
@@ -148,16 +141,15 @@ export default {
   // 字体颜色
   color: #fff;
   font-size: 20px;
-  .header_avatar {
+  .header_name {
+    height: 55px;
+    margin-top: 5px;
     display: flex;
     float: right;
     align-items: center;
-  }
-  .header_user_name {
-    height: 55px;
-    display: flex;
-    float: left;
-    align-items: center;
+    // 字体颜色
+    color: #fff;
+    font-size: 20px;
   }
 
   .home_title {
@@ -166,13 +158,6 @@ export default {
 
     span {
       margin-left: 20px;
-    }
-  }
-  .el-avatar {
-    margin-top: 5px;
-    > img {
-      height: auto;
-      width: 100%;
     }
   }
 }

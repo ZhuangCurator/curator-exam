@@ -113,8 +113,8 @@ public class LoginServiceImpl implements LoginService {
         }
         // 保存或更新用户token
         Map<String, Object> map = new HashMap<>(8);
-        map.put("access_token", CommonConstant.TOKEN_PREFIX + token);
-        map.put("expire_time", CommonConstant.TOKEN_EXPIRE_TIME);
+        map.put("accessToken", CommonConstant.TOKEN_PREFIX + token);
+        map.put("expireTime", CommonConstant.TOKEN_EXPIRE_TIME);
         RedissonUtil.setCacheObject(CommonConstant.CACHE_ACCOUNT_PREFIX + token, accountDTO, CommonConstant.TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
         return map;
     }

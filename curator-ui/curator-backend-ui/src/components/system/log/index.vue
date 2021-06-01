@@ -129,7 +129,7 @@ export default {
       operateTimeArray: [],
       // 查询表单参数
       queryForm: {
-        // 操作用户名
+        // 操作账户名
         operatorName: '',
         // 日志状态
         status: '',
@@ -181,7 +181,7 @@ export default {
         this.businessTypeList.push(obj)
       }
     },
-    // 得到用户分页数据
+    // 得到账户分页数据
     async getLogPage () {
       if (this.operateTimeArray) {
         this.queryForm.startOperateTime = this.operateTimeArray[0]

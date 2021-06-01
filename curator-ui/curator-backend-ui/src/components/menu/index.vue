@@ -237,7 +237,7 @@ export default {
         menuName: [
           {
             required: true,
-            message: '请输入用户名',
+            message: '请输入账户名',
             trigger: 'blur'
           }
         ],

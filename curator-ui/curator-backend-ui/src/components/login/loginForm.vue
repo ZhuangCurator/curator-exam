@@ -28,7 +28,7 @@
 
 <script>
 import { getImageValidateCode, handleLogin } from '@/apis/auth'
-import { setAvatar, setPermissions, setToken, setUsername } from '@/utils/storage'
+import { setAvatar, setPermissions, setToken, setAccountName } from '@/utils/storage'
 
 export default {
   name: 'loginForm',
@@ -86,10 +86,10 @@ export default {
             this.$message.error(res.message)
           } else {
             this.$message.success(res.message)
-            setToken(res.data.token)
-            setUsername(res.data.userName)
-            setAvatar(res.data.avatar)
-            setPermissions(JSON.stringify(res.data.permissions))
+            setToken(res.data.accessToken)
+            // setAccountName(res.data.userName)
+            // setAvatar(res.data.avatar)
+            // setPermissions(JSON.stringify(res.data.permissions))
             await this.$router.push('/home')
           }
         }

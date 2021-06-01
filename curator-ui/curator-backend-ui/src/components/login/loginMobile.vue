@@ -22,7 +22,7 @@
 
 <script>
 import { getSmsValidateCode, handleMobileLogin } from '@/apis/auth'
-import { setAvatar, setPermissions, setToken, setUsername } from '@/utils/storage'
+import { setAvatar, setPermissions, setToken, setAccountName } from '@/utils/storage'
 
 export default {
   name: 'loginMobile',
@@ -72,9 +72,6 @@ export default {
           } else {
             this.$message.success(res.message)
             setToken(res.data.token)
-            setUsername(res.data.userName)
-            setAvatar(res.data.avatar)
-            setPermissions(JSON.stringify(res.data.permissions))
             await this.$router.push('/home')
           }
         }

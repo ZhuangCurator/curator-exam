@@ -1,8 +1,8 @@
 import { deleted, get, post, put } from '@/http/axios'
 
-// 获取用户所能访问的菜单列表
-export function handleMenuListByUser () {
-  return get('/system/sysMenu/list/user')
+// 获取账户所能访问的路由
+export function handleRouterQuery () {
+  return get('/examInfoBackend/infoPower/router')
 }
 
 // 获取菜单列表
