@@ -23,8 +23,8 @@
         </el-form-item>
         <el-form-item label="角色状态">
           <el-select v-model="queryForm.status" placeholder="请选择角色状态" size="small">
-            <el-option :key="0" label="启用" :value="0"></el-option>
-            <el-option :key="1" label="禁用" :value="1"></el-option>
+            <el-option :key="1" label="启用" :value="1"></el-option>
+            <el-option :key="2" label="停用" :value="2"></el-option>
           </el-select>
         </el-form-item>
 
@@ -51,24 +51,24 @@
                 <span>{{ props.row.updateTime }}</span>
               </el-form-item>
               <el-form-item label="备注">
-                <span>{{ props.row.remark }}</span>
+                <span>{{ props.row.roleRemark }}</span>
               </el-form-item>
             </el-form>
           </template>
         </el-table-column>
         <el-table-column label="角色名" prop="roleName" align="center"></el-table-column>
-        <el-table-column label="权限字符" prop="roleKey" align="center"></el-table-column>
+        <el-table-column label="角色类型" prop="roleTypeDesc" align="center"></el-table-column>
         <el-table-column label="状态" align="center">
           <template slot-scope="props">
-            <el-switch v-model="props.row.status" active-text="启用" :active-value="0" inactive-text="禁用" :inactive-value="1"
+            <el-switch v-model="props.row.status" active-text="启用" :active-value="1" inactive-text="停用" :inactive-value="2"
                        @change="changeRoleStatus(props.row)"></el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['system:role:update']" @click="showEditDialog(scope.row.roleId)">编辑</el-button>
-            <el-button type="info" icon="el-icon-setting" size="mini" v-has-perm="['system:role:bind']" @click="showAuthDialog(scope.row)">菜单权限</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['system:role:deleted']" @click="deleteRole(scope.row.roleId)">删除</el-button>
+            <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['info:role:update']" @click="showEditDialog(scope.row.roleId)">编辑</el-button>
+            <el-button type="info" icon="el-icon-setting" size="mini" v-has-perm="['info:role:bind']" @click="showAuthDialog(scope.row)">菜单权限</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['info:role:deleted']" @click="deleteRole(scope.row.roleId)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -166,12 +166,15 @@
 import { handleAddRole, handleDeleteRole, handleUpdateRole, handleRolePage, handleRoleQuery, handleBindMenuWithRole } from '@/apis/role'
 import { handleMenuList } from '@/apis/menu'
 import { showElement } from '@/utils/show'
+import { getSuperAdmin } from '@/utils/storage'
 
 export default {
   name: 'RolePage',
   data () {
     return {
       columnShow: true,
+      // 是否是超级管理员
+      superAdmin: 0,
       // 启用的菜单列表
       menuOptions: [],
       defaultProps: {
@@ -256,6 +259,7 @@ export default {
     }
   },
   created () {
+    this.superAdmin = getSuperAdmin()
     this.getRolePage()
   },
   updated () {
@@ -276,6 +280,7 @@ export default {
     },
     // 得到角色分页数据
     async getRolePage () {
+      this.queryForm.superAdmin = this.superAdmin
       const { data: res } = await handleRolePage(this.queryForm)
       console.log(res.data)
       if (res.status !== '2000') return this.$message.error(res.message)

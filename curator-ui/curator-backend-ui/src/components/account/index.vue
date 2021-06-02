@@ -100,7 +100,7 @@
           <el-input v-model="addForm.phone"></el-input>
         </el-form-item>
         <el-form-item label="角色" prop="roleIdList">
-          <el-select v-model="addForm.roleId" placeholder="请选择角色">
+          <el-select v-model="addForm.roleId" filterable remote :remote-method="showRoleList" placeholder="请选择角色">
             <el-option
               v-for="item in roleList"
               :key="item.roleId"
@@ -426,7 +426,6 @@ export default {
     },
     // 展示添加账户对话框
     showAddDialog () {
-      this.showRoleList()
       this.addDialogVisible = true
     },
     // 添加账户
