@@ -1,5 +1,6 @@
 package com.curator.api.info.provider;
 
+import com.curator.api.info.pojo.dto.AccountDTO;
 import com.curator.common.support.ResultResponse;
 
 import java.util.Set;
@@ -19,4 +20,12 @@ public interface InfoAccountProvider {
      * @return
      */
     ResultResponse<Set<String>> getAccountAllPerms(String accountId);
+
+    /**
+     * 查询账户
+     *
+     * @param accountId 账户id
+     * @return
+     */
+    ResultResponse<AccountDTO> getAccount(String accountId);
 }

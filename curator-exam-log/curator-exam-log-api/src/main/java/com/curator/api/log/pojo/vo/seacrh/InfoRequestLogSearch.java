@@ -4,6 +4,8 @@ import com.curator.common.support.BaseSearch;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.time.LocalDateTime;
+
 /**
  * 账户分页查询条件
  *
@@ -44,4 +46,13 @@ public class InfoRequestLogSearch extends BaseSearch {
      */
     private String status;
 
+    /**
+     * 开始时间
+     */
+    private LocalDateTime startTime;
+
+    /**
+     * 结束时间
+     */
+    private LocalDateTime endTime;
 }

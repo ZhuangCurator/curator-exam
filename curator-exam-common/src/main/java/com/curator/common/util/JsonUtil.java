@@ -8,6 +8,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -40,12 +43,12 @@ public class JsonUtil {
     static {
 
         // // 初始化JavaTimeModule
-        // JavaTimeModule javaTimeModule = new JavaTimeModule();
-        //
+         JavaTimeModule javaTimeModule = new JavaTimeModule();
+
         // //处理LocalDateTime
-        // DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(STANDARD_PATTERN);
-        // javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
-        // javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
+         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(STANDARD_FORMAT);
+         javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
+         javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
         //
         // //处理LocalDate
         // DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
@@ -58,7 +61,7 @@ public class JsonUtil {
         // javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
         //
         // //注册时间模块, 支持支持jsr310, 即新的时间类(java.time包下的时间类)
-        // objectMapper.registerModule(javaTimeModule);
+         objectMapper.registerModule(javaTimeModule);
 
         //对象的所有字段全部列入
         objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
@@ -169,6 +172,6 @@ public class JsonUtil {
         List<Map<String,LocalDateTime>> list = Collections.singletonList(map);
         ResultResponse<List<Map<String,LocalDateTime>>> res = ResultResponse.<List<Map<String,LocalDateTime>>>builder().success().message("xxxx").data(list).build();
 
-        System.out.println(JsonUtil.obj2String(res));
+        System.out.println(JsonUtil.obj2String(map));
     }
 }

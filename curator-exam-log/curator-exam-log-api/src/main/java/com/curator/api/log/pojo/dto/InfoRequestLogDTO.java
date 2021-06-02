@@ -1,5 +1,7 @@
 package com.curator.api.log.pojo.dto;
 
+import com.curator.api.log.enums.RequestLogStatusEnum;
+import com.curator.common.util.Help;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -76,6 +78,11 @@ public class InfoRequestLogDTO implements Serializable {
     private Integer status;
 
     /**
+     * 状态描述
+     */
+    private String statusDesc;
+
+    /**
      * 异常消息
      */
     private String errorMsg;
@@ -115,4 +122,10 @@ public class InfoRequestLogDTO implements Serializable {
      */
     private LocalDateTime updateTime;
 
+    public String getStatusDesc() {
+        if(Help.isNotEmpty(status)) {
+            return RequestLogStatusEnum.getDesc(status);
+        }
+        return "";
+    }
 }

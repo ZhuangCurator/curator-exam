@@ -35,4 +35,12 @@ public interface AccountService {
      * @return
      */
     ResultResponse<?> updateAccount(AccountInfo info);
+
+    /**
+     * 查询账户
+     *
+     * @param accountId 账户id
+     * @return
+     */
+    ResultResponse<AccountDTO> getAccount(String accountId);
 }

@@ -30,6 +30,12 @@
             <artifactId>curator-exam-log-api</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <!--Info API JAR包-->
+        <dependency>
+            <groupId>com.curator</groupId>
+            <artifactId>curator-exam-info-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!--公共工具包-->
         <dependency>
             <groupId>com.curator</groupId>
@@ -109,6 +115,11 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <!-- Spring Cloud Dubbo -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-dubbo</artifactId>
         </dependency>
     </dependencies>
 

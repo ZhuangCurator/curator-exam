@@ -20,9 +20,9 @@ export function handleUpdatePower (params) {
   return put('/examInfoBackend/infoPower', params)
 }
 
-// 更新菜单数
+// 更新菜单状态
 export function handleUpdatePowerStatus (params) {
-  return put('/examInfoBackend/infoPower', params)
+  return put('/examInfoBackend/infoPower/powerStatus', params)
 }
 
 // 添加菜单数据

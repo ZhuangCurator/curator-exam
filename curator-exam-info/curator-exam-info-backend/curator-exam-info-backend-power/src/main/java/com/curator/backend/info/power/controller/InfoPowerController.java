@@ -5,6 +5,7 @@ import com.curator.backend.info.power.entity.dto.RouterDTO;
 import com.curator.backend.info.power.entity.vo.info.InfoPowerInfo;
 import com.curator.backend.info.power.entity.vo.search.InfoPowerSearch;
 import com.curator.backend.info.power.service.InfoPowerService;
+import com.curator.backend.info.role.entity.vo.info.InfoRoleInfo;
 import com.curator.common.annotation.Log;
 import com.curator.common.support.ResultResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,5 +96,17 @@ public class InfoPowerController {
     @Log(controllerName = "InfoPowerController", remark = "权限删除")
     ResultResponse<String> removeInfoPower(@PathVariable("infoPowerId") String infoPowerId) {
         return powerService.removeInfoPower(infoPowerId);
+    }
+
+    /**
+     * 编辑权限状态
+     *
+     * @param info 权限信息
+     * @return
+     */
+    @PutMapping("/powerStatus")
+    @Log(controllerName = "InfoPowerController", remark = "编辑权限状态")
+    ResultResponse<String> changePowerStatus(@RequestBody InfoPowerInfo info) {
+        return powerService.changePowerStatus(info);
     }
 }

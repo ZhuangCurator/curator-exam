@@ -3,6 +3,8 @@ package com.curator.core.log.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.curator.api.info.pojo.dto.AccountDTO;
+import com.curator.api.info.provider.InfoAccountProvider;
 import com.curator.api.log.pojo.dto.InfoRequestLogDTO;
 import com.curator.api.log.pojo.vo.info.InfoRequestLogInfo;
 import com.curator.api.log.pojo.vo.seacrh.InfoRequestLogSearch;
@@ -10,9 +12,11 @@ import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
+import com.curator.common.util.ServletUtil;
 import com.curator.core.log.entity.InfoRequestLog;
 import com.curator.core.log.mapper.InfoRequestLogMapper;
 import com.curator.core.log.service.InfoRequestLogService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,9 +38,11 @@ public class InfoRequestLogServiceImpl implements InfoRequestLogService {
 
     @Autowired
     private InfoRequestLogMapper requestLogMapper;
+    @DubboReference
+    private InfoAccountProvider accountProvider;
 
     @Override
-    public ResultResponse<PageResult<InfoRequestLogDTO>> pageWithRequestLog(InfoRequestLogSearch search, HttpServletRequest request) {
+    public ResultResponse<PageResult<InfoRequestLogDTO>> pageWithRequestLog(InfoRequestLogSearch search) {
         Page<InfoRequestLog> page = new Page<>(search.getCurrent(), search.getPageSize());
         QueryWrapper<InfoRequestLog> wrapper = new QueryWrapper<>();
         wrapper.like(Help.isNotEmpty(search.getApplicationName()), "application_name", search.getApplicationName())
@@ -45,9 +51,11 @@ public class InfoRequestLogServiceImpl implements InfoRequestLogService {
                 .eq(Help.isNotEmpty(search.getRequestMethod()), "request_method", search.getRequestMethod())
                 .like(Help.isNotEmpty(search.getRequestUrl()), "request_url", search.getRequestUrl())
                 .eq(Help.isNotEmpty(search.getStatus()), "status", search.getStatus())
+                .ge(Help.isNotEmpty(search.getStartTime()), "create_time", search.getStartTime())
+                .le(Help.isNotEmpty(search.getEndTime()), "create_time", search.getEndTime())
                 .orderByDesc("create_time");
         if (Boolean.FALSE.equals(search.getSuperAdmin())) {
-            String createAccountId = request.getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+            String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
             wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
                     .or(w -> w.eq("parent_account_id", createAccountId)));
         }
@@ -79,6 +87,8 @@ public class InfoRequestLogServiceImpl implements InfoRequestLogService {
         InfoRequestLogDTO target = new InfoRequestLogDTO();
         if (Help.isNotEmpty(entity)) {
             BeanUtils.copyProperties(entity, target);
+            AccountDTO accountDTO = accountProvider.getAccount(target.getCreateAccountId()).getData();
+            target.setCreateAccountName(accountDTO.getAccountName());
         }
         return target;
     }

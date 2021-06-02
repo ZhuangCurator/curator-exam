@@ -35,7 +35,7 @@ public class InfoRequestLogController {
      * @return 分页结果
      */
     @GetMapping("/page")
-    ResultResponse<PageResult<InfoRequestLogDTO>> pageWithRequestLog(InfoRequestLogSearch search, HttpServletRequest request){
-        return requestLogService.pageWithRequestLog(search, request);
+    ResultResponse<PageResult<InfoRequestLogDTO>> pageWithRequestLog(InfoRequestLogSearch search){
+        return requestLogService.pageWithRequestLog(search);
     }
 }

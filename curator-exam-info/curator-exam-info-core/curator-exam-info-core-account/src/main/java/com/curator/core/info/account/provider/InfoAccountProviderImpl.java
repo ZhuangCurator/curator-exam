@@ -1,5 +1,6 @@
 package com.curator.core.info.account.provider;
 
+import com.curator.api.info.pojo.dto.AccountDTO;
 import com.curator.api.info.provider.InfoAccountProvider;
 import com.curator.common.support.ResultResponse;
 import com.curator.core.info.account.service.AccountService;
@@ -21,5 +22,10 @@ public class InfoAccountProviderImpl implements InfoAccountProvider {
     @Override
     public ResultResponse<Set<String>> getAccountAllPerms(String accountId) {
         return accountService.getAccountAllPerms(accountId);
+    }
+
+    @Override
+    public ResultResponse<AccountDTO> getAccount(String accountId) {
+        return accountService.getAccount(accountId);
     }
 }

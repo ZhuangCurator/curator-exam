@@ -29,6 +29,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -183,6 +184,19 @@ public class InfoPowerServiceImpl implements InfoPowerService {
         return ResultResponse.<String>builder().success("权限删除成功").data(infoPowerId).build();
     }
 
+    @Override
+    public ResultResponse<String> changePowerStatus(InfoPowerInfo info) {
+        // 同时修改所有自己权限的状态
+        Set<String> powerIdSet = new HashSet<>();
+        Set<String> childPowerIdSet = selectChildPowerId(info.getPowerId());
+        if (Help.isNotEmpty(childPowerIdSet)) {
+            powerIdSet.addAll(childPowerIdSet);
+        }
+        powerIdSet.add(info.getPowerId());
+        powerMapper.batchUpdatePowerStatus(powerIdSet, info.getPowerStatus(), LocalDateTime.now());
+        return ResultResponse.<String>builder().success("权限状态更新成功").data(info.getPowerId()).build();
+    }
+
     /**
      * 构建路由树
      *
@@ -227,11 +241,14 @@ public class InfoPowerServiceImpl implements InfoPowerService {
      * @return
      */
     private String getRouterName(String name) {
-        if (Character.isUpperCase(name.charAt(0))) {
-            return name;
-        } else {
-            return Character.toUpperCase(name.charAt(0)) + name.substring(1);
+        if (Help.isNotEmpty(name)) {
+            if (Character.isUpperCase(name.charAt(0))) {
+                return name;
+            } else {
+                return Character.toUpperCase(name.charAt(0)) + name.substring(1);
+            }
         }
+        return "";
     }
 
     /**
@@ -289,6 +306,25 @@ public class InfoPowerServiceImpl implements InfoPowerService {
             parent.getChildren().sort(Comparator.comparing(InfoPowerDTO::getPowerOrder));
         }
         return parent;
+    }
+
+    /**
+     * 查询当前权限的所有子级权限id
+     *
+     * @param powerId 当前权限id
+     * @return
+     */
+    private Set<String> selectChildPowerId(String powerId) {
+        Set<String> powerIdSet = powerMapper.getChildPowerIdSet(powerId);
+        if (Help.isNotEmpty(powerIdSet)) {
+            powerIdSet.forEach(childPowerId -> {
+                Set<String> childPowerIdSet = selectChildPowerId(childPowerId);
+                if (Help.isNotEmpty(childPowerIdSet)) {
+                    powerIdSet.addAll(childPowerIdSet);
+                }
+            });
+        }
+        return powerIdSet;
     }
 
     /**

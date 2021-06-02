@@ -20,5 +20,16 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
+    <update id="batchUpdatePowerStatus">
+        update info_power set power_status = #{status}, update_time = #{now}
+        where power_id in
+        <foreach collection="idSet" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="getChildPowerIdSet" resultType="java.lang.String">
+        select power_id from info_power where parent_id = #{powerId} and is_deleted = 0
+    </select>
 
 </mapper>

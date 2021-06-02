@@ -119,19 +119,17 @@ public class InfoPowerGroupServiceImpl implements InfoPowerGroupService {
     @Override
     public ResultResponse<?> addPowerToPowerGroup(InfoGroupPowerInfo info) {
         if(Help.isNotEmpty(info.getPowerIdList())) {
+            // 首先删除原有的绑定关系
+            QueryWrapper<InfoGroupPower> wrapper = new QueryWrapper<>();
+            wrapper.eq("power_group_id", info.getPowerGroupId());
+            groupPowerMapper.delete(wrapper);
             info.getPowerIdList().forEach(powerId -> {
-                QueryWrapper<InfoGroupPower> groupPowerQueryWrapper = new QueryWrapper<>();
-                groupPowerQueryWrapper.eq("power_id", powerId)
-                        .eq("power_group_id", info.getPowerGroupId());
-                Integer count = groupPowerMapper.selectCount(groupPowerQueryWrapper);
-                if(count == null || count == 0) {
-                    InfoGroupPower groupPower = new InfoGroupPower();
-                    groupPower.setPowerGroupId(info.getPowerGroupId());
-                    groupPower.setPowerId(powerId);
-                    groupPower.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
-                    groupPower.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
-                    groupPowerMapper.insert(groupPower);
-                }
+                InfoGroupPower groupPower = new InfoGroupPower();
+                groupPower.setPowerGroupId(info.getPowerGroupId());
+                groupPower.setPowerId(powerId);
+                groupPower.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
+                groupPower.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
+                groupPowerMapper.insert(groupPower);
             });
             return ResultResponse.builder().success("权限列表成功添加至权限组!").build();
         }
@@ -170,6 +168,13 @@ public class InfoPowerGroupServiceImpl implements InfoPowerGroupService {
         InfoPowerGroupDTO target = new InfoPowerGroupDTO();
         if (Help.isNotEmpty(entity)) {
             BeanUtils.copyProperties(entity, target);
+            QueryWrapper<InfoGroupPower> wrapper = new QueryWrapper<>();
+            wrapper.eq("power_group_id", entity.getPowerGroupId());
+            List<InfoGroupPower> list = groupPowerMapper.selectList(wrapper);
+            if(Help.isNotEmpty(list)) {
+                List<String> powerIdList = list.stream().map(InfoGroupPower::getPowerId).collect(Collectors.toList());
+                target.setPowerIdList(powerIdList);
+            }
         }
         return target;
     }

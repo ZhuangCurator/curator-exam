@@ -4,16 +4,13 @@ import com.curator.backend.info.power.entity.dto.InfoPowerDTO;
 import com.curator.backend.info.power.entity.dto.RouterDTO;
 import com.curator.backend.info.power.entity.vo.info.InfoPowerInfo;
 import com.curator.backend.info.power.entity.vo.search.InfoPowerSearch;
-import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
-import org.springframework.web.bind.annotation.GetMapping;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
  * <p>
- *  权限信息 服务类
+ * 权限信息 服务类
  * </p>
  *
  * @author Jun
@@ -67,4 +64,12 @@ public interface InfoPowerService {
      * @return {@link ResultResponse}
      */
     ResultResponse<String> removeInfoPower(String infoPowerId);
+
+    /**
+     * 编辑权限状态
+     *
+     * @param info 权限信息
+     * @return
+     */
+    ResultResponse<String> changePowerStatus(InfoPowerInfo info);
 }

@@ -24,7 +24,7 @@ public interface InfoRequestLogService {
      * @param search {@link InfoRequestLogSearch}
      * @return 分页结果
      */
-    ResultResponse<PageResult<InfoRequestLogDTO>> pageWithRequestLog(InfoRequestLogSearch search, HttpServletRequest request);
+    ResultResponse<PageResult<InfoRequestLogDTO>> pageWithRequestLog(InfoRequestLogSearch search);
 
     /**
      * 添加日志信息

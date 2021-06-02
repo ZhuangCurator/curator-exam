@@ -46,7 +46,7 @@ label {
 
 /* 表单展开栏 数据行label样式 */
 .table-expand label {
-    width: 70px;
+    width: 100px;
     color: #99a9bf;
 }
 

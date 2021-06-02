@@ -46,10 +46,10 @@
         :tree-props="{children: 'children'}">
         <el-table-column prop="powerName" label="权限名称" :show-overflow-tooltip="true" width="130px"></el-table-column>
         <el-table-column prop="powerTypeDesc" align="center" label="权限类型" width="80px"></el-table-column>
-        <el-table-column prop="powerPerms" label="权限标识" width="170px"></el-table-column>
-        <el-table-column prop="powerPath" label="路由地址" width="170px"></el-table-column>
+        <el-table-column prop="powerPerms" label="权限标识" width="140px"></el-table-column>
+        <el-table-column prop="powerPath" label="路由地址" width="130px"></el-table-column>
         <el-table-column prop="powerComponent" label="组件路径"></el-table-column>
-        <el-table-column prop="powerIcon" label="权限图标" width="150px"></el-table-column>
+        <el-table-column prop="powerIcon" label="权限图标" width="160px"></el-table-column>
         <el-table-column label="权限状态" align="center" width="70px">
           <template slot-scope="scope">
             <el-switch v-model="scope.row.powerStatus" :active-value="1" :inactive-value="2"
@@ -57,9 +57,9 @@
           </template>
         </el-table-column>
         <el-table-column prop="powerOrder" align="center" label="排序" width="50px"></el-table-column>
-        <el-table-column prop="createTime" align="center" label="创建时间" width="140px">
-        </el-table-column>
-        <el-table-column label="操作" align="center" width="300px" v-if="columnShow">
+<!--        <el-table-column prop="createTime" align="center" label="创建时间" width="140px">-->
+<!--        </el-table-column>-->
+        <el-table-column label="操作" align="center" width="350px" v-if="columnShow">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-folder-add" size="mini" v-has-perm="['system:power:add']" @click="showAddDialog(scope.row)">添加下级权限</el-button>
             <el-button type="info" icon="el-icon-edit" size="mini" v-has-perm="['system:power:update']" @click="showEditDialog(scope.row.powerId)">编辑</el-button>
@@ -79,13 +79,14 @@
             :normalizer="normalizer"
             placeholder="请选择上级权限..."
             v-model="updateDialogForm.parentId"
+            disabled
           />
         </el-form-item>
         <el-form-item label="权限名称" prop="powerName">
           <el-input v-model="updateDialogForm.powerName"></el-input>
         </el-form-item>
         <el-form-item label="权限类型" prop="powerType">
-          <el-radio-group v-model="updateDialogForm.powerType">
+          <el-radio-group v-model="updateDialogForm.powerType" disabled>
             <el-radio :label="1">菜单</el-radio>
             <el-radio :label="2">按钮</el-radio>
             <el-radio :label="3">目录</el-radio>
@@ -133,7 +134,7 @@
           <el-input v-model="addDialogForm.powerName"></el-input>
         </el-form-item>
         <el-form-item label="权限类型" prop="powerType">
-          <el-radio-group v-model="addDialogForm.powerType">
+          <el-radio-group v-model="addDialogForm.powerType" disabled>
             <el-radio :label="1">菜单</el-radio>
             <el-radio :label="2">按钮</el-radio>
             <el-radio :label="3">目录</el-radio>
@@ -142,7 +143,7 @@
         <el-form-item label="权限标识" prop="powerPerms" v-if="addDialogForm.powerType !== 3">
           <el-input v-model="addDialogForm.powerPerms"></el-input>
         </el-form-item>
-        <el-form-item label="路由地址" prop="powerPath" v-if="addDialogForm.powerType === 1">
+        <el-form-item label="路由地址" prop="powerPath" v-if="addDialogForm.powerType !== 2">
           <el-input v-model="addDialogForm.powerPath"></el-input>
         </el-form-item>
         <el-form-item label="组件路径" prop="powerComponent" v-if="addDialogForm.powerType === 1">
@@ -151,7 +152,7 @@
         <el-form-item label="权限排序" prop="powerOrder">
           <el-input-number v-model="addDialogForm.powerOrder" controls-position="right" :min="1"></el-input-number>
         </el-form-item>
-        <el-form-item label="权限图标" prop="powerIcon" v-if="addDialogForm.powerType !== 2">
+        <el-form-item label="权限图标" prop="powerIcon" v-if="addDialogForm.powerType === 3">
           <el-input v-model="addDialogForm.powerIcon"></el-input>
         </el-form-item>
         <el-form-item label="权限备注" prop="powerRemark">

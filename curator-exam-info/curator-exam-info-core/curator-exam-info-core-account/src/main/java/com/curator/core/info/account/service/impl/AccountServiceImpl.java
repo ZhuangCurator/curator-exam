@@ -147,6 +147,12 @@ public class AccountServiceImpl implements AccountService {
         return ResultResponse.builder().success("账户信息修改成功!").build();
     }
 
+    @Override
+    public ResultResponse<AccountDTO> getAccount(String accountId) {
+        InfoAccount entity = accountMapper.selectById(accountId);
+        return ResultResponse.<AccountDTO>builder().success("账户查询成功!").data(convertEntity(entity)).build();
+    }
+
     /**
      * 查询权限集合的权限
      *
