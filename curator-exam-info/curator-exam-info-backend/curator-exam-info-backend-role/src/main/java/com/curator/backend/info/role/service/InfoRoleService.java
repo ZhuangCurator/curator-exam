@@ -6,6 +6,7 @@ import com.curator.backend.info.role.entity.vo.search.InfoRoleSearch;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -65,4 +66,11 @@ public interface InfoRoleService {
      * @return {@link ResultResponse}
      */
     ResultResponse<String> removeInfoRole(String id);
+
+    /**
+     * 查询角色类型集合
+     *
+     * @return {@link ResultResponse}
+     */
+    ResultResponse<List<HashMap<String, String>>> getRoleTypeList();
 }

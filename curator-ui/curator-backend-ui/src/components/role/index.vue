@@ -22,7 +22,7 @@
           />
         </el-form-item>
         <el-form-item label="角色状态">
-          <el-select v-model="queryForm.status" placeholder="请选择角色状态" size="small">
+          <el-select v-model="queryForm.roleStatus" placeholder="请选择角色状态" size="small">
             <el-option :key="1" label="启用" :value="1"></el-option>
             <el-option :key="2" label="停用" :value="2"></el-option>
           </el-select>
@@ -35,7 +35,7 @@
       </el-form>
       <el-row :gutter="20">
         <el-col :span="6">
-          <el-button type="primary" size="mini" v-has-perm="['system:role:add']" @click="addDialogVisible = true">添加角色</el-button>
+          <el-button type="primary" size="mini" v-has-perm="['info:role:add']" @click="showAddDialog">添加角色</el-button>
         </el-col>
       </el-row>
 
@@ -60,7 +60,7 @@
         <el-table-column label="角色类型" prop="roleTypeDesc" align="center"></el-table-column>
         <el-table-column label="状态" align="center">
           <template slot-scope="props">
-            <el-switch v-model="props.row.status" active-text="启用" :active-value="1" inactive-text="停用" :inactive-value="2"
+            <el-switch v-model="props.row.roleStatus" active-text="启用" :active-value="1" inactive-text="停用" :inactive-value="2"
                        @change="changeRoleStatus(props.row)"></el-switch>
           </template>
         </el-table-column>
@@ -92,24 +92,25 @@
         <el-form-item label="角色名" prop="roleName">
           <el-input v-model="addForm.roleName"></el-input>
         </el-form-item>
-        <el-form-item label="权限字符" prop="roleKey">
-          <el-input v-model="addForm.roleKey"></el-input>
+        <el-form-item label="角色类型" prop="roleType">
+          <el-select v-model="addForm.roleType" placeholder="请选择角色类型">
+            <el-option
+              v-for="item in roleTypeList"
+              :key="item.status"
+              :label="item.desc"
+              :value="item.status"
+            ></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="addForm.status">
-            <el-radio :label="0">启用</el-radio>
-            <el-radio :label="1">禁用</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input type="textarea" :rows="2" v-model="addForm.remark"></el-input>
+        <el-form-item label="备注" prop="roleRemark">
+          <el-input type="textarea" :rows="2" v-model="addForm.roleRemark"></el-input>
         </el-form-item>
       </el-form>
       <!-- 底部按钮区域 -->
       <span slot="footer" class="dialog-footer">
-    <el-button @click="addDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="addRole">确 定</el-button>
-  </span>
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addRole">确 定</el-button>
+      </span>
     </el-dialog>
 
     <!-- 修改角色对话框 -->
@@ -119,17 +120,18 @@
         <el-form-item label="角色名" prop="roleName">
           <el-input v-model="editForm.roleName"></el-input>
         </el-form-item>
-        <el-form-item label="权限字符" prop="roleKey">
-          <el-input v-model="editForm.roleKey"></el-input>
+        <el-form-item label="角色类型" prop="roleType">
+          <el-select v-model="editForm.roleType" placeholder="请选择角色类型">
+            <el-option
+              v-for="item in roleTypeList"
+              :key="item.status"
+              :label="item.desc"
+              :value="parseInt(item.status)"
+            ></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="editForm.status">
-            <el-radio :label="0">启用</el-radio>
-            <el-radio :label="1">禁用</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input type="textarea" :rows="2" v-model="editForm.remark"></el-input>
+        <el-form-item label="备注" prop="roleRemark">
+          <el-input type="textarea" :rows="2" v-model="editForm.roleRemark"></el-input>
         </el-form-item>
       </el-form>
       <!-- 底部按钮区域 -->
@@ -163,8 +165,15 @@
 </template>
 
 <script>
-import { handleAddRole, handleDeleteRole, handleUpdateRole, handleRolePage, handleRoleQuery, handleBindMenuWithRole } from '@/apis/role'
-import { handleMenuList } from '@/apis/menu'
+import {
+  handleAddRole,
+  handleDeleteRole,
+  handleUpdateRole,
+  handleRolePage,
+  handleRoleQuery,
+  handleBindMenuWithRole,
+  handleRoleTypeList
+} from '@/apis/role'
 import { showElement } from '@/utils/show'
 import { getSuperAdmin } from '@/utils/storage'
 
@@ -175,6 +184,8 @@ export default {
       columnShow: true,
       // 是否是超级管理员
       superAdmin: 0,
+      // 角色类型列表
+      roleTypeList: [],
       // 启用的菜单列表
       menuOptions: [],
       defaultProps: {
@@ -187,7 +198,7 @@ export default {
         // 角色名
         roleName: undefined,
         // 角色状态
-        status: undefined,
+        roleStatus: undefined,
         // 当前页
         current: 1,
         // 当前页大小
@@ -202,9 +213,8 @@ export default {
       // 添加角色表单数据
       addForm: {
         roleName: undefined,
-        roleKey: undefined,
-        status: 0,
-        remark: undefined
+        roleType: undefined,
+        roleRemark: undefined
       },
       // 控制修改角色对话框的显示
       editDialogVisible: false,
@@ -212,11 +222,10 @@ export default {
       editForm: {
         roleId: undefined,
         roleName: undefined,
-        roleKey: undefined,
-        status: undefined,
-        remark: undefined
+        roleType: undefined,
+        roleRemark: undefined
       },
-      // 修改角色表单校验规则
+      // 角色表单校验规则
       dialogFormRules: {
         roleName: [
           {
@@ -226,21 +235,15 @@ export default {
           },
           {
             min: 3,
-            max: 10,
-            message: '角色名长度在3~10字符之间',
+            max: 20,
+            message: '角色名长度在3~20字符之间',
             trigger: 'blur'
           }
         ],
-        roleKey: [
+        roleType: [
           {
             required: true,
-            message: '请输入角色权限字符',
-            trigger: 'blur'
-          },
-          {
-            min: 3,
-            max: 10,
-            message: '权限字符长度在3~15字符之间',
+            message: '请选择角色类型',
             trigger: 'blur'
           }
         ]
@@ -260,6 +263,7 @@ export default {
   },
   created () {
     this.superAdmin = getSuperAdmin()
+    this.showRoleTypeList()
     this.getRolePage()
   },
   updated () {
@@ -273,7 +277,7 @@ export default {
     // 查询表单重置
     resetQueryForm () {
       this.queryForm.roleName = undefined
-      this.queryForm.status = undefined
+      this.queryForm.roleStatus = undefined
       this.queryForm.current = 1
       this.queryForm.pageSize = 20
       this.getRolePage()
@@ -299,7 +303,7 @@ export default {
     },
     // 监听switch变化，改变角色状态
     async changeRoleStatus (roleInfo) {
-      const str = roleInfo.status === 0 ? '启用' : '禁用'
+      const str = roleInfo.roleStatus === 1 ? '启用' : '停用'
       this.$confirm('此操作将' + str + '该角色, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -307,18 +311,18 @@ export default {
       }).then(async () => {
         const param = {}
         param.roleId = roleInfo.roleId
-        param.status = roleInfo.status
+        param.roleStatus = roleInfo.roleStatus
 
         const { data: res } = await handleUpdateRole(param)
         if (res.status !== '2000') {
           // 更新失败的话，将页面的状态修改回去
-          roleInfo.status = str === '启用' ? 1 : 0
+          roleInfo.roleStatus = str === '启用' ? 1 : 2
           return this.$message.error(res.message)
         }
         this.$message.success('角色' + str + '成功!')
       }).catch(() => {
         // 取消修改的话，将页面的状态修改回去
-        roleInfo.status = str === '启用' ? 1 : 0
+        roleInfo.status = str === '启用' ? 1 : 2
         this.$message({
           type: 'info',
           message: '已取消' + str + '该角色'
@@ -329,6 +333,10 @@ export default {
     handleAddDialogClose () {
       // 清空字段
       this.$refs.addFormRef.resetFields()
+    },
+    // 展示添加角色对话框
+    showAddDialog () {
+      this.addDialogVisible = true
     },
     // 添加角色
     addRole () {
@@ -395,12 +403,12 @@ export default {
     },
     // 展示分配权限对话框
     async showAuthDialog (role) {
-      const query = { menuName: undefined, status: 0 }
-      const { data: res } = await handleMenuList(query)
-      const result = this.formatMenuList(res.data)
-      this.menuOptions = result
-      this.authDialogVisible = true
-      this.authForm = role
+      // const query = { menuName: undefined, status: 0 }
+      // const { data: res } = await handleMenuList(query)
+      // const result = this.formatMenuList(res.data)
+      // this.menuOptions = result
+      // this.authDialogVisible = true
+      // this.authForm = role
     },
     // 递归遍历菜单树,得到新的树
     formatMenuList (arr) {
@@ -432,6 +440,14 @@ export default {
       this.$message.success(res.message)
       this.authDialogVisible = false
       await this.getRolePage()
+    },
+    // 获取角色类型
+    async showRoleTypeList () {
+      const { data: result } = await handleRoleTypeList()
+      if (result.status !== '2000') {
+        return this.$message.error(result.message)
+      }
+      this.roleTypeList = result.data
     }
   }
 }
@@ -440,5 +456,8 @@ export default {
 <style lang="less" scoped>
 .el-tree {
   border: solid 1px #e7e1cd;
+}
+.el-select {
+  width: 100%;
 }
 </style>

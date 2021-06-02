@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.curator.api.info.enums.InfoRoleStatusEnum;
+import com.curator.api.info.enums.InfoRoleTypeEnum;
 import com.curator.backend.info.role.entity.InfoRole;
 import com.curator.backend.info.role.entity.dto.InfoRoleDTO;
 import com.curator.backend.info.role.entity.vo.info.InfoRoleInfo;
@@ -20,6 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,6 +109,21 @@ public class InfoRoleServiceImpl implements InfoRoleService {
     public ResultResponse<String> removeInfoRole(String id) {
         roleMapper.deleteById(id);
         return ResultResponse.<String>builder().success("角色删除成功").data(id).build();
+    }
+
+    @Override
+    public ResultResponse<List<HashMap<String, String>>> getRoleTypeList() {
+        String accountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+        Integer roleType = roleMapper.getAccountRoleType(accountId);
+        if(roleType == null) {
+            return ResultResponse.<List<HashMap<String, String>>>builder().failure("请先为本账号设置角色!").build();
+        }
+        List<HashMap<String, String>> roleTypeList = InfoRoleTypeEnum.getRoleTypeList();
+        List<HashMap<String, String>> filterList = roleTypeList.stream().filter(map -> {
+            int status = Integer.parseInt(map.get("status"));
+            return status > roleType;
+        }).collect(Collectors.toList());
+        return ResultResponse.<List<HashMap<String, String>>>builder().success("角色类型查询成功!").data(filterList).build();
     }
 
     /**

@@ -1,5 +1,9 @@
 package com.curator.api.info.enums;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * 角色类型枚举
  *
@@ -71,5 +75,16 @@ public enum InfoRoleTypeEnum {
             }
         }
         return "";
+    }
+
+    public static List<HashMap<String, String>> getRoleTypeList() {
+        List<HashMap<String, String>> list = new ArrayList<>();
+        for(InfoRoleTypeEnum obj : InfoRoleTypeEnum.values()){
+            HashMap<String, String> map = new HashMap<>();
+            map.put("status", String.valueOf(obj.getStatus()));
+            map.put("desc", obj.getDesc());
+            list.add(map);
+        }
+        return list;
     }
 }

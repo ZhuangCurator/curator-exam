@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { handleRouterQuery } from '@/apis/menu'
+import { handleRouterQuery } from '@/apis/power'
 import { handleLoginAccountQuery } from '@/apis/auth'
 import { filterAsyncRouter } from '@/utils/routerDecorate'
 

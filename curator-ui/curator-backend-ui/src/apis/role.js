@@ -10,7 +10,7 @@ export function handleRoleList (params) {
 }
 // 根据ID获取角色
 export function handleRoleQuery (params) {
-  return get('/examInfoBackend/infoRole' + params)
+  return get('/examInfoBackend/infoRole/' + params)
 }
 
 // 修改角色信息
@@ -25,10 +25,15 @@ export function handleAddRole (params) {
 
 // 删除角色
 export function handleDeleteRole (params) {
-  return deleted('/examInfoBackend/infoRole' + params)
+  return deleted('/examInfoBackend/infoRole/' + params)
 }
 
 // 角色绑定权限信息
 export function handleBindMenuWithRole (params) {
-  return post('/system/sysRole/bind/menu', params)
+  return post('/system/sysRole/bind/power', params)
+}
+
+// 获取角色类型列表
+export function handleRoleTypeList () {
+  return get('/examInfoBackend/infoRole/roleType/list')
 }

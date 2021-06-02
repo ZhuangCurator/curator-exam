@@ -10,6 +10,7 @@ import com.curator.common.support.ResultResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -97,5 +98,16 @@ public class InfoRoleController {
     @Log(controllerName = "InfoRoleController", remark = "删除角色")
     ResultResponse<String> removeInfoRole(@PathVariable("id") String id) {
         return roleService.removeInfoRole(id);
+    }
+
+    /**
+     * 查询角色类型集合
+     *
+     * @return {@link ResultResponse}
+     */
+    @GetMapping("/roleType/list")
+    @Log(controllerName = "InfoRoleController", remark = "查询角色类型集合")
+    ResultResponse<List<HashMap<String, String>>> getRoleTypeList() {
+        return roleService.getRoleTypeList();
     }
 }

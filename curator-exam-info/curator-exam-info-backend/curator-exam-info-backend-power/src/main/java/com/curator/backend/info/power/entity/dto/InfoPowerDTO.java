@@ -1,5 +1,8 @@
 package com.curator.backend.info.power.entity.dto;
 
+import com.curator.api.info.enums.InfoPowerStatusEnum;
+import com.curator.api.info.enums.InfoPowerTypeEnum;
+import com.curator.common.util.Help;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -47,9 +50,19 @@ public class InfoPowerDTO implements Serializable {
     private Integer powerType;
 
     /**
+     * 权限类型描述
+     */
+    private String powerTypeDesc;
+
+    /**
      * 权限状态(1启用 2停用)
      */
     private Integer powerStatus;
+
+    /**
+     * 权限状态描述
+     */
+    private String powerStatusDesc;
 
     /**
      * 路由地址
@@ -105,4 +118,18 @@ public class InfoPowerDTO implements Serializable {
      * 子权限
      */
     private List<InfoPowerDTO> children;
+
+    public String getPowerTypeDesc() {
+        if(Help.isNotEmpty(powerType)) {
+            return InfoPowerTypeEnum.getDesc(powerType);
+        }
+        return null;
+    }
+
+    public String getPowerStatusDesc() {
+        if(Help.isNotEmpty(powerStatus)) {
+            return InfoPowerStatusEnum.getDesc(powerStatus);
+        }
+        return null;
+    }
 }

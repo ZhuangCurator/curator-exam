@@ -3,6 +3,7 @@ package com.curator.backend.info.role.entity.dto;
 import com.baomidou.mybatisplus.annotation.*;
 import com.curator.api.info.enums.InfoRoleStatusEnum;
 import com.curator.api.info.enums.InfoRoleTypeEnum;
+import com.curator.common.util.Help;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -84,10 +85,16 @@ public class InfoRoleDTO implements Serializable {
     private LocalDateTime updateTime;
 
     public String getRoleStatusDesc() {
-        return InfoRoleStatusEnum.getDesc(roleStatus);
+        if(Help.isNotEmpty(roleStatus)) {
+            return InfoRoleStatusEnum.getDesc(roleStatus);
+        }
+        return null;
     }
 
     public String getRoleTypeDesc() {
-        return InfoRoleTypeEnum.getDesc(roleType);
+        if(Help.isNotEmpty(roleType)) {
+            return InfoRoleTypeEnum.getDesc(roleType);
+        }
+        return null;
     }
 }

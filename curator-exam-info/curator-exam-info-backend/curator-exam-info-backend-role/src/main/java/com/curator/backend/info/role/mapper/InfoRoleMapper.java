@@ -13,4 +13,11 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface InfoRoleMapper extends BaseMapper<InfoRole> {
 
+    /**
+     * 查询账号的角色类型
+     *
+     * @param accountId 账号ID
+     * @return
+     */
+    Integer getAccountRoleType(String accountId);
 }

@@ -14,5 +14,8 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
+    <select id="getAccountRoleType" resultType="java.lang.Integer">
+        select role_type from info_account where account_id = #{accountId}
+    </select>
 
 </mapper>

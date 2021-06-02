@@ -46,10 +46,10 @@
               </el-menu-item>
             </el-submenu>
 <!--            &lt;!&ndash; 没有子菜单的一级菜单 &ndash;&gt;-->
-<!--            <el-menu-item :index="item.path" :key="item.path" v-else>-->
+<!--            <el-power-item :index="item.path" :key="item.path" v-else>-->
 <!--              <i :class="item.meta.icon"></i>-->
 <!--              <span>{{ item.meta.title }}</span>-->
-<!--            </el-menu-item>-->
+<!--            </el-power-item>-->
           </template>
         </el-menu>
       </el-aside>
@@ -63,7 +63,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { handleMenuList } from '@/apis/menu'
 import { getAccountName } from '@/utils/storage'
 
 export default {
@@ -93,17 +92,17 @@ export default {
     },
 
     // 获取菜单列表
-    async getMenuList () {
-      const params = {}
-      params.status = 0
-      params.menuType = 1
-      const { data: res } = await handleMenuList(params)
-      if (res.status === '2000') {
-        this.menuList = res.data
-      } else {
-        this.$message.error(res.message)
-      }
-    },
+    // async getMenuList () {
+    //   const params = {}
+    //   params.status = 0
+    //   params.menuType = 1
+    //   const { data: res } = await handleMenuList(params)
+    //   if (res.status === '2000') {
+    //     this.menuList = res.data
+    //   } else {
+    //     this.$message.error(res.message)
+    //   }
+    // },
     // 点击按钮，切换菜单栏的折叠与展开
     toggleCollapse () {
       this.isCollapse = !this.isCollapse
