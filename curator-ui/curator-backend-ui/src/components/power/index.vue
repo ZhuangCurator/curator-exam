@@ -46,7 +46,7 @@
         :tree-props="{children: 'children'}">
         <el-table-column prop="powerName" label="权限名称" :show-overflow-tooltip="true" width="130px"></el-table-column>
         <el-table-column prop="powerTypeDesc" align="center" label="权限类型" width="80px"></el-table-column>
-        <el-table-column prop="powerPerms" label="权限标识" width="140px"></el-table-column>
+        <el-table-column prop="powerPerms" label="权限标识" width="150px"></el-table-column>
         <el-table-column prop="powerPath" label="路由地址" width="130px"></el-table-column>
         <el-table-column prop="powerComponent" label="组件路径"></el-table-column>
         <el-table-column prop="powerIcon" label="权限图标" width="160px"></el-table-column>

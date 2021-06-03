@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -83,6 +84,11 @@ public class InfoRoleDTO implements Serializable {
      * 更新时间
      */
     private LocalDateTime updateTime;
+
+    /**
+     * 已绑定的权限组ID集合
+     */
+    private List<String> powerGroupIdList;
 
     public String getRoleStatusDesc() {
         if(Help.isNotEmpty(roleStatus)) {

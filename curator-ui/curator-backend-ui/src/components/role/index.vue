@@ -67,7 +67,7 @@
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['info:role:update']" @click="showEditDialog(scope.row.roleId)">编辑</el-button>
-            <el-button type="info" icon="el-icon-setting" size="mini" v-has-perm="['info:role:bind']" @click="showAuthDialog(scope.row)">菜单权限</el-button>
+            <el-button type="info" icon="el-icon-setting" size="mini" v-has-perm="['info:role:bind']" @click="showPowerGroupDialog(scope.row)">权限组绑定</el-button>
             <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['info:role:deleted']" @click="deleteRole(scope.row.roleId)">删除</el-button>
           </template>
         </el-table-column>
@@ -141,18 +141,22 @@
       </span>
     </el-dialog>
 
-    <!-- 修改角色数据权限对话框 -->
-    <el-dialog title="分配菜单权限" :visible.sync="authDialogVisible" width="30%" @close="handleAuthDialogClose">
+    <!-- 修改角色权限对话框 -->
+    <el-dialog title="绑定权限组" :visible.sync="authDialogVisible" width="35%" @close="handleAuthDialogClose">
       <!-- 对话框主题区域 -->
-      <el-form ref="authFormRef" :model="authForm" :rules="dialogFormRules" label-width="80px">
+      <el-form ref="authFormRef" :model="authForm" :rules="dialogFormRules" label-width="100px">
         <el-form-item label="角色名">
           <el-input v-model="authForm.roleName" disabled></el-input>
         </el-form-item>
-        <el-form-item label="权限字符">
-          <el-input v-model="authForm.roleKey" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="菜单权限">
-          <el-tree :data="menuOptions" :default-checked-keys="authForm.menuIdList" :props="defaultProps" ref="menuTree" node-key="id" show-checkbox></el-tree>
+        <el-form-item label="权限组列表">
+          <el-select v-model="authForm.powerGroupIdList" multiple placeholder="请选择权限组">
+            <el-option
+              v-for="item in powerGroupOptions"
+              :key="item.powerGroupId"
+              :label="item.powerGroupName"
+              :value="item.powerGroupId">
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <!-- 底部按钮区域 -->
@@ -171,9 +175,9 @@ import {
   handleUpdateRole,
   handleRolePage,
   handleRoleQuery,
-  handleBindMenuWithRole,
   handleRoleTypeList
 } from '@/apis/role'
+import { handlePowerGroupList, handleAddPowerGroupToRole } from '@/apis/powerGroup'
 import { showElement } from '@/utils/show'
 import { getSuperAdmin } from '@/utils/storage'
 
@@ -186,8 +190,8 @@ export default {
       superAdmin: 0,
       // 角色类型列表
       roleTypeList: [],
-      // 启用的菜单列表
-      menuOptions: [],
+      // 启用的权限组列表
+      powerGroupOptions: [],
       defaultProps: {
         children: 'children',
         label: 'label',
@@ -254,10 +258,7 @@ export default {
       authForm: {
         roleId: undefined,
         roleName: undefined,
-        roleKey: undefined,
-        status: 0,
-        remark: undefined,
-        parentId: undefined
+        powerGroupIdList: []
       }
     }
   },
@@ -402,40 +403,22 @@ export default {
       })
     },
     // 展示分配权限对话框
-    async showAuthDialog (role) {
-      // const query = { menuName: undefined, status: 0 }
-      // const { data: res } = await handleMenuList(query)
-      // const result = this.formatMenuList(res.data)
-      // this.menuOptions = result
-      // this.authDialogVisible = true
-      // this.authForm = role
-    },
-    // 递归遍历菜单树,得到新的树
-    formatMenuList (arr) {
-      const result = []
-      for (let i = 0; i < arr.length; i++) {
-        const item = arr[i]
-        const node = { id: item.menuId, label: item.menuName }
-        result.push(node)
-        if (item.children) {
-          node.leaf = false
-          node.children = this.formatMenuList(item.children)
-        } else {
-          node.leaf = true
-        }
-      }
-      return result
+    async showPowerGroupDialog (role) {
+      const query = { superAdmin: this.superAdmin }
+      const { data: res } = await handlePowerGroupList(query)
+      this.powerGroupOptions = res.data
+      this.authDialogVisible = true
+      this.authForm = role
     },
     // 监听 分配权限对话框关闭事件
     handleAuthDialogClose () {
       // 清空字段
       this.$refs.authFormRef.resetFields()
-      this.menuOptions = []
+      this.powerGroupOptions = []
     },
     // 处理分配权限对话框确定按钮
     async handleAuthDialogConfirm () {
-      this.authForm.menuIdList = this.$refs.menuTree.getCheckedKeys(true)
-      const { data: res } = await handleBindMenuWithRole(this.authForm)
+      const { data: res } = await handleAddPowerGroupToRole(this.authForm)
       if (res.status !== '2000') return this.$message.error(res.message)
       this.$message.success(res.message)
       this.authDialogVisible = false

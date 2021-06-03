@@ -28,11 +28,6 @@ export function handleDeleteRole (params) {
   return deleted('/examInfoBackend/infoRole/' + params)
 }
 
-// 角色绑定权限信息
-export function handleBindMenuWithRole (params) {
-  return post('/system/sysRole/bind/power', params)
-}
-
 // 获取角色类型列表
 export function handleRoleTypeList () {
   return get('/examInfoBackend/infoRole/roleType/list')

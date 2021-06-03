@@ -139,19 +139,17 @@ public class InfoPowerGroupServiceImpl implements InfoPowerGroupService {
     @Override
     public ResultResponse<?> bindPowerGroupWithRole(InfoRolePowerGroupInfo info) {
         if(Help.isNotEmpty(info.getPowerGroupIdList())) {
+            // 首先删除原有的绑定关系
+            QueryWrapper<InfoRolePowerGroup> wrapper = new QueryWrapper<>();
+            wrapper.eq("role_id", info.getRoleId());
+            rolePowerGroupMapper.delete(wrapper);
             info.getPowerGroupIdList().forEach(powerGroupId -> {
-                QueryWrapper<InfoRolePowerGroup> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("power_group_id", powerGroupId)
-                        .eq("role_id", info.getRoleId());
-                Integer count = rolePowerGroupMapper.selectCount(queryWrapper);
-                if(count == null || count == 0) {
-                    InfoRolePowerGroup entity = new InfoRolePowerGroup();
-                    entity.setPowerGroupId(powerGroupId);
-                    entity.setRoleId(info.getRoleId());
-                    entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
-                    entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
-                    rolePowerGroupMapper.insert(entity);
-                }
+                InfoRolePowerGroup entity = new InfoRolePowerGroup();
+                entity.setPowerGroupId(powerGroupId);
+                entity.setRoleId(info.getRoleId());
+                entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
+                entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
+                rolePowerGroupMapper.insert(entity);
             });
             return ResultResponse.builder().success("权限组列表成功与角色绑定!").build();
         }

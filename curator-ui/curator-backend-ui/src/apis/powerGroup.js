@@ -32,3 +32,8 @@ export function handleDeletePowerGroup (params) {
 export function handleAddPowerToPowerGroup (params) {
   return post('/examInfoBackend/infoPowerGroup/add/power', params)
 }
+
+// 添加权限组至角色
+export function handleAddPowerGroupToRole (params) {
+  return post('/examInfoBackend/infoPowerGroup/role/bind', params)
+}

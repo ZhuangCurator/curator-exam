@@ -19,12 +19,12 @@ export function handleAddAccount (params) {
   return post('/examInfoBackend/infoAccount/', params)
 }
 
+// 添加子账户信息
+export function handleAddSonAccount (params) {
+  return post('/examInfoBackend/infoAccount/sonAccount/add', params)
+}
+
 // 删除账户
 export function handleDeleteAccount (params) {
   return deleted('/examInfoBackend/infoAccount/' + params)
-}
-
-// 账户绑定角色
-export function handleBindRoleWithAccount (params) {
-  return post('/system/sysAccount/bind/role', params)
 }

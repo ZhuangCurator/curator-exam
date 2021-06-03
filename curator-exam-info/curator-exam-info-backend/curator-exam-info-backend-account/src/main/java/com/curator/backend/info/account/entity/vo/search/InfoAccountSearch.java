@@ -24,4 +24,9 @@ public class InfoAccountSearch extends BaseSearch {
      */
     private Integer accountStatus;
 
+    /**
+     * 是否查询子账号
+     */
+    private Boolean child = Boolean.FALSE;
+
 }

@@ -136,6 +136,10 @@ public class InfoRoleServiceImpl implements InfoRoleService {
         InfoRoleDTO target = new InfoRoleDTO();
         if (Help.isNotEmpty(entity)) {
             BeanUtils.copyProperties(entity, target);
+            List<String> powerGroupIdList = roleMapper.getPowerGroupIdWithRole(entity.getRoleId());
+            if(Help.isNotEmpty(powerGroupIdList)) {
+                target.setPowerGroupIdList(powerGroupIdList);
+            }
         }
         return target;
     }

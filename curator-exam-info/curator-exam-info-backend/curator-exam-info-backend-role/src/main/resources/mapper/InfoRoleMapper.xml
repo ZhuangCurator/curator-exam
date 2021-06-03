@@ -17,5 +17,8 @@
     <select id="getAccountRoleType" resultType="java.lang.Integer">
         select role_type from info_account where account_id = #{accountId}
     </select>
+    <select id="getPowerGroupIdWithRole" resultType="java.lang.String">
+        select power_group_id from info_role_power_group where role_id = #{roleId} and is_deleted = 0
+    </select>
 
 </mapper>

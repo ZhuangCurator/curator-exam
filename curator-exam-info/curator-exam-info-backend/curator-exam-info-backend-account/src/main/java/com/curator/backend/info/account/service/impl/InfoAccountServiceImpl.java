@@ -54,8 +54,12 @@ public class InfoAccountServiceImpl implements InfoAccountService {
                 .orderByDesc("create_time");
         if (Boolean.FALSE.equals(search.getSuperAdmin())) {
             String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
-            wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
-                    .or(w -> w.eq("parent_account_id", createAccountId)));
+            if(search.getChild().equals(Boolean.TRUE)) {
+                wrapper.eq("parent_id", createAccountId);
+            } else {
+                wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
+                        .or(w -> w.eq("parent_account_id", createAccountId)));
+            }
         }
         IPage<InfoAccount> iPage = accountMapper.selectPage(page, wrapper);
         List<InfoAccountDTO> resultList = iPage.getRecords().stream()
@@ -109,6 +113,10 @@ public class InfoAccountServiceImpl implements InfoAccountService {
             return res;
         }
         InfoAccount entity = convertInfo(info);
+        if(Help.isEmpty(entity.getRoleType())) {
+            InfoRole role = roleMapper.selectById(entity.getRoleId());
+            entity.setRoleType(role.getRoleType());
+        }
         String salt = RandomUtil.randomString(RandomUtil.randomInt(10, 15));
         String encryptPassword = SecurityUtil.encryptPassword("123456", salt);
         entity.setAccountPassword(encryptPassword);
@@ -129,10 +137,15 @@ public class InfoAccountServiceImpl implements InfoAccountService {
             return res;
         }
         InfoAccount entity = convertInfo(info);
+        // 继承父账号的省市字段
+        String parentId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+        InfoAccount parentAccount = accountMapper.selectById(parentId);
+        entity.setProvince(parentAccount.getProvince());
+        entity.setCity(parentAccount.getCity());
         // 新用户状态为正常
         entity.setAccountStatus(InfoAccountStatusEnum.NORMAL.getStatus());
-        entity.setParentId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
-        entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
+        entity.setParentId(parentId);
+        entity.setCreateAccountId(parentId);
         entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
         // 加密盐
         String salt = RandomUtil.randomString(RandomUtil.randomInt(10, 15));
@@ -211,6 +224,9 @@ public class InfoAccountServiceImpl implements InfoAccountService {
      * @return
      */
     private ResultResponse<InfoAccountDTO> checkInfoAccount(InfoAccountInfo info) {
+        if(Help.isEmpty(info.getRoleId())) {
+            return ResultResponse.<InfoAccountDTO>builder().failure("请选择角色!").build();
+        }
         // 判断账户名是否重复
         QueryWrapper<InfoAccount> wrapper = new QueryWrapper<>();
         wrapper.eq("account_name", info.getAccountName());
