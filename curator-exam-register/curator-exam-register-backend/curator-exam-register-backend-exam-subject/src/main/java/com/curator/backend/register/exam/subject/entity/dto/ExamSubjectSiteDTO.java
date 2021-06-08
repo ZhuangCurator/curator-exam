@@ -41,6 +41,11 @@ public class ExamSubjectSiteDTO implements Serializable {
     private String examSiteName;
 
     /**
+     * 考点人数限制
+     */
+    private Integer numberLimit;
+
+    /**
      * 报名人数
      */
     private Integer registerNumber;
@@ -51,13 +56,33 @@ public class ExamSubjectSiteDTO implements Serializable {
     private String province;
 
     /**
+     * 省(名称)
+     */
+    private String provinceName;
+
+    /**
      * 市(代码)
      */
     private String city;
 
     /**
+     * 市(名称)
+     */
+    private String cityName;
+
+    /**
      * 区(代码)
      */
     private String district;
+
+    /**
+     * 区(名称)
+     */
+    private String districtName;
+
+    /**
+     * 详细地址
+     */
+    private String address;
 
 }

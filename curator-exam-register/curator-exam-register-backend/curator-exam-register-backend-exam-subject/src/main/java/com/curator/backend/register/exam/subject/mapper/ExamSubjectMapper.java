@@ -19,4 +19,13 @@ public interface ExamSubjectMapper extends BaseMapper<ExamSubject> {
      * @return
      */
     Integer selectMaxSerialNum(@Param("examCategoryId") String examCategoryId);
+
+    /**
+     * 查询该科目下此考点的报名人数
+     *
+     * @param examSubjectId 考试科目ID
+     * @param examSiteId 考点ID
+     * @return
+     */
+    Integer getRegisterNumberWithSubjectAndSite(@Param("examSubjectId") String examSubjectId, @Param("examSiteId") String examSiteId);
 }

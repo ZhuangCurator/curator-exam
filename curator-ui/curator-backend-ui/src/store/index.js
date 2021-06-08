@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { handleRouterQuery } from '@/apis/power'
-import { handleLoginAccountQuery } from '@/apis/auth'
+import { handleRouterQuery } from '@/apis/info/power'
+import { handleLoginAccountQuery } from '@/apis/info/auth'
 import { filterAsyncRouter } from '@/utils/routerDecorate'
 
 Vue.use(Vuex)
@@ -38,10 +38,10 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         handleRouterQuery().then(res => {
           const result = res.data
-          console.log('queryRouter#result', JSON.stringify(result))
+          console.log('handleRouterQuery#result', JSON.stringify(result))
           const routers = filterAsyncRouter(result.data)
           commit('setRouters', routers)
-          console.log('queryRouter#routers', JSON.stringify(routers))
+          console.log('handleRouterQuery#routers', JSON.stringify(routers))
           resolve(routers)
         }).catch(error => {
           reject(error)

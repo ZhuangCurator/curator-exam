@@ -29,4 +29,9 @@ public class InfoAccountSearch extends BaseSearch {
      */
     private Boolean child = Boolean.FALSE;
 
+    /**
+     * 是否查询普通账户
+     */
+    private Boolean ordinary = Boolean.FALSE;
+
 }

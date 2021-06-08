@@ -70,6 +70,11 @@ public class InfoPowerInfo implements Serializable {
     private String powerIcon;
 
     /**
+     * 是否隐藏
+     */
+    private Integer hide;
+
+    /**
      * 备注
      */
     private String powerRemark;

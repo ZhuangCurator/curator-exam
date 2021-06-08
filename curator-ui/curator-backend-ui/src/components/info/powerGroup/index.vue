@@ -134,8 +134,8 @@ import {
   handlePowerGroupPage,
   handlePowerGroupQuery,
   handleAddPowerToPowerGroup
-} from '@/apis/powerGroup'
-import { handlePowerList } from '@/apis/power'
+} from '@/apis/info/powerGroup'
+import { handlePowerList } from '@/apis/info/power'
 import { showElement } from '@/utils/show'
 import { getSuperAdmin } from '@/utils/storage'
 

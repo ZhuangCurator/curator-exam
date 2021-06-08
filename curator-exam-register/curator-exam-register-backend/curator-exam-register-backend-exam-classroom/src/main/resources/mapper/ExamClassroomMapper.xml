@@ -17,7 +17,7 @@
     </resultMap>
 
     <select id="selectMaxSerialNum" resultType="java.lang.Integer">
-        select max(serial_num) from exam_calssroom where exam_site_id = #{examSiteId} and is_deleted = 0
+        select max(serial_num) from exam_classroom where exam_site_id = #{examSiteId} and is_deleted = 0
     </select>
 
 </mapper>

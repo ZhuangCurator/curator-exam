@@ -75,6 +75,12 @@ public class InfoPower implements Serializable {
     private String powerIcon;
 
     /**
+     * 是否隐藏
+     */
+    @TableField(value = "is_hide")
+    private Integer hide;
+
+    /**
      * 备注
      */
     private String powerRemark;

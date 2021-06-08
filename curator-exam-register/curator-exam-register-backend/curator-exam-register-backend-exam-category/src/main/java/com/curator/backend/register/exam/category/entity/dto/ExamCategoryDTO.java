@@ -39,16 +39,6 @@ public class ExamCategoryDTO implements Serializable {
     private LocalDateTime examEndTime;
 
     /**
-     * 省(代码)
-     */
-    private String province;
-
-    /**
-     * 市(代码)
-     */
-    private String city;
-
-    /**
      * 创建账户 id
      */
     private String createAccountId;

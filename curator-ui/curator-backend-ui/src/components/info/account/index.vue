@@ -3,15 +3,15 @@
     <!-- 面包屑导航区域 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>子账户管理</el-breadcrumb-item>
-      <el-breadcrumb-item>子账户列表</el-breadcrumb-item>
+      <el-breadcrumb-item>账户管理</el-breadcrumb-item>
+      <el-breadcrumb-item>账户列表</el-breadcrumb-item>
     </el-breadcrumb>
 
     <!-- 卡片视图区域-->
     <el-card class="box-card">
       <!--  搜索与添加区域 -->
-      <el-form :model="queryForm" ref="queryFormRef" :inline="true" label-width="80px">
-        <el-form-item label="子账户名称" label-width="90px">
+      <el-form :model="queryForm" ref="queryFormRef" :inline="true" label-width="68px">
+        <el-form-item label="账户名称">
           <el-input
             v-model="queryForm.accountName"
             placeholder="请输入账户名称"
@@ -86,10 +86,10 @@
     </el-card>
 
     <!-- 添加账户对话框 -->
-    <el-dialog title="添加子账户" :visible.sync="addDialogVisible" width="30%" @close="handleAddDialogClose">
+    <el-dialog title="添加账户" :visible.sync="addDialogVisible" width="30%" @close="handleAddDialogClose">
       <!-- 对话框主题区域 -->
       <el-form ref="addFormRef" :model="addForm" :rules="addFormRules" label-width="80px">
-        <el-form-item label="子账户名" prop="accountName">
+        <el-form-item label="账户名" prop="accountName">
           <el-input v-model="addForm.accountName"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
@@ -108,6 +108,16 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <template v-if="superAdmin === '1'">
+          <el-form-item label="省份" prop="province">
+            <v-distpicker only-province @province="onChangeProvince"></v-distpicker>
+          </el-form-item>
+        </template>
+        <template v-else>
+          <el-form-item label="地市" prop="province">
+            <v-distpicker hide-area @province="onChangeProvince"  @city="onChangeCity"></v-distpicker>
+          </el-form-item>
+        </template>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="addForm.remark"></el-input>
         </el-form-item>
@@ -120,10 +130,10 @@
     </el-dialog>
 
     <!-- 修改账户对话框 -->
-    <el-dialog title="编辑子账户" :visible.sync="editDialogVisible" width="30%" @close="handleEditDialogClose">
+    <el-dialog title="编辑账户" :visible.sync="editDialogVisible" width="30%" @close="handleEditDialogClose">
       <!-- 对话框主题区域 -->
       <el-form ref="editFormRef" :model="editForm" :rules="editFormRules" label-width="80px">
-        <el-form-item label="子账户名" prop="accountName">
+        <el-form-item label="账户名" prop="accountName">
           <el-input v-model="editForm.accountName" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="角色" prop="roleName">
@@ -149,15 +159,8 @@
 </template>
 
 <script>
-import {
-  handleUpdateAccount,
-  handleAccountQuery,
-  handleAccountPage,
-  handleDeleteAccount,
-  handleBindRoleWithAccount,
-  handleAddSonAccount
-} from '@/apis/account'
-import { handleRoleList } from '@/apis/role'
+import { handleUpdateAccount, handleAccountQuery, handleAccountPage, handleAddAccount, handleDeleteAccount, handleBindRoleWithAccount } from '@/apis/info/account'
+import { handleRoleList } from '@/apis/info/role'
 import { showElement } from '@/utils/show'
 import { getSuperAdmin } from '@/utils/storage'
 export default {
@@ -194,8 +197,6 @@ export default {
         accountName: undefined,
         // 账户状态
         accountStatus: undefined,
-        // 是否查询子账号
-        child: 1,
         // 当前页
         current: 1,
         // 当前页大小
@@ -213,6 +214,10 @@ export default {
         email: undefined,
         phone: undefined,
         roleId: undefined,
+        province: undefined,
+        provinceName: undefined,
+        city: undefined,
+        cityName: undefined,
         remark: undefined
       },
       // 添加账户表单校验规则
@@ -220,7 +225,7 @@ export default {
         accountName: [
           {
             required: true,
-            message: '请输入子账户名',
+            message: '请输入账户名',
             trigger: 'blur'
           },
           {
@@ -249,6 +254,13 @@ export default {
           },
           {
             validator: checkPhone,
+            trigger: 'blur'
+          }
+        ],
+        province: [
+          {
+            required: true,
+            message: '请选择省份',
             trigger: 'blur'
           }
         ]
@@ -325,8 +337,9 @@ export default {
       // this.$refs.queryFormRef.resetFields()
       this.getAccountPage()
     },
-    // 得到子账户分页数据
+    // 得到账户分页数据
     async getAccountPage () {
+      this.queryForm.superAdmin = this.superAdmin
       const { data: res } = await handleAccountPage(this.queryForm)
       console.log(res.data)
       if (res.status !== '2000') return this.$message.error(res.message)
@@ -384,7 +397,7 @@ export default {
     addAccount () {
       this.$refs.addFormRef.validate(async valid => {
         if (valid) {
-          const { data: res } = await handleAddSonAccount(this.addForm)
+          const { data: res } = await handleAddAccount(this.addForm)
           if (res.status !== '2000') return this.$message.error(res.message)
           this.$message.success(res.message)
           this.addDialogVisible = false
@@ -452,6 +465,14 @@ export default {
         return this.$message.error(result.message)
       }
       this.roleList = result.data
+    },
+    onChangeProvince (data) {
+      this.addForm.province = data.code
+      this.addForm.provinceName = data.name
+    },
+    onChangeCity (data) {
+      this.addForm.city = data.code
+      this.addForm.cityName = data.name
     }
   }
 }

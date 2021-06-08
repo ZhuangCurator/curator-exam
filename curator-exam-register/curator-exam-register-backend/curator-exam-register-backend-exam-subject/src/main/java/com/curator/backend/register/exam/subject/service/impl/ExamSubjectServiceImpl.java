@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.curator.api.info.provider.InfoCityProvider;
 import com.curator.backend.register.exam.site.entity.ExamSite;
 import com.curator.backend.register.exam.site.mapper.ExamSiteMapper;
 import com.curator.backend.register.exam.subject.entity.ExamSubject;
@@ -22,6 +23,7 @@ import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.common.util.ServletUtil;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,8 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
     private ExamSiteMapper examSiteMapper;
     @Autowired
     private ExamSubjectSiteMapper subjectSiteMapper;
+    @DubboReference
+    private InfoCityProvider cityProvider;
 
     @Override
     public ResultResponse<PageResult<ExamSubjectDTO>> pageWithExamSubject(ExamSubjectSearch search) {
@@ -274,6 +278,19 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
             BeanUtils.copyProperties(entity, target);
             ExamSite examSite = examSiteMapper.selectById(entity.getExamSiteId());
             target.setExamSiteName(examSite.getExamSiteName());
+            target.setAddress(examSite.getAddress());
+            target.setNumberLimit(examSite.getNumberLimit());
+            Integer registerNumber = examSubjectMapper.getRegisterNumberWithSubjectAndSite(entity.getExamSubjectId(), entity.getExamSiteId());
+            target.setRegisterNumber( registerNumber != null ? registerNumber : 0);
+            if(Help.isNotEmpty(entity.getCity())) {
+                target.setCityName(cityProvider.getCityName(entity.getCity()).getData());
+            }
+            if(Help.isNotEmpty(entity.getProvince())) {
+                target.setProvinceName(cityProvider.getCityName(entity.getProvince()).getData());
+            }
+            if(Help.isNotEmpty(entity.getDistrict())) {
+                target.setDistrictName(cityProvider.getCityName(entity.getDistrict()).getData());
+            }
         }
         return target;
     }

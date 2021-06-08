@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { getImageValidateCode, handleLogin } from '@/apis/auth'
+import { getImageValidateCode, handleLogin } from '@/apis/info/auth'
 import { setAvatar, setPermissions, setToken, setAccountName } from '@/utils/storage'
 
 export default {

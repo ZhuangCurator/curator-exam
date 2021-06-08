@@ -95,7 +95,7 @@
         <el-form-item label="权限标识" prop="powerPerms" v-if="updateDialogForm.powerType !== 3">
           <el-input v-model="updateDialogForm.powerPerms"></el-input>
         </el-form-item>
-        <el-form-item label="路由地址" prop="powerPath" v-if="updateDialogForm.powerType === 1">
+        <el-form-item label="路由地址" prop="powerPath" v-if="updateDialogForm.powerType !== 2">
           <el-input v-model="updateDialogForm.powerPath"></el-input>
         </el-form-item>
         <el-form-item label="组件路径" prop="powerComponent" v-if="updateDialogForm.powerType === 1">
@@ -104,8 +104,12 @@
         <el-form-item label="权限排序" prop="powerOrder">
           <el-input-number v-model="updateDialogForm.powerOrder" controls-position="right" :min="1"></el-input-number>
         </el-form-item>
-        <el-form-item label="权限图标" prop="powerIcon" v-if="updateDialogForm.powerType !== 2">
+        <el-form-item label="权限图标" prop="powerIcon"  v-if="updateDialogForm.powerType === 3">
           <el-input v-model="updateDialogForm.powerIcon"></el-input>
+        </el-form-item>
+        <el-form-item label="是否隐藏" prop="hide" v-if="updateDialogForm.powerType !== 2">
+          <el-radio v-model="updateDialogForm.hide" :label="1">是</el-radio>
+          <el-radio v-model="updateDialogForm.hide" :label="0">否</el-radio>
         </el-form-item>
         <el-form-item label="权限备注" prop="powerRemark">
           <el-input v-model="updateDialogForm.powerRemark"></el-input>
@@ -155,6 +159,10 @@
         <el-form-item label="权限图标" prop="powerIcon" v-if="addDialogForm.powerType === 3">
           <el-input v-model="addDialogForm.powerIcon"></el-input>
         </el-form-item>
+        <el-form-item label="是否隐藏" prop="hide" v-if="addDialogForm.powerType !== 2">
+          <el-radio v-model="addDialogForm.hide" label="1">是</el-radio>
+          <el-radio v-model="addDialogForm.hide" label="0">否</el-radio>
+        </el-form-item>
         <el-form-item label="权限备注" prop="powerRemark">
           <el-input type="textarea" :rows="2" v-model="addDialogForm.powerRemark"></el-input>
         </el-form-item>
@@ -169,7 +177,7 @@
 </template>
 
 <script>
-import { handlePowerList, handlePowerQuery, handleAddPower, handleUpdatePower, handleDeletePower, handleUpdatePowerStatus } from '@/apis/power'
+import { handlePowerList, handlePowerQuery, handleAddPower, handleUpdatePower, handleDeletePower, handleUpdatePowerStatus } from '@/apis/info/power'
 import TreeSelect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { showElement } from '@/utils/show'
@@ -203,6 +211,7 @@ export default {
         powerPerms: undefined,
         powerComponent: undefined,
         powerIcon: undefined,
+        hide: undefined,
         powerRemark: undefined
       },
       // 编辑对话框表单数据
@@ -216,6 +225,7 @@ export default {
         powerPerms: undefined,
         powerComponent: undefined,
         powerIcon: undefined,
+        hide: undefined,
         powerRemark: undefined
       },
       dialogFormRules: {
@@ -254,10 +264,31 @@ export default {
             trigger: 'blur'
           }
         ],
+        powerComponent: [
+          {
+            required: true,
+            message: '请输入路由地址',
+            trigger: 'blur'
+          }
+        ],
+        powerIcon: [
+          {
+            required: true,
+            message: '请输入权限图标',
+            trigger: 'blur'
+          }
+        ],
         powerPerms: [
           {
             required: true,
             message: '请输入权限标识',
+            trigger: 'blur'
+          }
+        ],
+        hide: [
+          {
+            required: true,
+            message: '请选择是否隐藏！',
             trigger: 'blur'
           }
         ]

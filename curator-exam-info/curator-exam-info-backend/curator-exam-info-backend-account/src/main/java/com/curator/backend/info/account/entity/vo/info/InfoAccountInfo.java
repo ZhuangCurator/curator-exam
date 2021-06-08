@@ -65,9 +65,19 @@ public class InfoAccountInfo implements Serializable {
     private String province;
 
     /**
+     * 省(名称)
+     */
+    private String provinceName;
+
+    /**
      * 市(代码)
      */
     private String city;
+
+    /**
+     * 市(名称)
+     */
+    private String cityName;
 
     /**
      * 父账号id

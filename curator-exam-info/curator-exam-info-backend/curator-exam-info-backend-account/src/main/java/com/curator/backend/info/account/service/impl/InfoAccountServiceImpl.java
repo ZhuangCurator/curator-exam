@@ -8,11 +8,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.curator.api.info.enums.InfoAccountStatusEnum;
 import com.curator.api.info.enums.InfoRoleStatusEnum;
 import com.curator.api.info.enums.InfoRoleTypeEnum;
+import com.curator.api.info.provider.InfoCityProvider;
 import com.curator.backend.info.account.entity.InfoAccount;
+import com.curator.backend.info.account.entity.InfoCity;
 import com.curator.backend.info.account.entity.dto.InfoAccountDTO;
 import com.curator.backend.info.account.entity.vo.info.InfoAccountInfo;
 import com.curator.backend.info.account.entity.vo.search.InfoAccountSearch;
 import com.curator.backend.info.account.mapper.InfoAccountMapper;
+import com.curator.backend.info.account.mapper.InfoCityMapper;
 import com.curator.backend.info.account.service.InfoAccountService;
 import com.curator.backend.info.role.entity.InfoRole;
 import com.curator.backend.info.role.mapper.InfoRoleMapper;
@@ -44,6 +47,8 @@ public class InfoAccountServiceImpl implements InfoAccountService {
     private InfoAccountMapper accountMapper;
     @Autowired
     private InfoRoleMapper roleMapper;
+    @Autowired
+    private InfoCityMapper infoCityMapper;
 
     @Override
     public ResultResponse<PageResult<InfoAccountDTO>> pageWithInfoAccount(InfoAccountSearch search) {
@@ -51,13 +56,18 @@ public class InfoAccountServiceImpl implements InfoAccountService {
         QueryWrapper<InfoAccount> wrapper = new QueryWrapper<>();
         wrapper.like(Help.isNotEmpty(search.getAccountName()), "account_name", search.getAccountName())
                 .eq(Help.isNotEmpty(search.getAccountStatus()), "account_status", search.getAccountStatus())
+                .isNull(search.getOrdinary().equals(Boolean.TRUE), "role_id")
+                .isNotNull(search.getOrdinary().equals(Boolean.FALSE), "role_id")
                 .orderByDesc("create_time");
         if (Boolean.FALSE.equals(search.getSuperAdmin())) {
             String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
             if(search.getChild().equals(Boolean.TRUE)) {
+                // 查询子账户
                 wrapper.eq("parent_id", createAccountId);
-            } else {
-                wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
+            }else if(search.getOrdinary().equals(Boolean.FALSE)){
+                // 查询管理员账户
+                wrapper.isNotNull("role_id")
+                        .and(wr -> wr.eq("create_account_id", createAccountId)
                         .or(w -> w.eq("parent_account_id", createAccountId)));
             }
         }
@@ -112,6 +122,8 @@ public class InfoAccountServiceImpl implements InfoAccountService {
         if (!res.getSucceeded()) {
             return res;
         }
+        // 记录下地市信息
+        saveInfoCity(info);
         InfoAccount entity = convertInfo(info);
         if(Help.isEmpty(entity.getRoleType())) {
             InfoRole role = roleMapper.selectById(entity.getRoleId());
@@ -275,5 +287,21 @@ public class InfoAccountServiceImpl implements InfoAccountService {
             BeanUtils.copyProperties(info, target);
         }
         return target;
+    }
+
+    private void saveInfoCity(InfoAccountInfo info) {
+        InfoCity entity;
+        if(Help.isNotEmpty(info.getProvince())) {
+            entity = new InfoCity();
+            entity.setCode(info.getProvince());
+            entity.setName(info.getProvinceName());
+            infoCityMapper.saveInfoCity(entity);
+        }
+        if(Help.isNotEmpty(info.getCity())) {
+            entity = new InfoCity();
+            entity.setCode(info.getCity());
+            entity.setName(info.getCityName());
+            infoCityMapper.saveInfoCity(entity);
+        }
     }
 }

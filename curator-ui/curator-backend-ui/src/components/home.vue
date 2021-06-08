@@ -30,20 +30,20 @@
                  unique-opened :collapse="isCollapse" :collapse-transition="false" router :default-active="activePath">
           <template v-for="item in routers" >
             <!-- 含有子菜单的一级菜单 -->
-            <el-submenu :index="item.path" :key="item.path" v-if="item.children">
+            <el-submenu :index="item.path" :key="item.path" v-if="item.children && !item.meta.hideInMenu">
               <template slot="title">
-                <i :class="item.meta.icon"></i>
-                <span>{{ item.meta.title }}</span>
+                  <i :class="item.meta.icon"></i>
+                  <span>{{ item.meta.title }}</span>
               </template>
               <!-- 二级菜单 -->
-              <el-menu-item :index="item.path + '/' + subItem.path"  v-for="subItem in item.children" :key="subItem.path" @click="saveActivePath(item.path + '/' + subItem.path)">
-                <template slot="title">
-                  <!-- 菜单图标 -->
-                  <i class="el-icon-menu"></i>
-                  <!-- 菜单文本 -->
-                  <span slot="title">{{ subItem.meta.title }}</span>
-                </template>
-              </el-menu-item>
+              <template  v-for="subItem in item.children">
+                <el-menu-item :index="item.path + '/' + subItem.path"  v-if="!subItem.meta.hideInMenu" :key="subItem.path" @click="saveActivePath(item.path + '/' + subItem.path)">
+                    <!-- 菜单图标 -->
+                    <i class="el-icon-menu"></i>
+                    <!-- 菜单文本 -->
+                    <span slot="title">{{ subItem.meta.title }}</span>
+                </el-menu-item>
+              </template>
             </el-submenu>
 <!--            &lt;!&ndash; 没有子菜单的一级菜单 &ndash;&gt;-->
 <!--            <el-power-item :index="item.path" :key="item.path" v-else>-->

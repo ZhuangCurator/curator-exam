@@ -176,8 +176,8 @@ import {
   handleRolePage,
   handleRoleQuery,
   handleRoleTypeList
-} from '@/apis/role'
-import { handlePowerGroupList, handleAddPowerGroupToRole } from '@/apis/powerGroup'
+} from '@/apis/info/role'
+import { handlePowerGroupList, handleAddPowerGroupToRole } from '@/apis/info/powerGroup'
 import { showElement } from '@/utils/show'
 import { getSuperAdmin } from '@/utils/storage'
 

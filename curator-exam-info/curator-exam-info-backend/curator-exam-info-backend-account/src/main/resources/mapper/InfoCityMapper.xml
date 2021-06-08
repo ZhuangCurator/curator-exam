@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.curator.backend.info.account.mapper.InfoCityMapper">
+
+
+    <insert id="saveInfoCity">
+        insert ignore  into info_city(code, name) values (#{infoCity.code}, #{infoCity.name})
+    </insert>
+</mapper>

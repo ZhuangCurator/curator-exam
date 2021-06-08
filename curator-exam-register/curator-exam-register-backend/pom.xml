@@ -45,6 +45,12 @@
             <artifactId>curator-exam-paper-api</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <!-- Info API 包-->
+        <dependency>
+            <groupId>com.curator</groupId>
+            <artifactId>curator-exam-info-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!--公共工具包-->
         <dependency>
             <groupId>com.curator</groupId>

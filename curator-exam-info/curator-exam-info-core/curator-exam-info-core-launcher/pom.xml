@@ -27,6 +27,11 @@
             <artifactId>curator-exam-info-core-role</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.curator</groupId>
+            <artifactId>curator-exam-info-core-city</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

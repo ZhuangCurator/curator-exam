@@ -52,6 +52,13 @@ public class RouterDTO implements Serializable {
          */
         private String icon;
 
+        /**
+         * 菜单是否隐藏
+         */
+        private Boolean hideInMenu;
+
+        private String abc;
+
         public String getTitle() {
             return title;
         }
@@ -68,9 +75,27 @@ public class RouterDTO implements Serializable {
             this.icon = icon;
         }
 
-        public Meta(String title, String icon) {
+        public void setHideInMenu(Boolean hideInMenu) {
+            this.hideInMenu = hideInMenu;
+        }
+
+        public Boolean getHideInMenu() {
+            return hideInMenu;
+        }
+
+        public String getAbc() {
+            return abc;
+        }
+
+        public void setAbc(String abc) {
+            this.abc = abc;
+        }
+
+        public Meta(String title, String icon, Boolean hideInMenu) {
             this.title = title;
             this.icon = icon;
+            this.hideInMenu = hideInMenu;
         }
+
     }
 }

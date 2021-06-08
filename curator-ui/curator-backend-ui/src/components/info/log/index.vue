@@ -122,7 +122,7 @@
 </template>
 
 <script>
-import { handleLogPage } from '@/apis/log'
+import { handleLogPage } from '@/apis/info/log'
 import { getSuperAdmin } from '@/utils/storage'
 
 export default {

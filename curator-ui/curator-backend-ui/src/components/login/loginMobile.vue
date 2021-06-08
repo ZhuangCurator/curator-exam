@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { getSmsValidateCode, handleMobileLogin } from '@/apis/auth'
+import { getSmsValidateCode, handleMobileLogin } from '@/apis/info/auth'
 import { setAvatar, setPermissions, setToken, setAccountName } from '@/utils/storage'
 
 export default {

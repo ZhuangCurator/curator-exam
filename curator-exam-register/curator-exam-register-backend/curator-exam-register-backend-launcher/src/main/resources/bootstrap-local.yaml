@@ -25,7 +25,7 @@ dubbo:
     address: nacos://127.0.0.1:9005
     group: ${spring.profiles.active}-registry
   cloud:
-    subscribed-services: curator-exam-paper-core
+    subscribed-services: curator-exam-paper-core, curator-exam-info-core
   consumer:
     # 启动时是否检查依赖的服务
     check: false
@@ -44,3 +44,4 @@ minio:
   accessKey: minioadmin
   secretKey: minioadmin
   bucketName: log-bucket
+

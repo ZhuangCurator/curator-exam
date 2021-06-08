@@ -210,7 +210,7 @@ public class InfoPowerServiceImpl implements InfoPowerService {
             routerDTO.setName(getRouterName(powerDTO.getPowerPath()));
             routerDTO.setPath(getRouterPath(powerDTO));
             routerDTO.setComponent(getRouterComponent(powerDTO));
-            routerDTO.setMeta(new RouterDTO.Meta(powerDTO.getPowerName(), powerDTO.getPowerIcon()));
+            routerDTO.setMeta(new RouterDTO.Meta(powerDTO.getPowerName(), powerDTO.getPowerIcon(), powerDTO.getHide() == 1));
             List<InfoPowerDTO> childrenList = powerDTO.getChildren();
             if (Help.isNotEmpty(childrenList)) {
                 routerDTO.setChildren(buildRouterTree(childrenList));

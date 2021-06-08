@@ -1,5 +1,6 @@
 package com.curator.backend.info.power.entity.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.curator.api.info.enums.InfoPowerStatusEnum;
 import com.curator.api.info.enums.InfoPowerTypeEnum;
 import com.curator.common.util.Help;
@@ -83,6 +84,11 @@ public class InfoPowerDTO implements Serializable {
      * 权限图标
      */
     private String powerIcon;
+
+    /**
+     * 是否隐藏
+     */
+    private Integer hide;
 
     /**
      * 备注

@@ -4,25 +4,35 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.curator.backend.register.exam.subject.entity.ExamSubject">
-        <id column="exam_subject_id" property="examSubjectId" />
-        <result column="exam_subject_name" property="examSubjectName" />
-        <result column="exam_category_id" property="examCategoryId" />
-        <result column="generation_rule_id" property="generationRuleId" />
-        <result column="register_start_time" property="registerStartTime" />
-        <result column="register_end_time" property="registerEndTime" />
-        <result column="exam_start_time" property="examStartTime" />
-        <result column="exam_end_time" property="examEndTime" />
-        <result column="exam_duration" property="examDuration" />
-        <result column="passing_score" property="passingScore" />
-        <result column="create_account_id" property="createAccountId" />
-        <result column="parent_account_id" property="parentAccountId" />
-        <result column="is_deleted" property="deleted" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
+        <id column="exam_subject_id" property="examSubjectId"/>
+        <result column="exam_subject_name" property="examSubjectName"/>
+        <result column="exam_category_id" property="examCategoryId"/>
+        <result column="generation_rule_id" property="generationRuleId"/>
+        <result column="register_start_time" property="registerStartTime"/>
+        <result column="register_end_time" property="registerEndTime"/>
+        <result column="exam_start_time" property="examStartTime"/>
+        <result column="exam_end_time" property="examEndTime"/>
+        <result column="exam_duration" property="examDuration"/>
+        <result column="passing_score" property="passingScore"/>
+        <result column="create_account_id" property="createAccountId"/>
+        <result column="parent_account_id" property="parentAccountId"/>
+        <result column="is_deleted" property="deleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
     </resultMap>
 
     <select id="selectMaxSerialNum" resultType="java.lang.Integer">
-        select max(serial_num) from exam_subject where exam_category_id = #{examCategoryId} and is_deleted = 0
+        select max(serial_num)
+        from exam_subject
+        where exam_category_id = #{examCategoryId}
+          and is_deleted = 0
+    </select>
+    <select id="getRegisterNumberWithSubjectAndSite" resultType="java.lang.Integer">
+        select count(*)
+        from exam_register_info
+        where exam_subject_id = #{examSubjectId}
+          and exam_site_id = #{examSiteId}
+          and is_deleted = 0
     </select>
 
 </mapper>

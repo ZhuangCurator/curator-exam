@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.curator.api.info.provider.InfoCityProvider;
 import com.curator.backend.register.exam.site.entity.ExamSite;
 import com.curator.backend.register.exam.site.entity.dto.ExamSiteDTO;
 import com.curator.backend.register.exam.site.entity.vo.info.ExamSiteInfo;
@@ -15,6 +16,7 @@ import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.common.util.ServletUtil;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,8 @@ public class ExamSiteServiceImpl implements ExamSiteService {
 
     @Autowired
     private ExamSiteMapper examSiteMapper;
+    @DubboReference
+    private InfoCityProvider cityProvider;
 
     @Override
     public ResultResponse<PageResult<ExamSiteDTO>> pageWithExamSite(ExamSiteSearch search) {
@@ -90,6 +94,8 @@ public class ExamSiteServiceImpl implements ExamSiteService {
         if(!res.getSucceeded()) {
             return res;
         }
+        // 保存地市信息
+        saveInfoCity(info);
         ExamSite entity = convertInfo(info);
         // 查询当前地区下考点的最大序列号
         Integer serialNum = examSiteMapper.selectMaxSerialNum(entity.getDistrict());
@@ -108,6 +114,8 @@ public class ExamSiteServiceImpl implements ExamSiteService {
         if(!res.getSucceeded()) {
             return res;
         }
+        // 保存地市信息
+        saveInfoCity(info);
         ExamSite entity = convertInfo(info);
         examSiteMapper.update(entity, new UpdateWrapper<ExamSite>().eq("exam_site_id", info.getExamSiteId()));
         return ResultResponse.<ExamSiteDTO>builder().success("考点更新成功").data(convertEntity(entity)).build();
@@ -150,6 +158,15 @@ public class ExamSiteServiceImpl implements ExamSiteService {
         ExamSiteDTO target = new ExamSiteDTO();
         if (Help.isNotEmpty(entity)) {
             BeanUtils.copyProperties(entity, target);
+            if(Help.isNotEmpty(entity.getProvince())) {
+                target.setProvinceName(cityProvider.getCityName(entity.getProvince()).getData());
+            }
+            if(Help.isNotEmpty(entity.getCity())) {
+                target.setCityName(cityProvider.getCityName(entity.getCity()).getData());
+            }
+            if(Help.isNotEmpty(entity.getDistrict())) {
+                target.setDistrictName(cityProvider.getCityName(entity.getDistrict()).getData());
+            }
         }
         return target;
     }
@@ -166,5 +183,16 @@ public class ExamSiteServiceImpl implements ExamSiteService {
             BeanUtils.copyProperties(info, target);
         }
         return target;
+    }
+
+    /**
+     * 保存地市信息
+     *
+     * @param info
+     */
+    private void saveInfoCity(ExamSiteInfo info) {
+        cityProvider.saveInfoCity(info.getProvince(), info.getProvinceName());
+        cityProvider.saveInfoCity(info.getCity(), info.getCityName());
+        cityProvider.saveInfoCity(info.getDistrict(), info.getDistrictName());
     }
 }
