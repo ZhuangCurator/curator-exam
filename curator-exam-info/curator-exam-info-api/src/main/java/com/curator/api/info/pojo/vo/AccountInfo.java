@@ -26,6 +26,11 @@ public class AccountInfo implements Serializable {
     private String accountName;
 
     /**
+     * 考生身份证号
+     */
+    private String idCard;
+
+    /**
      * 账户密码
      */
     private String accountPassword;

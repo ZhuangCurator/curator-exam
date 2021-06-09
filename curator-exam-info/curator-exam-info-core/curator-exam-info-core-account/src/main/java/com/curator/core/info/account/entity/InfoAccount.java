@@ -38,6 +38,11 @@ public class InfoAccount implements Serializable {
     private String accountPassword;
 
     /**
+     * 考生身份证号
+     */
+    private String idCard;
+
+    /**
      * 加密盐
      */
     private String salt;

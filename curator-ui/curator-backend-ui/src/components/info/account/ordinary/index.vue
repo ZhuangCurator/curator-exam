@@ -56,6 +56,7 @@
           </template>
         </el-table-column>
         <el-table-column label="账户名" prop="accountName" align="center"></el-table-column>
+        <el-table-column label="身份证号" prop="idCard" width="170px" align="center"></el-table-column>
         <el-table-column label="邮箱" prop="email" align="center"></el-table-column>
         <el-table-column label="电话" prop="phone" align="center"></el-table-column>
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">

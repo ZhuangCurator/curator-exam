@@ -37,6 +37,11 @@ public class ExamRegisterInfoSearch extends BaseSearch {
     private String accountName;
 
     /**
+     * 考生身份证号
+     */
+    private String idCard;
+
+    /**
      * 准考证编号
      */
     private String admissionNumber;

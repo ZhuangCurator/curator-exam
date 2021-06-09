@@ -110,6 +110,8 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
         Integer serialNum = examSubjectMapper.selectMaxSerialNum(entity.getExamCategoryId());
         if(serialNum != null) {
             entity.setSerialNum(serialNum + 1);
+        } else {
+            entity.setSerialNum(1);
         }
         entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
         entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));

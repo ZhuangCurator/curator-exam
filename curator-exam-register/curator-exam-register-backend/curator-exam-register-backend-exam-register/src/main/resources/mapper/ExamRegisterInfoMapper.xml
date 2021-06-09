@@ -46,6 +46,12 @@
                         then #{item.seatNumber}
                 </foreach>
             </trim>
+            <trim prefix="admission_number =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when exam_register_info_id=#{item.examRegisterInfoId}
+                    then #{item.admissionNumber}
+                </foreach>
+            </trim>
         </trim>
         where exam_register_info_id in
         <foreach collection="list" item="item" index="index" separator="," open="(" close=")">

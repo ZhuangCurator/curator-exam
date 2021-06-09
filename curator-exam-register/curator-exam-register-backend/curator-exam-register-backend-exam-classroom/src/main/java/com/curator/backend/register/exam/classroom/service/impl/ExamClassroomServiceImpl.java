@@ -11,8 +11,6 @@ import com.curator.backend.register.exam.classroom.entity.vo.search.ExamClassroo
 import com.curator.backend.register.exam.classroom.mapper.ExamClassroomMapper;
 import com.curator.backend.register.exam.classroom.service.ExamClassroomService;
 import com.curator.backend.register.exam.site.entity.ExamSite;
-import com.curator.backend.register.exam.site.entity.dto.ExamSiteDTO;
-import com.curator.backend.register.exam.site.entity.vo.info.ExamSiteInfo;
 import com.curator.backend.register.exam.site.mapper.ExamSiteMapper;
 import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.PageResult;
@@ -89,15 +87,11 @@ public class ExamClassroomServiceImpl implements ExamClassroomService {
     @Override
     public ResultResponse<ExamClassroomDTO> saveExamClassroom(ExamClassroomInfo info) {
         ResultResponse<ExamClassroomDTO> res = checkExamClassroom(info);
-        if(!res.getSucceeded()) {
+        if (!res.getSucceeded()) {
             return res;
         }
         ExamClassroom entity = convertInfo(info);
-        // 查询当前考试类目下科目的最大序列号
-        Integer serialNum = examClassroomMapper.selectMaxSerialNum(entity.getExamSiteId());
-        if(serialNum != null) {
-            entity.setSerialNum(serialNum + 1);
-        }
+
         entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
         entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
         examClassroomMapper.insert(entity);
@@ -107,7 +101,7 @@ public class ExamClassroomServiceImpl implements ExamClassroomService {
     @Override
     public ResultResponse<ExamClassroomDTO> putExamClassroom(ExamClassroomInfo info) {
         ResultResponse<ExamClassroomDTO> res = checkExamClassroom(info);
-        if(!res.getSucceeded()) {
+        if (!res.getSucceeded()) {
             return res;
         }
         ExamClassroom entity = convertInfo(info);
@@ -132,11 +126,11 @@ public class ExamClassroomServiceImpl implements ExamClassroomService {
         QueryWrapper<ExamClassroom> wrapper = new QueryWrapper<>();
         wrapper.eq("exam_classroom_name", info.getExamClassroomName())
                 .eq("exam_site_id", info.getExamSiteId());
-        if(Help.isNotEmpty(info.getExamClassroomId())) {
+        if (Help.isNotEmpty(info.getExamClassroomId())) {
             wrapper.ne("exam_classroom_id", info.getExamClassroomId());
         }
         ExamClassroom entity = examClassroomMapper.selectOne(wrapper);
-        if(Help.isNotEmpty(entity)) {
+        if (Help.isNotEmpty(entity)) {
             return ResultResponse.<ExamClassroomDTO>builder().failure("该考点下，教室: " +
                     entity.getExamClassroomName() + "已存在!").build();
         }
@@ -144,14 +138,14 @@ public class ExamClassroomServiceImpl implements ExamClassroomService {
         ExamSite examSite = examSiteMapper.selectById(info.getExamSiteId());
         wrapper = new QueryWrapper<>();
         wrapper.eq("exam_site_id", info.getExamSiteId());
-        if(Help.isNotEmpty(info.getExamClassroomId())) {
+        if (Help.isNotEmpty(info.getExamClassroomId())) {
             wrapper.ne("exam_classroom_id", info.getExamClassroomId());
         }
         List<ExamClassroom> classroomList = examClassroomMapper.selectList(wrapper);
-        if(Help.isNotEmpty(classroomList)) {
+        if (Help.isNotEmpty(classroomList)) {
             int numberLimit = classroomList.stream().mapToInt(ExamClassroom::getNumberLimit).sum();
             numberLimit = numberLimit + info.getNumberLimit();
-            if(numberLimit > examSite.getNumberLimit()) {
+            if (numberLimit > examSite.getNumberLimit()) {
                 return ResultResponse.<ExamClassroomDTO>builder().failure("该考点下，各教室的人数限制加起来超过了考点人数限制！").build();
             }
         }

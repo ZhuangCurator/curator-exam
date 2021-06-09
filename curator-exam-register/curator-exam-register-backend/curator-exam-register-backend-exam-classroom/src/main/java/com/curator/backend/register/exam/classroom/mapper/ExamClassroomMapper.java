@@ -12,11 +12,4 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface ExamClassroomMapper extends BaseMapper<ExamClassroom> {
 
-    /**
-     * 查询当前考点下教室的最大序列号
-     *
-     * @param examSiteId 考点ID
-     * @return
-     */
-    Integer selectMaxSerialNum(@Param("examSiteId") String examSiteId);
 }

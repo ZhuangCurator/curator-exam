@@ -42,12 +42,13 @@
           </template>
         </el-table-column>
         <el-table-column label="账户" prop="accountName" align="center"></el-table-column>
+        <el-table-column label="身份证号" prop="idCard" width="150px" align="center"></el-table-column>
+        <el-table-column label="准考证编号" prop="admissionNumber" width="150px" align="center"></el-table-column>
         <el-table-column label="考试类别" width="170px;" prop="examCategoryName" align="center"></el-table-column>
         <el-table-column label="考试科目" prop="examSubjectName" align="center"></el-table-column>
         <el-table-column label="考点" prop="examSiteName" align="center"></el-table-column>
         <el-table-column label="教室" prop="examClassroomName" align="center"></el-table-column>
         <el-table-column label="座位号" prop="seatNumber" align="center"></el-table-column>
-        <el-table-column label="准考证编号" prop="admissionNumber" align="center"></el-table-column>
         <el-table-column label="考试口令" prop="examPassword" align="center"></el-table-column>
         <el-table-column label="成绩" prop="score" align="center"></el-table-column>
         <el-table-column label="考试状态" prop="examStatusDesc" align="center"></el-table-column>

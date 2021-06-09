@@ -23,3 +23,18 @@ export function handleUpdateExamRegisterInfo (params) {
 export function handleDeleteExamRegisterInfo (params) {
   return deleted('/examRegisterBackend/examRegisterInfo/' + params)
 }
+
+// 统一修改考试口令
+export function handleGenerateExamPassword (params) {
+  return put('/examRegisterBackend/examRegisterInfo/generate/examPassword', params)
+}
+
+// 统一分配教室
+export function handleAssignClassroom (params) {
+  return put('/examRegisterBackend/examRegisterInfo/assign/classroom', params)
+}
+
+// 考生重考
+export function handleReExam (params) {
+  return put('/examRegisterBackend/examRegisterInfo/reExam', params)
+}

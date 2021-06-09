@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "4682680",
+      "name": "试卷",
+      "font_class": "paper",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "2738175",
+      "name": "报名信息",
+      "font_class": "register",
+      "unicode": "e750",
+      "unicode_decimal": 59216
+    },
+    {
+      "icon_id": "9472344",
+      "name": "类别",
+      "font_class": "category",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "18235867",
+      "name": "考点",
+      "font_class": "examSite",
+      "unicode": "e635",
+      "unicode_decimal": 58933
+    },
+    {
       "icon_id": "1137788",
       "name": "系统",
       "font_class": "system",

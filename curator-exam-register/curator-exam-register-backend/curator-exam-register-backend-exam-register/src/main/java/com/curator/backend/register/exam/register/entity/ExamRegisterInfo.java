@@ -70,6 +70,11 @@ public class ExamRegisterInfo implements Serializable {
     private String accountName;
 
     /**
+     * 考生身份证号
+     */
+    private String idCard;
+
+    /**
      * 考试状态(0:未开始考试,1:已结束考试,2:缺考)
      */
     private Integer examStatus;

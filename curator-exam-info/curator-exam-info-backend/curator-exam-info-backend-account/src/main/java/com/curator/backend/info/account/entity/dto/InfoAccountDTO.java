@@ -34,6 +34,11 @@ public class InfoAccountDTO implements Serializable {
     private String accountName;
 
     /**
+     * 考生身份证号
+     */
+    private String idCard;
+
+    /**
      * 手机号码
      */
     private String phone;

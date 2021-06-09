@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2585167 */
-  src: url('iconfont.woff2?t=1622551047968') format('woff2'),
-       url('iconfont.woff?t=1622551047968') format('woff'),
-       url('iconfont.ttf?t=1622551047968') format('truetype');
+  src: url('iconfont.woff2?t=1623223637263') format('woff2'),
+       url('iconfont.woff?t=1623223637263') format('woff'),
+       url('iconfont.ttf?t=1623223637263') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,22 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-paper:before {
+  content: "\e601";
+}
+
+.icon-register:before {
+  content: "\e750";
+}
+
+.icon-category:before {
+  content: "\e600";
+}
+
+.icon-examSite:before {
+  content: "\e635";
 }
 
 .icon-system:before {

@@ -86,8 +86,7 @@ public class ExamRegisterInfoServiceImpl implements ExamRegisterInfoService {
     public ResultResponse<?> generateExamPassword(ExamRegisterInfoInfo info) {
         // 给当前考点下的所有考生生成考试口令
         QueryWrapper<ExamRegisterInfo> wrapper = new QueryWrapper<>();
-        wrapper.eq("exam_category_id", info.getExamCategoryId())
-                .eq("exam_subject_id", info.getExamSubjectId())
+        wrapper.eq("exam_subject_id", info.getExamSubjectId())
                 .eq("exam_site_id", info.getExamSiteId());
         List<ExamRegisterInfo> infoList = examRegisterInfoMapper.selectList(wrapper);
         if(Help.isNotEmpty(infoList)) {
@@ -101,8 +100,7 @@ public class ExamRegisterInfoServiceImpl implements ExamRegisterInfoService {
     @Override
     public ResultResponse<?> assignClassroom(ExamRegisterInfoInfo info) {
         QueryWrapper<ExamRegisterInfo> wrapper = new QueryWrapper<>();
-        wrapper.eq("exam_category_id", info.getExamCategoryId())
-                .eq("exam_subject_id", info.getExamSubjectId())
+        wrapper.eq("exam_subject_id", info.getExamSubjectId())
                 .eq("exam_site_id", info.getExamSiteId());
         List<ExamRegisterInfo> infoList = examRegisterInfoMapper.selectList(wrapper);
         if(Help.isEmpty(infoList)) {
@@ -152,21 +150,18 @@ public class ExamRegisterInfoServiceImpl implements ExamRegisterInfoService {
         // 考试科目的序列号
         String serialNumWithExamSubject = String.format("%03d",  examSubject.getSerialNum());
         // 考点的序列号
-        String serialNumWithExamSite = String.format("%03d",  examSite.getSerialNum());
+        String serialNumWithExamSite = String.format("%02d",  examSite.getSerialNum());
         joiner.add(year).add(serialNumWithExamSubject).add(district).add(serialNumWithExamSite);
         for (ExamClassroom examClassroom : classroomList) {
             Integer numberLimit = examClassroom.getNumberLimit();
-            // 考点下教室的序列号
-            String serialNumWithClassroom = String.format("%03d",  examClassroom.getSerialNum());
-            joiner.add(serialNumWithClassroom);
             int startNum = sort.get();
             for (int i = startNum; i < size; i++) {
                 ExamRegisterInfo registerInfo = infoList.get(i);
                 registerInfo.setExamClassroomId(examClassroom.getExamClassroomId());
                 registerInfo.setSeatNumber(sort.incrementAndGet());
-                joiner.add(String.format("%03d",  registerInfo.getSeatNumber()));
                 // 准考证编号
-                registerInfo.setAdmissionNumber(joiner.toString());
+                String  admissionNumber = joiner + String.format("%04d",  registerInfo.getSeatNumber());
+                registerInfo.setAdmissionNumber(admissionNumber);
                 if(sort.get() == numberLimit) {
                     // 当前教室的座位分配完了
                     break;
