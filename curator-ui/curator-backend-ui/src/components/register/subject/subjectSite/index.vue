@@ -44,7 +44,7 @@
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
             <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['register:subjectSite:deleted']" @click="deleteExamSubjectSite(scope.row.examSubjectSiteId)">删除</el-button>
-            <el-button type="info" icon="el-icon-setting" size="mini" @click="showClassroomPage(scope.row.examSiteId)">教室列表</el-button>
+            <el-button type="info" icon="el-icon-setting" size="mini" @click="showRegisterInfoPage(scope.row)">考生列表</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -258,12 +258,13 @@ export default {
       this.editForm.district = data.area.code
       this.editForm.districtName = data.area.value
     },
-    // 跳转到教室列表
-    showClassroomPage (examSiteId) {
+    // 跳转到当前考点下的考生信息界面
+    showRegisterInfoPage (examSubjectSite) {
       this.$router.push({
-        path: 'classroomPage',
+        path: 'subjectRegisterInfoPage',
         query: {
-          id: examSiteId
+          examSubjectId: examSubjectSite.examSubjectId,
+          examSiteId: examSubjectSite.examSiteId
         }
       })
     }

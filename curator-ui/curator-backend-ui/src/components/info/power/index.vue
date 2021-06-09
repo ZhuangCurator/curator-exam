@@ -57,8 +57,6 @@
           </template>
         </el-table-column>
         <el-table-column prop="powerOrder" align="center" label="排序" width="50px"></el-table-column>
-<!--        <el-table-column prop="createTime" align="center" label="创建时间" width="140px">-->
-<!--        </el-table-column>-->
         <el-table-column label="操作" align="center" width="350px" v-if="columnShow">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-folder-add" size="mini" v-has-perm="['system:power:add']" @click="showAddDialog(scope.row)">添加下级权限</el-button>

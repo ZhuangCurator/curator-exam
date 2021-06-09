@@ -4,10 +4,6 @@ import com.curator.common.support.BaseSearch;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 /**
  * 考试报名信息 分页查询条件
  *
@@ -39,6 +35,21 @@ public class ExamRegisterInfoSearch extends BaseSearch {
      * 考生账户名称
      */
     private String accountName;
+
+    /**
+     * 准考证编号
+     */
+    private String admissionNumber;
+
+    /**
+     * 座位号
+     */
+    private Integer seatNumber;
+
+    /**
+     * 考试状态(0:未开始考试,1:已结束考试,2:缺考)
+     */
+    private Integer examStatus;
 
     /**
      * 是否及格（1-是，0-否）

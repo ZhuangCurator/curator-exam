@@ -4,7 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import com.curator.backend.register.exam.register.entity.dto.ExamRegisterInfoDTO;
 import com.curator.backend.register.exam.register.entity.dto.ExamRegisterInfoExcelDTO;
 import com.curator.backend.register.exam.register.entity.vo.search.ExamRegisterInfoSearch;
-import com.curator.backend.register.exam.register.entity.vo.search.info.ExamRegisterInfoInfo;
+import com.curator.backend.register.exam.register.entity.vo.info.ExamRegisterInfoInfo;
 import com.curator.backend.register.exam.register.service.ExamRegisterInfoService;
 import com.curator.common.annotation.Log;
 import com.curator.common.support.PageResult;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 

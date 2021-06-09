@@ -14,7 +14,7 @@ import com.curator.backend.register.exam.register.entity.ExamRegisterInfo;
 import com.curator.backend.register.exam.register.entity.dto.ExamRegisterInfoDTO;
 import com.curator.backend.register.exam.register.entity.dto.ExamRegisterInfoExcelDTO;
 import com.curator.backend.register.exam.register.entity.vo.search.ExamRegisterInfoSearch;
-import com.curator.backend.register.exam.register.entity.vo.search.info.ExamRegisterInfoInfo;
+import com.curator.backend.register.exam.register.entity.vo.info.ExamRegisterInfoInfo;
 import com.curator.backend.register.exam.register.mapper.ExamRegisterInfoMapper;
 import com.curator.backend.register.exam.register.service.ExamRegisterInfoService;
 import com.curator.backend.register.exam.site.entity.ExamSite;
@@ -66,6 +66,9 @@ public class ExamRegisterInfoServiceImpl implements ExamRegisterInfoService {
                 .eq(Help.isNotEmpty(search.getExamCategoryId()), "exam_category_id", search.getExamCategoryId())
                 .eq(Help.isNotEmpty(search.getExamSubjectId()), "exam_subject_id", search.getExamSubjectId())
                 .eq(Help.isNotEmpty(search.getExamSiteId()), "exam_site_id", search.getExamSiteId())
+                .eq(Help.isNotEmpty(search.getAdmissionNumber()), "admission_number", search.getAdmissionNumber())
+                .eq(Help.isNotEmpty(search.getSeatNumber()), "seat_number", search.getSeatNumber())
+                .eq(Help.isNotEmpty(search.getExamStatus()), "exam_status", search.getExamStatus())
                 .eq(Help.isNotEmpty(search.getPassed()), "is_passed", search.getPassed())
                 .orderByDesc("create_time");
         IPage<ExamRegisterInfo> iPage = examRegisterInfoMapper.selectPage(page, wrapper);
@@ -227,6 +230,16 @@ public class ExamRegisterInfoServiceImpl implements ExamRegisterInfoService {
         ExamRegisterInfoDTO target = new ExamRegisterInfoDTO();
         if (Help.isNotEmpty(entity)) {
             BeanUtils.copyProperties(entity, target);
+            ExamCategory examCategory = examCategoryMapper.selectById(entity.getExamCategoryId());
+            target.setExamCategoryName(examCategory.getExamCategoryName());
+            ExamSubject examSubject = examSubjectMapper.selectById(entity.getExamSubjectId());
+            target.setExamSubjectName(examSubject.getExamSubjectName());
+            ExamSite examSite = examSiteMapper.selectById(entity.getExamSiteId());
+            target.setExamSiteName(examSite.getExamSiteName());
+            if(Help.isNotEmpty(entity.getExamClassroomId())) {
+                ExamClassroom classroom = examClassroomMapper.selectById(entity.getExamClassroomId());
+                target.setExamClassroomName(classroom.getExamClassroomName());
+            }
         }
         return target;
     }

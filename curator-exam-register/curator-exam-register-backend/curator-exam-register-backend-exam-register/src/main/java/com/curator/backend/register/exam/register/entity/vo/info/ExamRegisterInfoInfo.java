@@ -1,4 +1,4 @@
-package com.curator.backend.register.exam.register.entity.vo.search.info;
+package com.curator.backend.register.exam.register.entity.vo.info;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

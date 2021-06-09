@@ -3,12 +3,9 @@ package com.curator.backend.register.exam.register.service;
 import com.curator.backend.register.exam.register.entity.dto.ExamRegisterInfoDTO;
 import com.curator.backend.register.exam.register.entity.dto.ExamRegisterInfoExcelDTO;
 import com.curator.backend.register.exam.register.entity.vo.search.ExamRegisterInfoSearch;
-import com.curator.backend.register.exam.register.entity.vo.search.info.ExamRegisterInfoInfo;
-import com.curator.common.annotation.Log;
+import com.curator.backend.register.exam.register.entity.vo.info.ExamRegisterInfoInfo;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 

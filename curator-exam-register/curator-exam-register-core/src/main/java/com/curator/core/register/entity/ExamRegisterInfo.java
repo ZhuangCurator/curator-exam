@@ -82,7 +82,7 @@ public class ExamRegisterInfo implements Serializable {
     private String admissionNumber;
 
     /**
-     * 开始考试时间
+     * 开始考试时间(考生见到试卷时间)
      */
     private LocalDateTime startTime;
 

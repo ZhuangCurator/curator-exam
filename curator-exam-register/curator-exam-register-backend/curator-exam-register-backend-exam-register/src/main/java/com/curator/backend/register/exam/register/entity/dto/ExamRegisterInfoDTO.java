@@ -1,5 +1,6 @@
 package com.curator.backend.register.exam.register.entity.dto;
 
+import com.curator.api.register.enums.ExamStatusTypeEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -30,9 +31,19 @@ public class ExamRegisterInfoDTO implements Serializable {
     private String examCategoryId;
 
     /**
+     * 考试类别名称
+     */
+    private String examCategoryName;
+
+    /**
      * 考试科目ID
      */
     private String examSubjectId;
+
+    /**
+     * 考试科目名称
+     */
+    private String examSubjectName;
 
     /**
      * 考点ID
@@ -40,9 +51,19 @@ public class ExamRegisterInfoDTO implements Serializable {
     private String examSiteId;
 
     /**
+     * 考点名称
+     */
+    private String examSiteName;
+
+    /**
      * 教室ID
      */
     private String examClassroomId;
+
+    /**
+     * 教室名称
+     */
+    private String examClassroomName;
 
     /**
      * 座位号
@@ -70,6 +91,11 @@ public class ExamRegisterInfoDTO implements Serializable {
     private Integer examStatus;
 
     /**
+     * 考试状态描述
+     */
+    private String examStatusDesc;
+
+    /**
      * 准考证url
      */
     private String admissionTicketUrl;
@@ -80,7 +106,7 @@ public class ExamRegisterInfoDTO implements Serializable {
     private String admissionNumber;
 
     /**
-     * 开始考试时间
+     * 开始考试时间(考生见到试卷时间)
      */
     private LocalDateTime startTime;
 
@@ -109,4 +135,7 @@ public class ExamRegisterInfoDTO implements Serializable {
      */
     private LocalDateTime updateTime;
 
+    public String getExamStatusDesc() {
+        return ExamStatusTypeEnum.getDesc(examStatus);
+    }
 }
