@@ -56,7 +56,8 @@ public class QuestionServiceImpl implements QuestionService {
             wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
                     .or(w -> w.eq("parent_account_id", createAccountId)));
         }
-        wrapper.eq(Help.isNotEmpty(search.getQuestionType()), "question_type", search.getQuestionType())
+        wrapper.like(Help.isNotEmpty(search.getQuestionStem()), "question_stem", search.getQuestionStem())
+                .eq(Help.isNotEmpty(search.getQuestionType()), "question_type", search.getQuestionType())
                 .eq(Help.isNotEmpty(search.getQuestionDifficulty()), "question_difficulty", search.getQuestionDifficulty())
                 .in(Help.isNotEmpty(search.getQuestionIdList()), "question_id", search.getQuestionIdList())
                 .orderByDesc("create_time");

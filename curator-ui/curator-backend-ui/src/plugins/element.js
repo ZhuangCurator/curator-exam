@@ -35,7 +35,10 @@ import {
   Dropdown,
   DropdownMenu,
   DropdownItem,
-  Avatar
+  Avatar,
+  CheckboxGroup,
+  CheckboxButton,
+  Checkbox
 } from 'element-ui'
 
 Vue.use(Button)
@@ -72,6 +75,9 @@ Vue.use(Dropdown)
 Vue.use(DropdownMenu)
 Vue.use(DropdownItem)
 Vue.use(Avatar)
+Vue.use(CheckboxGroup)
+Vue.use(CheckboxButton)
+Vue.use(Checkbox)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

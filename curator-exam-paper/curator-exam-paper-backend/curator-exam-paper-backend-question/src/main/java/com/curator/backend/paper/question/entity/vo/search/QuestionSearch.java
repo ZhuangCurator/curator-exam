@@ -17,6 +17,11 @@ import java.util.List;
 public class QuestionSearch extends BaseSearch {
 
     /**
+     * 题干
+     */
+    private String questionStem;
+
+    /**
      * 试题类型
      */
     private Integer questionType;
