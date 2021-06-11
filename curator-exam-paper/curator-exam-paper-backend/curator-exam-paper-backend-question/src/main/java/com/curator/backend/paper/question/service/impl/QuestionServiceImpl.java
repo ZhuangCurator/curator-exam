@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.curator.api.paper.enums.QuestionTypeEnum;
 import com.curator.backend.paper.question.entity.Question;
 import com.curator.backend.paper.question.entity.QuestionAnswer;
 import com.curator.backend.paper.question.entity.dto.QuestionAnswerDTO;
@@ -98,32 +99,85 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public ResultResponse<QuestionDTO> saveQuestion(QuestionInfo info) {
-        if (Help.isEmpty(info.getQuestionAnswerInfoList())) {
-            return ResultResponse.<QuestionDTO>builder().failure("试题答案不能为空").build();
-        }
+        // if (Help.isEmpty(info.getQuestionAnswerInfoList())) {
+        //     return ResultResponse.<QuestionDTO>builder().failure("试题答案不能为空").build();
+        // }
         Question entity = convertInfo(info);
         entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
         entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
         questionMapper.insert(entity);
         // 保存答案
-        AtomicInteger order = new AtomicInteger(0);
-        List<QuestionAnswerInfo> questionAnswerInfoList = info.getQuestionAnswerInfoList();
-        // 正确答案个数
-        long size = questionAnswerInfoList.stream().filter(questionAnswerInfo -> questionAnswerInfo.getRighted() == 1).count();
-        // 四舍五入,保留两位小数
-        BigDecimal answerPoint = new BigDecimal(entity.getQuestionPoint()).divide(new BigDecimal(size), 2, BigDecimal.ROUND_HALF_UP);
-        questionAnswerInfoList.forEach(questionAnswerInfo -> {
-            QuestionAnswer answerEntity = convertInfo(questionAnswerInfo);
-            answerEntity.setQuestionAnswerOrder(order.incrementAndGet());
-            answerEntity.setQuestionId(entity.getQuestionId());
-            if(questionAnswerInfo.getRighted() == 1) {
-                // 正确答案设置分数
-                answerEntity.setQuestionPoint(answerPoint);
+        if(info.getQuestionType() == QuestionTypeEnum.SINGLE_CHOICE.getStatus() || info.getQuestionType() == QuestionTypeEnum.MULTIPLE_CHOICE.getStatus()) {
+            // 单选题或多选题
+            List<String> questionAnswerContent = info.getQuestionAnswerContent();
+            for (int i = 0; i < questionAnswerContent.size(); i++) {
+                QuestionAnswer answerEntity = new QuestionAnswer();
+                answerEntity.setContent(questionAnswerContent.get(i));
+                answerEntity.setQuestionAnswerOrder(i + 1);
+                answerEntity.setQuestionId(entity.getQuestionId());
+                // 将序号转为大写字母
+                String answer = String.valueOf((char) (i + 65));
+                if(info.getQuestionAnswerRighted().contains(answer)) {
+                    // 正确答案设置分数
+                    answerEntity.setRighted(1);
+                    // 四舍五入,保留两位小数
+                    BigDecimal answerPoint = new BigDecimal(entity.getQuestionPoint()).divide(new BigDecimal(info.getQuestionAnswerRighted().size()), 2, BigDecimal.ROUND_HALF_UP);
+                    answerEntity.setQuestionPoint(answerPoint);
+                }
+                answerEntity.setCreateAccountId(entity.getCreateAccountId());
+                answerEntity.setParentAccountId(entity.getParentAccountId());
+                questionAnswerMapper.insert(answerEntity);
             }
-            answerEntity.setCreateAccountId(entity.getCreateAccountId());
-            answerEntity.setParentAccountId(entity.getParentAccountId());
-            questionAnswerMapper.insert(answerEntity);
-        });
+        } else if(info.getQuestionType() == QuestionTypeEnum.JUDGMENT.getStatus()) {
+            // 判断题
+            int answer = Integer.parseInt(info.getQuestionAnswerRighted().get(0));
+            for (int i = 0; i < 2; i++) {
+                QuestionAnswer answerEntity = new QuestionAnswer();
+                answerEntity.setContent(i == 1 ? "正确" : "错误");
+                answerEntity.setQuestionAnswerOrder(i + 1);
+                answerEntity.setQuestionId(entity.getQuestionId());
+                if(answer == i) {
+                    // 正确答案设置分数
+                    answerEntity.setRighted(1);
+                    answerEntity.setQuestionPoint(new BigDecimal(entity.getQuestionPoint()));
+                }
+                answerEntity.setCreateAccountId(entity.getCreateAccountId());
+                answerEntity.setParentAccountId(entity.getParentAccountId());
+                questionAnswerMapper.insert(answerEntity);
+            }
+        } else if(info.getQuestionType() == QuestionTypeEnum.FILL_BLANK.getStatus()) {
+            List<String> questionAnswerRighted = info.getQuestionAnswerRighted();
+            BigDecimal answerPoint = new BigDecimal(entity.getQuestionPoint()).divide(new BigDecimal(info.getQuestionAnswerRighted().size()), 2, BigDecimal.ROUND_HALF_UP);
+            for (int i = 0; i < questionAnswerRighted.size(); i++) {
+                QuestionAnswer answerEntity = new QuestionAnswer();
+                answerEntity.setContent(questionAnswerRighted.get(i));
+                answerEntity.setQuestionAnswerOrder(i + 1);
+                answerEntity.setQuestionId(entity.getQuestionId());
+                answerEntity.setRighted(1);
+                answerEntity.setQuestionPoint(answerPoint);
+                answerEntity.setCreateAccountId(entity.getCreateAccountId());
+                answerEntity.setParentAccountId(entity.getParentAccountId());
+                questionAnswerMapper.insert(answerEntity);
+            }
+        }
+        // AtomicInteger order = new AtomicInteger(0);
+        // List<QuestionAnswerInfo> questionAnswerInfoList = info.getQuestionAnswerInfoList();
+        // // 正确答案个数
+        // long size = questionAnswerInfoList.stream().filter(questionAnswerInfo -> questionAnswerInfo.getRighted() == 1).count();
+        // // 四舍五入,保留两位小数
+        // BigDecimal answerPoint = new BigDecimal(entity.getQuestionPoint()).divide(new BigDecimal(size), 2, BigDecimal.ROUND_HALF_UP);
+        // questionAnswerInfoList.forEach(questionAnswerInfo -> {
+        //     QuestionAnswer answerEntity = convertInfo(questionAnswerInfo);
+        //     answerEntity.setQuestionAnswerOrder(order.incrementAndGet());
+        //     answerEntity.setQuestionId(entity.getQuestionId());
+        //     if(questionAnswerInfo.getRighted() == 1) {
+        //         // 正确答案设置分数
+        //         answerEntity.setQuestionPoint(answerPoint);
+        //     }
+        //     answerEntity.setCreateAccountId(entity.getCreateAccountId());
+        //     answerEntity.setParentAccountId(entity.getParentAccountId());
+        //     questionAnswerMapper.insert(answerEntity);
+        // });
         return ResultResponse.<QuestionDTO>builder().success("试题添加成功").data(convertEntity(entity)).build();
     }
 

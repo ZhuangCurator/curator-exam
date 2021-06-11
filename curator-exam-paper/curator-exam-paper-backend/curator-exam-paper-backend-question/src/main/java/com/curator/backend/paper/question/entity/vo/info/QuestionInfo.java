@@ -51,6 +51,16 @@ public class QuestionInfo implements Serializable {
     private Integer ordered;
 
     /**
+     * 答案选项内容
+     */
+    private List<String> questionAnswerContent;
+
+    /**
+     * 正确答案
+     */
+    private List<String> questionAnswerRighted;
+
+    /**
      * 试题答案集合
      */
     private List<QuestionAnswerInfo> questionAnswerInfoList;
