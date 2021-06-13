@@ -110,6 +110,10 @@ public class PaperGenerationRuleServiceImpl implements PaperGenerationRuleServic
         PaperGenerationRuleDTO target = new PaperGenerationRuleDTO();
         if (Help.isNotEmpty(entity)) {
             BeanUtils.copyProperties(entity, target);
+            if(Help.isNotEmpty(entity.getQuestionBankId())) {
+                String questionBankName = generationRuleMapper.selectQuestionBankName(entity.getQuestionBankId());
+                target.setQuestionBankName(questionBankName);
+            }
         }
         return target;
     }

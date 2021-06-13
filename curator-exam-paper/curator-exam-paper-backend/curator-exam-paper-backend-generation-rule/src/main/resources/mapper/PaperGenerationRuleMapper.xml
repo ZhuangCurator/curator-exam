@@ -15,5 +15,8 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
+    <select id="selectQuestionBankName" resultType="java.lang.String">
+        select question_bank_name from question_bank where question_bank_id = #{questionBankId}
+    </select>
 
 </mapper>

@@ -29,5 +29,8 @@
             #{item.createAccountId}, #{item.parentAccountId}, #{item.deleted}, #{item.createTime}, #{item.updateTime})
         </foreach>
     </insert>
+    <delete id="deleteQuestionAnswer">
+        delete from question_answer where question_id = #{questionId}
+    </delete>
 
 </mapper>

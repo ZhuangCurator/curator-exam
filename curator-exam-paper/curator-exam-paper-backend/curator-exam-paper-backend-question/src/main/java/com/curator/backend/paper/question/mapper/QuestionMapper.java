@@ -21,4 +21,11 @@ public interface QuestionMapper extends BaseMapper<Question> {
      * @return
      */
     int batchAddQuestion(@Param("list") List<Question> list);
+
+    /**
+     * 强制删除试题答案
+     *
+     * @param questionId 试题id
+     */
+    void deleteQuestionAnswer(@Param("questionId") String questionId);
 }

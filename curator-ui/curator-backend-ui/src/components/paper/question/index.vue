@@ -44,11 +44,12 @@
       <el-row :gutter="20">
         <el-col :span="6">
           <el-button type="primary" size="mini" v-has-perm="['paper:question:add']" @click="showAddDialog">添加试题</el-button>
+          <el-button type="primary" size="mini" v-has-perm="['paper:questionBank:bind']" @click="showQuestionBankBindDialog">添加至试题库</el-button>
         </el-col>
       </el-row>
 
       <!--  试题列表区域 -->
-      <el-table :data="questionList" border stripe>
+      <el-table :data="questionList" border stripe @selection-change="handleSelectionChange">
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" class="table-expand">
@@ -61,6 +62,7 @@
             </el-form>
           </template>
         </el-table-column>
+        <el-table-column type="selection" width="35"></el-table-column>
         <el-table-column label="题干" prop="questionStem" align="center"></el-table-column>
         <el-table-column label="试题难度" width="70px" prop="questionDifficultyDesc" align="center"></el-table-column>
         <el-table-column label="试题类型" width="70px" prop="questionTypeDesc" align="center"></el-table-column>
@@ -75,6 +77,7 @@
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['paper:question:update']" @click="showEditDialog(scope.row.questionId)">编辑</el-button>
             <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['paper:question:deleted']" @click="deleteQuestion(scope.row.questionId)">删除</el-button>
+            <el-button type="info" icon="el-icon-setting" size="mini" v-has-perm="['paper:question:preview']" @click="showPreviewDialog(scope.row.questionId)">预览试题</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -122,30 +125,28 @@
         <el-form-item label="试题题干" prop="questionStem">
           <el-input  type="textarea" :rows="2" v-model="addForm.questionStem"></el-input>
         </el-form-item>
-        <el-form-item label="试题选项" v-if="addForm.questionType === 1 || addForm.questionType === 2" prop="questionAnswerContent">
-          <el-input  placeholder="请输入选项内容" class="question-input" v-model="addForm.questionAnswerContent[index]" v-for="(item, index) in choseOptions" :key="item">
+        <el-form-item label="试题选项" v-if="addForm.questionType === 1 || addForm.questionType === 2">
+          <el-input  placeholder="请输入选项内容" class="question-input" v-model="addForm.questionAnswerContentList[index]" v-for="(item, index) in choseOptions" :key="item">
             <template slot="prepend">{{ item }}</template>
           </el-input>
         </el-form-item>
-        <el-form-item label="试题答案" v-if="addForm.questionType === 1 || addForm.questionType === 2" prop="questionAnswerRighted">
-          <el-checkbox-group v-model="addForm.questionAnswerRighted" :min="0" :max="addForm.questionType === 1 ? 1 : 4">
+        <el-form-item label="试题答案" v-if="addForm.questionType === 1 || addForm.questionType === 2" >
+          <el-checkbox-group v-model="addForm.questionAnswerRightedList" :min="0" :max="addForm.questionType === 1 ? 1 : 4">
             <el-checkbox v-for="(item, index) in choseOptions" :label="item" :key="index">{{item}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item label="试题答案" v-if="addForm.questionType === 3" prop="questionAnswerRighted">
-          <el-radio-group v-model="addForm.questionAnswerRighted[0]">
+        <el-form-item label="试题答案" v-if="addForm.questionType === 3" >
+          <el-radio-group v-model="addForm.questionAnswerRightedList[0]">
             <el-radio :label="1">正确</el-radio>
             <el-radio :label="0">错误</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="试题答案" v-if="addForm.questionType === 4" prop="questionAnswerRighted">
-          <template v-for="(item, index) of addForm.questionAnswerRighted">
-            <div class="question-input" :key="'div:' + index">
-              <el-input v-model="addForm.questionAnswerRighted[index]" style="width: 400px" :key="index"></el-input>
-              <el-button class="question-button" @click="addQuestionAnswerInput" :key="'add:' + index" type="primary" v-if="index + 1 === addForm.questionAnswerRighted.length">增加</el-button>
+        <el-form-item label="试题答案" v-if="addForm.questionType === 4">
+            <div  v-for="(item, index) of addForm.questionAnswerRightedList" class="question-input" :key="'div:' + index">
+              <el-input v-model="addForm.questionAnswerRightedList[index]" style="width: 60%" :key="index"></el-input>
+              <el-button class="question-button" @click="addQuestionAnswerInput" :key="'add:' + index" type="primary" v-if="index + 1 === addForm.questionAnswerRightedList.length">增加</el-button>
               <el-button class="question-button" @click="deleteQuestionAnswerInput(index)" :key="'delete:' + index"  type="danger"  v-if="index !== 0">删除</el-button>
             </div>
-          </template>
         </el-form-item>
         <el-form-item label="解析" prop="questionAnalysis">
           <el-input type="textarea" :rows="2" v-model="addForm.questionAnalysis"></el-input>
@@ -159,11 +160,58 @@
     </el-dialog>
 
     <!-- 修改试题对话框 -->
-    <el-dialog title="编辑试题" :visible.sync="editDialogVisible" width="30%" @close="handleEditDialogClose">
+    <el-dialog title="编辑试题" :visible.sync="editDialogVisible" width="40%" @close="handleEditDialogClose">
       <!-- 对话框主题区域 -->
-      <el-form ref="editFormRef" :model="editForm" :rules="dialogFormRules" label-width="80px">
-        <el-form-item label="题干" prop="questionStem">
-          <el-input v-model="editForm.questionStem"></el-input>
+      <el-form ref="editFormRef" :model="editForm" :rules="dialogFormRules" label-width="110px">
+        <el-form-item label="试题类型" prop="questionType">
+          <el-select v-model="editForm.questionType" placeholder="请选择试题类型" size="small" @change="questionTypeChange">
+            <el-option :key="1" label="单选" :value="1"></el-option>
+            <el-option :key="2" label="多选" :value="2"></el-option>
+            <el-option :key="3" label="判断" :value="3"></el-option>
+            <el-option :key="4" label="填空" :value="4"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="试题难度" prop="questionDifficulty">
+          <el-select v-model="editForm.questionDifficulty" placeholder="请选择试题难度" size="small">
+            <el-option :key="1" label="初级" :value="1"></el-option>
+            <el-option :key="2" label="中级" :value="2"></el-option>
+            <el-option :key="3" label="高级" :value="3"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="试题分数" prop="questionPoint">
+          <el-input v-model="editForm.questionPoint"></el-input>
+        </el-form-item>
+        <el-form-item label="答案是否有序"  v-if="editForm.questionType === 4" prop="ordered">
+          <el-radio-group v-model="editForm.ordered">
+            <el-radio :label="1">是</el-radio>
+            <el-radio :label="0">否</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="试题题干" prop="questionStem">
+          <el-input  type="textarea" :rows="2" v-model="editForm.questionStem"></el-input>
+        </el-form-item>
+        <el-form-item label="试题选项" v-if="editForm.questionType === 1 || editForm.questionType === 2">
+          <el-input  placeholder="请输入选项内容" class="question-input" v-model="editForm.questionAnswerContentList[index]" v-for="(item, index) in choseOptions" :key="item">
+            <template slot="prepend">{{ item }}</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="试题答案" v-if="editForm.questionType === 1 || editForm.questionType === 2" >
+          <el-checkbox-group v-model="editForm.questionAnswerRightedList" :min="0" :max="editForm.questionType === 1 ? 1 : 4">
+            <el-checkbox v-for="(item, index) in choseOptions" :label="item" :key="index">{{item}}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="试题答案" v-if="editForm.questionType === 3" >
+          <el-radio-group v-model="editForm.questionAnswerRightedList[0]">
+            <el-radio :label="1">正确</el-radio>
+            <el-radio :label="0">错误</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="试题答案" v-if="editForm.questionType === 4">
+          <div  v-for="(item, index) of editForm.questionAnswerRightedList" class="question-input" :key="'div:' + index">
+            <el-input v-model="editForm.questionAnswerRightedList[index]" style="width: 60%" :key="index"></el-input>
+            <el-button class="question-button" @click="addQuestionAnswerInput" :key="'add:' + index" type="primary" v-if="index + 1 === editForm.questionAnswerRightedList.length">增加</el-button>
+            <el-button class="question-button" @click="deleteQuestionAnswerInput(index)" :key="'delete:' + index"  type="danger"  v-if="index !== 0">删除</el-button>
+          </div>
         </el-form-item>
         <el-form-item label="解析" prop="questionAnalysis">
           <el-input type="textarea" :rows="2" v-model="editForm.questionAnalysis"></el-input>
@@ -176,6 +224,56 @@
       </span>
     </el-dialog>
 
+    <!-- 预览试题对话框 -->
+    <el-dialog title="预览试题" :visible.sync="previewDialogVisible" width="50%">
+      <!-- 对话框主题区域 -->
+      <el-row>
+        <h3>{{ editForm.questionStem }} ({{editForm.questionPoint}}分)</h3>
+      </el-row>
+      <el-row v-if="editForm.questionType === 4">
+        正确答案：<el-tag  v-for="(item, index) in editForm.questionAnswerRightedList" :key="index">{{ item }}</el-tag>
+      </el-row>
+      <el-row v-if="editForm.questionType === 1 || editForm.questionType === 2">
+          <el-checkbox-group v-model="editForm.questionAnswerRightedList">
+            <el-checkbox v-for="(item, index) in editForm.questionAnswerContentList" :label="choseOptions[index]" :key="index" disabled>{{item}}</el-checkbox>
+          </el-checkbox-group>
+      </el-row>
+      <el-row v-if="editForm.questionType === 3">
+        <el-checkbox-group v-model="editForm.questionAnswerRightedList">
+          <el-checkbox  :label="'1'"  disabled>正确</el-checkbox>
+          <el-checkbox  :label="'0'"  disabled>错误</el-checkbox>
+        </el-checkbox-group>
+      </el-row>
+      <el-row class="analysis-row">
+        解析：<span class="analysis-span">{{ editForm.questionAnalysis }}</span>
+      </el-row>
+      <!-- 底部按钮区域 -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="previewDialogVisible = false">取 消</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 绑定试题库对话框 -->
+    <el-dialog title="绑定试题库" :visible.sync="bindDialogVisible" width="30%">
+      <!-- 对话框主题区域 -->
+      <el-form ref="bindFormRef" :model="bindForm" :rules="bindFormRules" label-width="110px">
+        <el-form-item label="试题库" prop="questionBankId">
+          <el-select v-model="bindForm.questionBankId" placeholder="请选择试题库">
+            <el-option
+              v-for="item in questionBankList"
+              :key="item.questionBankId"
+              :label="item.questionBankName"
+              :value="item.questionBankId"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <!-- 底部按钮区域 -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="bindDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="bindQuestionToQuestionBank">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -187,18 +285,19 @@ import {
   handleQuestionPage,
   handleQuestionQuery
 } from '@/apis/paper/question'
+import { handleQuestionBankList, handleAddQuestionToQuestionBank } from '@/apis/paper/questionBank'
 import { showElement } from '@/utils/show'
 import { getSuperAdmin } from '@/utils/storage'
 
 export default {
-  name: 'questionPage',
+  name: 'QuestionPage',
   data () {
     return {
       columnShow: true,
       // 是否是超级管理员
       superAdmin: 0,
-      // 试题库ID
-      questionBankId: undefined,
+      // 试题库列表
+      questionBankList: [],
       // 查询表单参数
       queryForm: {
         // 题干
@@ -229,9 +328,9 @@ export default {
         questionPoint: undefined,
         ordered: 0,
         // 答案选项内容
-        questionAnswerContent: [],
+        questionAnswerContentList: [],
         // 正确答案
-        questionAnswerRighted: []
+        questionAnswerRightedList: []
       },
       // 控制修改试题对话框的显示
       editDialogVisible: false,
@@ -239,7 +338,15 @@ export default {
       editForm: {
         questionId: undefined,
         questionStem: undefined,
-        questionAnalysis: undefined
+        questionAnalysis: undefined,
+        questionDifficulty: undefined,
+        questionType: undefined,
+        questionPoint: undefined,
+        ordered: undefined,
+        // 答案选项内容
+        questionAnswerContentList: [],
+        // 正确答案
+        questionAnswerRightedList: []
       },
       // 试题表单校验规则
       dialogFormRules: {
@@ -283,7 +390,7 @@ export default {
             trigger: 'blur'
           }
         ],
-        questionAnswerContent: [
+        questionAnswerContentList: [
           {
             type: 'array',
             required: true,
@@ -291,11 +398,30 @@ export default {
             trigger: 'blur'
           }
         ],
-        questionAnswerRighted: [
+        questionAnswerRightedList: [
           {
             type: 'array',
             required: true,
             message: '请选择正确答案',
+            trigger: 'blur'
+          }
+        ]
+      },
+      // 控制预览试题对话框的显示
+      previewDialogVisible: false,
+      // 控制绑定试题库对话框的显示
+      bindDialogVisible: false,
+      bindForm: {
+        questionBankId: undefined,
+        // 选中试题id集合
+        questionIdList: []
+      },
+      // 绑定试题库表单校验规则
+      bindFormRules: {
+        questionBankId: [
+          {
+            required: true,
+            message: '请选择试题类型',
             trigger: 'blur'
           }
         ]
@@ -346,10 +472,7 @@ export default {
     handleAddDialogClose () {
       // 清空字段
       this.$refs.addFormRef.resetFields()
-      // // 重置正确答案数组
-      // this.addForm.questionAnswerRighted = []
-      // // 重置选项内容数组
-      // this.addForm.questionAnswerContent = []
+      this.addForm.questionStem = undefined
     },
     // 展示添加试题对话框
     showAddDialog () {
@@ -382,6 +505,7 @@ export default {
     handleEditDialogClose () {
       // 清空字段
       this.$refs.editFormRef.resetFields()
+      this.editForm.questionStem = undefined
     },
     // 确定编辑试题
     editQuestion () {
@@ -421,25 +545,60 @@ export default {
     // 当添加试题时 试题类型发生改变
     questionTypeChange (questionType) {
       // 重置正确答案数组
-      this.addForm.questionAnswerRighted = []
+      this.addForm.questionAnswerRightedList = []
       // 重置选项内容数组
-      this.addForm.questionAnswerContent = []
+      this.addForm.questionAnswerContentList = []
       if (questionType === 4) {
-        this.addForm.questionAnswerRighted.push('')
+        this.addForm.questionAnswerRightedList.push('')
       }
     },
+    // 动态添加输入框
     addQuestionAnswerInput () {
-      this.addForm.questionAnswerRighted.push('')
+      this.addForm.questionAnswerRightedList.push('')
     },
+    //  动态删除输入框
     deleteQuestionAnswerInput (index) {
-      this.addForm.questionAnswerRighted.splice(index, 1)
+      this.addForm.questionAnswerRightedList.splice(index, 1)
     },
-    // 跳转试题页面
-    showQuestionView (questionId) {
-      this.$router.push({
-        path: 'questionPage',
-        query: {
-          id: questionId
+    // 展示预览试题对话框
+    async showPreviewDialog (questionId) {
+      const { data: res } = await handleQuestionQuery(questionId)
+      console.log(res)
+      if (res.status !== '2000') {
+        return this.$message.error(res.message)
+      }
+      // 查询出试题 在展示预览框
+      this.previewDialogVisible = true
+      this.editForm = res.data
+    },
+    // 首行复选框选中触发
+    handleSelectionChange (values) {
+      this.bindForm.questionIdList = []
+      values.some(val => {
+        this.bindForm.questionIdList.push(val.questionId)
+      })
+    },
+    // 点击展示试题库绑定对话框
+    async showQuestionBankBindDialog () {
+      if (this.bindForm.questionIdList.length === 0) {
+        return this.$message.error('请先选择试题')
+      }
+      const param = { superAdmin: this.superAdmin }
+      const { data: res } = await handleQuestionBankList(param)
+      if (res.status !== '2000') {
+        return this.$message.error(res.message)
+      }
+      this.questionBankList = res.data
+      this.bindDialogVisible = true
+    },
+    // 确定绑定试题至试题库
+    bindQuestionToQuestionBank () {
+      this.$refs.bindFormRef.validate(async valid => {
+        if (valid) {
+          const { data: res } = await handleAddQuestionToQuestionBank(this.bindForm)
+          if (res.status !== '2000') return this.$message.error(res.message)
+          this.$message.success(res.message)
+          this.bindDialogVisible = false
         }
       })
     }
@@ -448,16 +607,26 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.el-tree {
-  border: solid 1px #e7e1cd;
-}
 .el-select {
   width: 100%;
+}
+.el-tag {
+  margin-right: 10px;
+}
+.el-checkbox {
+  display: block;
+  color: #9a6e3a;
 }
 .question-input {
   margin-bottom: 10px;
 }
 .question-button {
   margin-left: 10px;
+}
+.analysis-row {
+  margin-top: 20px;
+}
+.analysis-span {
+  font-weight: bold;
 }
 </style>

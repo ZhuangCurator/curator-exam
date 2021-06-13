@@ -119,17 +119,23 @@ public class QuestionBankServiceImpl implements QuestionBankService {
         String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
         String parentAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID);
         questionIdList.forEach(questionId -> {
-            QuestionDTO questionDTO = questionService.getQuestion(questionId).getData();
-            if(Help.isNotEmpty(questionDTO)) {
-                BankQuestion bankQuestion = new BankQuestion();
-                bankQuestion.setQuestionBankId(info.getQuestionBankId());
-                bankQuestion.setQuestionId(questionId);
-                bankQuestion.setQuestionType(questionDTO.getQuestionType());
-                bankQuestion.setQuestionPoint(questionDTO.getQuestionPoint());
-                bankQuestion.setQuestionDifficulty(questionDTO.getQuestionDifficulty());
-                bankQuestion.setCreateAccountId(createAccountId);
-                bankQuestion.setParentAccountId(parentAccountId);
-                bankQuestionMapper.insert(bankQuestion);
+            QueryWrapper<BankQuestion> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("question_id", questionId)
+                    .eq("question_bank_id", info.getQuestionBankId());
+            Integer count = bankQuestionMapper.selectCount(queryWrapper);
+            if(count == null || count == 0) {
+                QuestionDTO questionDTO = questionService.getQuestion(questionId).getData();
+                if (Help.isNotEmpty(questionDTO)) {
+                    BankQuestion bankQuestion = new BankQuestion();
+                    bankQuestion.setQuestionBankId(info.getQuestionBankId());
+                    bankQuestion.setQuestionId(questionId);
+                    bankQuestion.setQuestionType(questionDTO.getQuestionType());
+                    bankQuestion.setQuestionPoint(questionDTO.getQuestionPoint());
+                    bankQuestion.setQuestionDifficulty(questionDTO.getQuestionDifficulty());
+                    bankQuestion.setCreateAccountId(createAccountId);
+                    bankQuestion.setParentAccountId(parentAccountId);
+                    bankQuestionMapper.insert(bankQuestion);
+                }
             }
         });
         return ResultResponse.builder().success("试题成功添加至试题库中!").build();

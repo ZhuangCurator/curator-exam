@@ -90,6 +90,16 @@ public class QuestionDTO implements Serializable {
     private LocalDateTime updateTime;
 
     /**
+     * 答案选项内容
+     */
+    private List<String> questionAnswerContentList;
+
+    /**
+     * 正确答案
+     */
+    private List<String> questionAnswerRightedList;
+
+    /**
      * 试题答案集合
      */
     private List<QuestionAnswerDTO> questionAnswerDTOList;

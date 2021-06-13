@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -99,85 +98,11 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public ResultResponse<QuestionDTO> saveQuestion(QuestionInfo info) {
-        // if (Help.isEmpty(info.getQuestionAnswerInfoList())) {
-        //     return ResultResponse.<QuestionDTO>builder().failure("试题答案不能为空").build();
-        // }
         Question entity = convertInfo(info);
         entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
         entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
         questionMapper.insert(entity);
-        // 保存答案
-        if(info.getQuestionType() == QuestionTypeEnum.SINGLE_CHOICE.getStatus() || info.getQuestionType() == QuestionTypeEnum.MULTIPLE_CHOICE.getStatus()) {
-            // 单选题或多选题
-            List<String> questionAnswerContent = info.getQuestionAnswerContent();
-            for (int i = 0; i < questionAnswerContent.size(); i++) {
-                QuestionAnswer answerEntity = new QuestionAnswer();
-                answerEntity.setContent(questionAnswerContent.get(i));
-                answerEntity.setQuestionAnswerOrder(i + 1);
-                answerEntity.setQuestionId(entity.getQuestionId());
-                // 将序号转为大写字母
-                String answer = String.valueOf((char) (i + 65));
-                if(info.getQuestionAnswerRighted().contains(answer)) {
-                    // 正确答案设置分数
-                    answerEntity.setRighted(1);
-                    // 四舍五入,保留两位小数
-                    BigDecimal answerPoint = new BigDecimal(entity.getQuestionPoint()).divide(new BigDecimal(info.getQuestionAnswerRighted().size()), 2, BigDecimal.ROUND_HALF_UP);
-                    answerEntity.setQuestionPoint(answerPoint);
-                }
-                answerEntity.setCreateAccountId(entity.getCreateAccountId());
-                answerEntity.setParentAccountId(entity.getParentAccountId());
-                questionAnswerMapper.insert(answerEntity);
-            }
-        } else if(info.getQuestionType() == QuestionTypeEnum.JUDGMENT.getStatus()) {
-            // 判断题
-            int answer = Integer.parseInt(info.getQuestionAnswerRighted().get(0));
-            for (int i = 0; i < 2; i++) {
-                QuestionAnswer answerEntity = new QuestionAnswer();
-                answerEntity.setContent(i == 1 ? "正确" : "错误");
-                answerEntity.setQuestionAnswerOrder(i + 1);
-                answerEntity.setQuestionId(entity.getQuestionId());
-                if(answer == i) {
-                    // 正确答案设置分数
-                    answerEntity.setRighted(1);
-                    answerEntity.setQuestionPoint(new BigDecimal(entity.getQuestionPoint()));
-                }
-                answerEntity.setCreateAccountId(entity.getCreateAccountId());
-                answerEntity.setParentAccountId(entity.getParentAccountId());
-                questionAnswerMapper.insert(answerEntity);
-            }
-        } else if(info.getQuestionType() == QuestionTypeEnum.FILL_BLANK.getStatus()) {
-            List<String> questionAnswerRighted = info.getQuestionAnswerRighted();
-            BigDecimal answerPoint = new BigDecimal(entity.getQuestionPoint()).divide(new BigDecimal(info.getQuestionAnswerRighted().size()), 2, BigDecimal.ROUND_HALF_UP);
-            for (int i = 0; i < questionAnswerRighted.size(); i++) {
-                QuestionAnswer answerEntity = new QuestionAnswer();
-                answerEntity.setContent(questionAnswerRighted.get(i));
-                answerEntity.setQuestionAnswerOrder(i + 1);
-                answerEntity.setQuestionId(entity.getQuestionId());
-                answerEntity.setRighted(1);
-                answerEntity.setQuestionPoint(answerPoint);
-                answerEntity.setCreateAccountId(entity.getCreateAccountId());
-                answerEntity.setParentAccountId(entity.getParentAccountId());
-                questionAnswerMapper.insert(answerEntity);
-            }
-        }
-        // AtomicInteger order = new AtomicInteger(0);
-        // List<QuestionAnswerInfo> questionAnswerInfoList = info.getQuestionAnswerInfoList();
-        // // 正确答案个数
-        // long size = questionAnswerInfoList.stream().filter(questionAnswerInfo -> questionAnswerInfo.getRighted() == 1).count();
-        // // 四舍五入,保留两位小数
-        // BigDecimal answerPoint = new BigDecimal(entity.getQuestionPoint()).divide(new BigDecimal(size), 2, BigDecimal.ROUND_HALF_UP);
-        // questionAnswerInfoList.forEach(questionAnswerInfo -> {
-        //     QuestionAnswer answerEntity = convertInfo(questionAnswerInfo);
-        //     answerEntity.setQuestionAnswerOrder(order.incrementAndGet());
-        //     answerEntity.setQuestionId(entity.getQuestionId());
-        //     if(questionAnswerInfo.getRighted() == 1) {
-        //         // 正确答案设置分数
-        //         answerEntity.setQuestionPoint(answerPoint);
-        //     }
-        //     answerEntity.setCreateAccountId(entity.getCreateAccountId());
-        //     answerEntity.setParentAccountId(entity.getParentAccountId());
-        //     questionAnswerMapper.insert(answerEntity);
-        // });
+        saveQuestionAnswer(entity.getQuestionId(), info.getQuestionAnswerContentList(), info.getQuestionAnswerRightedList());
         return ResultResponse.<QuestionDTO>builder().success("试题添加成功").data(convertEntity(entity)).build();
     }
 
@@ -185,20 +110,8 @@ public class QuestionServiceImpl implements QuestionService {
     public ResultResponse<QuestionDTO> putQuestion(QuestionInfo info) {
         Question entity = convertInfo(info);
         questionMapper.update(entity, new UpdateWrapper<Question>().eq("question_id", info.getQuestionId()));
-        List<QuestionAnswerInfo> questionAnswerInfoList = info.getQuestionAnswerInfoList();
-        // 正确答案个数
-        long size = questionAnswerInfoList.stream().filter(questionAnswerInfo -> questionAnswerInfo.getRighted() == 1).count();
-        // 四舍五入,保留两位小数
-        BigDecimal answerPoint = new BigDecimal(entity.getQuestionPoint()).divide(new BigDecimal(size), 2, BigDecimal.ROUND_HALF_UP);
-        questionAnswerInfoList.forEach(questionAnswerInfo -> {
-            QuestionAnswer answerEntity = convertInfo(questionAnswerInfo);
-            answerEntity.setQuestionPoint(new BigDecimal(0));
-            if(answerEntity.getRighted() == 1) {
-                // 正确答案设置分数
-                answerEntity.setQuestionPoint(answerPoint);
-            }
-            questionAnswerMapper.update(answerEntity, new UpdateWrapper<QuestionAnswer>().eq("question_answer_id", answerEntity.getQuestionAnswerId()));
-        });
+        questionMapper.deleteQuestionAnswer(info.getQuestionId());
+        saveQuestionAnswer(info.getQuestionId(), info.getQuestionAnswerContentList(), info.getQuestionAnswerRightedList());
         return ResultResponse.<QuestionDTO>builder().success("试题更新成功").data(convertEntity(entity)).build();
     }
 
@@ -262,6 +175,69 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     /**
+     * 保存试题答案
+     *
+     * @param questionId 试题id
+     * @param questionAnswerContentList 选项内容集合
+     * @param questionAnswerRightedList 正确答案集合
+     */
+    private void saveQuestionAnswer(String questionId, List<String> questionAnswerContentList, List<String> questionAnswerRightedList) {
+        Question entity = questionMapper.selectById(questionId);
+        // 保存答案
+        if(entity.getQuestionType() == QuestionTypeEnum.SINGLE_CHOICE.getStatus() || entity.getQuestionType() == QuestionTypeEnum.MULTIPLE_CHOICE.getStatus()) {
+            // 单选题或多选题
+            for (int i = 0; i < questionAnswerContentList.size(); i++) {
+                QuestionAnswer answerEntity = new QuestionAnswer();
+                answerEntity.setContent(questionAnswerContentList.get(i));
+                answerEntity.setQuestionAnswerOrder(i + 1);
+                answerEntity.setQuestionId(questionId);
+                // 将序号转为大写字母
+                String answer = String.valueOf((char) (i + 65));
+                if(questionAnswerRightedList.contains(answer)) {
+                    // 正确答案设置分数
+                    answerEntity.setRighted(1);
+                    // 四舍五入,保留两位小数
+                    BigDecimal answerPoint = new BigDecimal(entity.getQuestionPoint()).divide(new BigDecimal(questionAnswerRightedList.size()), 2, BigDecimal.ROUND_HALF_UP);
+                    answerEntity.setQuestionPoint(answerPoint);
+                }
+                answerEntity.setCreateAccountId(entity.getCreateAccountId());
+                answerEntity.setParentAccountId(entity.getParentAccountId());
+                questionAnswerMapper.insert(answerEntity);
+            }
+        } else if(entity.getQuestionType() == QuestionTypeEnum.JUDGMENT.getStatus()) {
+            // 判断题
+            int answer = Integer.parseInt(questionAnswerRightedList.get(0));
+            for (int i = 0; i < 2; i++) {
+                QuestionAnswer answerEntity = new QuestionAnswer();
+                answerEntity.setContent(i == 1 ? "正确" : "错误");
+                answerEntity.setQuestionAnswerOrder(i + 1);
+                answerEntity.setQuestionId(questionId);
+                if(answer == i) {
+                    // 正确答案设置分数
+                    answerEntity.setRighted(1);
+                    answerEntity.setQuestionPoint(new BigDecimal(entity.getQuestionPoint()));
+                }
+                answerEntity.setCreateAccountId(entity.getCreateAccountId());
+                answerEntity.setParentAccountId(entity.getParentAccountId());
+                questionAnswerMapper.insert(answerEntity);
+            }
+        } else if(entity.getQuestionType() == QuestionTypeEnum.FILL_BLANK.getStatus()) {
+            BigDecimal answerPoint = new BigDecimal(entity.getQuestionPoint()).divide(new BigDecimal(questionAnswerRightedList.size()), 2, BigDecimal.ROUND_HALF_UP);
+            for (int i = 0; i < questionAnswerRightedList.size(); i++) {
+                QuestionAnswer answerEntity = new QuestionAnswer();
+                answerEntity.setContent(questionAnswerRightedList.get(i));
+                answerEntity.setQuestionAnswerOrder(i + 1);
+                answerEntity.setQuestionId(questionId);
+                answerEntity.setRighted(1);
+                answerEntity.setQuestionPoint(answerPoint);
+                answerEntity.setCreateAccountId(entity.getCreateAccountId());
+                answerEntity.setParentAccountId(entity.getParentAccountId());
+                questionAnswerMapper.insert(answerEntity);
+            }
+        }
+    }
+
+    /**
      * 将 数据库对象 转为 数据传输对象
      *
      * @param entity 数据库信息
@@ -274,10 +250,29 @@ public class QuestionServiceImpl implements QuestionService {
             QueryWrapper<QuestionAnswer> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("question_id", entity.getQuestionId());
             List<QuestionAnswer> list = questionAnswerMapper.selectList(queryWrapper);
-            if(Help.isNotEmpty(list)) {
-                List<QuestionAnswerDTO> resultList = list.parallelStream().map(this::convertEntity).collect(Collectors.toList());
-                target.setQuestionAnswerDTOList(resultList);
+            if(entity.getQuestionType() == QuestionTypeEnum.SINGLE_CHOICE.getStatus() || entity.getQuestionType() == QuestionTypeEnum.MULTIPLE_CHOICE.getStatus()) {
+                List<String> contentList = new ArrayList<>();
+                List<String> answerList = new ArrayList<>();
+                for (int i = 0; i < list.size(); i++) {
+                    contentList.add(list.get(i).getContent());
+                    if(list.get(i).getRighted() == 1) {
+                        String answer = String.valueOf((char) (i + 65));
+                        answerList.add(answer);
+                    }
+                }
+                target.setQuestionAnswerContentList(contentList);
+                target.setQuestionAnswerRightedList(answerList);
+            } else if (entity.getQuestionType() == QuestionTypeEnum.JUDGMENT.getStatus()) {
+                QuestionAnswer right = list.stream().filter(questionAnswer -> questionAnswer.getRighted() == 1).findFirst().get();
+                String answer = "正确".equals(right.getContent()) ? "1" : "0";
+                target.setQuestionAnswerRightedList(Collections.singletonList(answer));
+            } else if(entity.getQuestionType() == QuestionTypeEnum.FILL_BLANK.getStatus()) {
+                target.setQuestionAnswerRightedList(list.stream().map(QuestionAnswer::getContent).collect(Collectors.toList()));
             }
+//            if(Help.isNotEmpty(list)) {
+//                List<QuestionAnswerDTO> resultList = list.parallelStream().map(this::convertEntity).collect(Collectors.toList());
+//                target.setQuestionAnswerDTOList(resultList);
+//            }
         }
         return target;
     }

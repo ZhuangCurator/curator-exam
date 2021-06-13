@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2585167 */
-  src: url('iconfont.woff2?t=1623223637263') format('woff2'),
-       url('iconfont.woff?t=1623223637263') format('woff'),
-       url('iconfont.ttf?t=1623223637263') format('truetype');
+  src: url('iconfont.woff2?t=1623493945751') format('woff2'),
+       url('iconfont.woff?t=1623493945751') format('woff'),
+       url('iconfont.ttf?t=1623493945751') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,18 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-rule:before {
+  content: "\e657";
+}
+
+.icon-questionBank:before {
+  content: "\e60d";
+}
+
+.icon-question:before {
+  content: "\e684";
 }
 
 .icon-paper:before {

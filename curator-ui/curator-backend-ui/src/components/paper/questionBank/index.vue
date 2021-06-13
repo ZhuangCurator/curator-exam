@@ -286,7 +286,7 @@ export default {
     // 跳转试题页面
     showQuestionView (questionBankId) {
       this.$router.push({
-        path: 'questionPage',
+        path: 'bankQuestionPage',
         query: {
           id: questionBankId
         }

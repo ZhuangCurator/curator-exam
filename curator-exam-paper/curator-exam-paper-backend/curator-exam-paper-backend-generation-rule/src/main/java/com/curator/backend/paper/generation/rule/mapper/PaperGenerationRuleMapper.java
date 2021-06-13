@@ -11,4 +11,11 @@ import com.curator.backend.paper.generation.rule.entity.PaperGenerationRule;
  */
 public interface PaperGenerationRuleMapper extends BaseMapper<PaperGenerationRule> {
 
+    /**
+     * 查询试题库名称
+     *
+     * @param questionBankId 试题库id
+     * @return
+     */
+    String selectQuestionBankName(String questionBankId);
 }

@@ -27,3 +27,18 @@ export function handleAddQuestionBank (params) {
 export function handleDeleteQuestionBank (params) {
   return deleted('/examPaperBackend/questionBank/' + params)
 }
+
+// 获取试题库试题分页数据
+export function handleBankQuestionPage (params) {
+  return get('/examPaperBackend/questionBank/page/question', params)
+}
+
+// 删除试题库中试题
+export function handleDeleteBankQuestion (params) {
+  return post('/examPaperBackend/questionBank/remove/question', params)
+}
+
+// 添加试题至试题库
+export function handleAddQuestionToQuestionBank (params) {
+  return post('/examPaperBackend/questionBank/bind/question', params)
+}

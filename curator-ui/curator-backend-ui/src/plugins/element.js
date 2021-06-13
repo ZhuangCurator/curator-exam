@@ -38,7 +38,8 @@ import {
   Avatar,
   CheckboxGroup,
   CheckboxButton,
-  Checkbox
+  Checkbox,
+  Tag
 } from 'element-ui'
 
 Vue.use(Button)
@@ -78,6 +79,7 @@ Vue.use(Avatar)
 Vue.use(CheckboxGroup)
 Vue.use(CheckboxButton)
 Vue.use(Checkbox)
+Vue.use(Tag)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

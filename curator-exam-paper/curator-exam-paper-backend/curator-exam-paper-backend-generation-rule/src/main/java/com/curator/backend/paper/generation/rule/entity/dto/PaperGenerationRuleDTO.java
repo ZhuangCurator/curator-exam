@@ -26,6 +26,11 @@ public class PaperGenerationRuleDTO implements Serializable {
     private String questionBankId;
 
     /**
+     * 试题库名称
+     */
+    private String questionBankName;
+
+    /**
      * 规则名称
      */
     private String generationRuleName;

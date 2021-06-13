@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5435393",
+      "name": "规则",
+      "font_class": "rule",
+      "unicode": "e657",
+      "unicode_decimal": 58967
+    },
+    {
+      "icon_id": "5996263",
+      "name": "试题库",
+      "font_class": "questionBank",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "12872432",
+      "name": "试题",
+      "font_class": "question",
+      "unicode": "e684",
+      "unicode_decimal": 59012
+    },
+    {
       "icon_id": "4682680",
       "name": "试卷",
       "font_class": "paper",
