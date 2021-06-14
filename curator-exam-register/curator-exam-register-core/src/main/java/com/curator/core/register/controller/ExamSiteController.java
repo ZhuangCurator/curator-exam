@@ -1,8 +1,10 @@
 package com.curator.core.register.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.curator.api.register.pojo.dto.ExamSiteDTO;
 import com.curator.api.register.pojo.vo.search.ExamSiteSearch;
 import com.curator.common.annotation.Log;
+import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.core.register.service.ExamSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +28,14 @@ public class ExamSiteController {
     private ExamSiteService examSiteService;
 
     /**
-     * 考点列表查询
+     * 考点分页查询
      *
      * @param search 查询条件
      * @return
      */
-    @GetMapping("/list")
-    @Log(controllerName = "ExamSiteController", remark = "考点列表查询")
-    ResultResponse<List<ExamSiteDTO>> listWithExamSite(ExamSiteSearch search) {
-        return examSiteService.listWithExamSite(search);
+    @GetMapping("/page")
+    @Log(controllerName = "ExamSiteController", remark = "考点分页查询")
+    ResultResponse<PageResult<ExamSiteDTO>> pageWithExamSite(ExamSiteSearch search) {
+        return examSiteService.pageWithExamSite(search);
     }
 }

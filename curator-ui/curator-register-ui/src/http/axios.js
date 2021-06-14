@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-axios.defaults.baseURL = 'http://localhost:18010'
+axios.defaults.baseURL = 'http://localhost:9010'
 
 // 设置请求超时时间
 axios.defaults.timeout = 10000

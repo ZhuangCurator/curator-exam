@@ -109,7 +109,7 @@ public class ExamCategoryServiceImpl implements ExamCategoryService {
     }
 
     /**
-     * 构件查询wrapper
+     * 构建查询wrapper
      *
      * @param wrapper
      */

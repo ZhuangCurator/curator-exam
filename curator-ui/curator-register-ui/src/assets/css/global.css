@@ -5,16 +5,9 @@ html, body, #app {
     padding: 0;
 }
 
-/*面包屑导航全局样式*/
-.el-breadcrumb {
-    margin-bottom: 15px;
-    font-size: 13px;
-}
-
 /*卡片视图全局样式*/
-.el-card {
-    /*覆盖卡片视图阴影特效*/
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
+.el-card{
+    min-height: 400px;
 }
 
 .el-table {
@@ -34,20 +27,4 @@ label {
 /* 解决表头和内容列不对齐 */
 .el-table th.gutter {
     display: table-cell !important;
-
 }
-
-/* 表单展开栏 数据行样式 */
-.table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 100%;
-}
-
-/* 表单展开栏 数据行label样式 */
-.table-expand label {
-    width: 70px;
-    color: #99a9bf;
-}
-
-

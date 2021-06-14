@@ -51,6 +51,11 @@ public class ExamSite implements Serializable {
     private String district;
 
     /**
+     * 考点地址
+     */
+    private String address;
+
+    /**
      * 创建账户 id
      */
     private String createAccountId;

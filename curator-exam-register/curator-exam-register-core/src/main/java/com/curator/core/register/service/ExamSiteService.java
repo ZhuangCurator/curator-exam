@@ -2,9 +2,8 @@ package com.curator.core.register.service;
 
 import com.curator.api.register.pojo.dto.ExamSiteDTO;
 import com.curator.api.register.pojo.vo.search.ExamSiteSearch;
+import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
-
-import java.util.List;
 
 /**
  * 考点 服务类
@@ -15,10 +14,10 @@ import java.util.List;
 public interface ExamSiteService {
 
     /**
-     * 考点列表查询
+     * 考点分页查询
      *
      * @param search 查询条件
      * @return
      */
-    ResultResponse<List<ExamSiteDTO>> listWithExamSite(ExamSiteSearch search);
+    ResultResponse<PageResult<ExamSiteDTO>> pageWithExamSite(ExamSiteSearch search);
 }

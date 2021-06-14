@@ -42,6 +42,11 @@
             <artifactId>curator-exam-register-backend-exam-subject</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.curator</groupId>
+            <artifactId>curator-exam-register-backend-exam-notice</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
