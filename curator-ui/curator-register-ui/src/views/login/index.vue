@@ -31,7 +31,27 @@
         </el-tab-pane>
         <el-tab-pane name="registerForm">
           <span slot="label"><i class="icon-slot el-icon-collection"></i>用户注册</span>
-          用户注册
+          <div class="register_div">
+            <!-- 对话框主题区域 -->
+            <el-form ref="addFormRef" :model="addForm" :rules="addFormRules" label-width="80px">
+              <el-form-item label="账户名" prop="accountName">
+                <el-input v-model="addForm.accountName"></el-input>
+              </el-form-item>
+              <el-form-item label="身份证号" prop="idCard">
+                <el-input v-model="addForm.idCard"></el-input>
+              </el-form-item>
+              <el-form-item label="邮箱" prop="email">
+                <el-input v-model="addForm.email"></el-input>
+              </el-form-item>
+              <el-form-item label="电话" prop="phone">
+                <el-input v-model="addForm.phone"></el-input>
+              </el-form-item>
+              <!-- 按钮区域  -->
+              <el-form-item class="btn_item">
+                <el-button type="primary" @click="register">确定</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -44,6 +64,23 @@ import { getImageValidateCode, handleLogin } from '@/apis/auth/auth'
 export default {
   name: 'Login',
   data () {
+    // 自定义邮箱校验规则
+    const checkEmail = (rule, value, callback) => {
+      const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
+      if (regEmail.test(value)) {
+        return callback()
+      }
+      callback(new Error('请输入合法的邮箱账号'))
+    }
+
+    // 自定义手机号码校验规则
+    const checkPhone = (rule, value, callback) => {
+      const regEmail = /^1[3-9]\d{9}$/
+      if (regEmail.test(value)) {
+        return callback()
+      }
+      callback(new Error('请输入合法的手机号'))
+    }
     return {
       activeName: 'loginForm',
       // 登录表单数据绑定对象
@@ -77,7 +114,53 @@ export default {
         ]
       },
       validateCodeImage: '',
-      uuid: ''
+      uuid: '',
+      // 添加账户表单数据
+      addForm: {
+        accountName: undefined,
+        email: undefined,
+        phone: undefined,
+        idCard: undefined
+      },
+      // 添加账户表单校验规则
+      addFormRules: {
+        accountName: [
+          {
+            required: true,
+            message: '请输入账户名',
+            trigger: 'blur'
+          }
+        ],
+        email: [
+          {
+            required: true,
+            message: '请输入邮箱帐号',
+            trigger: 'blur'
+          },
+          {
+            validator: checkEmail,
+            trigger: 'blur'
+          }
+        ],
+        phone: [
+          {
+            required: true,
+            message: '请输入联系电话',
+            trigger: 'blur'
+          },
+          {
+            validator: checkPhone,
+            trigger: 'blur'
+          }
+        ],
+        idCard: [
+          {
+            required: true,
+            message: '请输入身份证号',
+            trigger: 'blur'
+          }
+        ]
+      }
     }
   },
   methods: {
@@ -114,6 +197,22 @@ export default {
     // 刷新图片验证码
     refreshValidateCode () {
       this.getValidateCodeImage()
+    },
+    // 点击确定按钮，发起注册请求
+    register () {
+      // 首先进行表单的预验证
+      this.$refs.addFormRef.validate(async valid => {
+        if (valid) {
+          const { data: res } = await handleLogin(this.addForm)
+          if (res.status !== '2000') {
+            this.$message.error(res.message)
+          } else {
+            // 注册成功 跳转登录标签
+            this.$message.success(res.message)
+            this.activeName = 'loginForm'
+          }
+        }
+      })
     }
   },
   created () {

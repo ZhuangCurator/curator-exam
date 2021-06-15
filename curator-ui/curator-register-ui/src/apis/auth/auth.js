@@ -29,3 +29,8 @@ export function handleMobileLogin (params) {
 export function handleLoginAccountQuery () {
   return get('/examAuthCore/loginAccount')
 }
+
+// 普通账户注册
+export function handleRegister (params) {
+  return post('/examInfoCore/infoAccount/register', params)
+}

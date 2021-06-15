@@ -227,12 +227,6 @@ export default {
             required: true,
             message: '请输入账户名',
             trigger: 'blur'
-          },
-          {
-            min: 3,
-            max: 20,
-            message: '账户名长度在3~20字符之间',
-            trigger: 'blur'
           }
         ],
         email: [
