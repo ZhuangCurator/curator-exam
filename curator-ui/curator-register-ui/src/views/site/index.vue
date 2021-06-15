@@ -28,9 +28,7 @@
         <el-table-column label="区县" prop="districtName" align="center"></el-table-column>
         <el-table-column label="地址" prop="address" align="center"></el-table-column>
         <el-table-column label="操作" width="120px;" align="center">
-          <template slot-scope="scope">
-            <el-button type="success" icon="el-icon-setting" size="mini" @click="showExamSitePage(scope.row.examSubjectId)">报名</el-button>
-          </template>
+            <el-button type="success" icon="el-icon-setting" size="mini" @click="handleRegister()">报名</el-button>
         </el-table-column>
       </el-table>
       <!-- 分页区域 -->
@@ -90,6 +88,17 @@ export default {
     handleCurrentChange (newCurrent) {
       this.queryForm.current = newCurrent
       this.getExamSitePage()
+    },
+    // 用户报名
+    handleRegister () {
+      if (this.$store.state.accountId === '') {
+        // 没有登录则跳转到登录页
+        this.$router.push({
+          path: 'login'
+        })
+      } else {
+        console.log('报名了')
+      }
     }
   },
   mounted () {
