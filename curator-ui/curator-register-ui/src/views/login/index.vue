@@ -8,7 +8,7 @@
             <el-form class="login_item" ref="loginFormRef" :model="loginForm" :rules="loginFormRules">
               <!-- 账户名 -->
               <el-form-item prop="accountName">
-                <el-input v-model="loginForm.accountName" placeholder="请输入账户名" prefix-icon="iconfont icon-user"></el-input>
+                <el-input v-model="loginForm.accountName" placeholder="请输入姓名" prefix-icon="iconfont icon-user"></el-input>
               </el-form-item>
               <!-- 密码 -->
               <el-form-item prop="accountPassword">
@@ -34,7 +34,7 @@
           <div class="register_div">
             <!-- 对话框主题区域 -->
             <el-form ref="addFormRef" :model="addForm" :rules="addFormRules" label-width="80px">
-              <el-form-item label="账户名" prop="accountName">
+              <el-form-item label="姓名" prop="accountName">
                 <el-input v-model="addForm.accountName"></el-input>
               </el-form-item>
               <el-form-item label="身份证号" prop="idCard">
@@ -59,11 +59,19 @@
 </template>
 
 <script>
-import { getImageValidateCode, handleLogin } from '@/apis/auth/auth'
+import { getImageValidateCode, handleLogin, handleRegister } from '@/apis/auth/auth'
 
 export default {
   name: 'Login',
   data () {
+    // 自定义邮箱校验规则
+    const checkIdCard = (rule, value, callback) => {
+      const regIdCard = /^[1-9]\d{5}(18|19|20|(3\d))\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
+      if (regIdCard.test(value)) {
+        return callback()
+      }
+      callback(new Error('请输入合法的身份证号'))
+    }
     // 自定义邮箱校验规则
     const checkEmail = (rule, value, callback) => {
       const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
@@ -85,7 +93,7 @@ export default {
       activeName: 'loginForm',
       // 登录表单数据绑定对象
       loginForm: {
-        accountName: 'SUPER_ADMIN',
+        accountName: '',
         accountPassword: '123456',
         captcha: ''
       },
@@ -127,7 +135,7 @@ export default {
         accountName: [
           {
             required: true,
-            message: '请输入账户名',
+            message: '请输入姓名',
             trigger: 'blur'
           }
         ],
@@ -158,6 +166,10 @@ export default {
             required: true,
             message: '请输入身份证号',
             trigger: 'blur'
+          },
+          {
+            validator: checkIdCard,
+            trigger: 'blur'
           }
         ]
       }
@@ -177,11 +189,17 @@ export default {
             this.$message.error(res.message)
           } else {
             this.$message.success(res.message)
-            // setToken(res.data.accessToken)
-            // setAccountName(res.data.userName)
-            // setAvatar(res.data.avatar)
-            // setPermissions(JSON.stringify(res.data.permissions))
-            // await this.$router.push('site')
+            // 保存token
+            this.$store.commit('saveToken', res.data.accessToken)
+            // 查询登录账户信息
+            await this.$store.dispatch('queryLoginAccount')
+            if (!this.$route.query.redirect) {
+              this.$store.commit('setActiveMenu', 'subject')
+            }
+            // 则跳转至进入登录页前的路由
+            await this.$router.push({
+              path: this.$route.query.redirect ? this.$route.query.redirect : 'subject'
+            })
           }
         }
       })
@@ -203,7 +221,7 @@ export default {
       // 首先进行表单的预验证
       this.$refs.addFormRef.validate(async valid => {
         if (valid) {
-          const { data: res } = await handleLogin(this.addForm)
+          const { data: res } = await handleRegister(this.addForm)
           if (res.status !== '2000') {
             this.$message.error(res.message)
           } else {

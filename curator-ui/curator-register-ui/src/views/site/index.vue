@@ -28,7 +28,9 @@
         <el-table-column label="区县" prop="districtName" align="center"></el-table-column>
         <el-table-column label="地址" prop="address" align="center"></el-table-column>
         <el-table-column label="操作" width="120px;" align="center">
-            <el-button type="success" icon="el-icon-setting" size="mini" @click="handleRegister()">报名</el-button>
+          <template slot-scope="scope">
+            <el-button type="success" icon="el-icon-setting" size="mini" @click="handleAccountRegister(scope.row.examSiteId)">报名</el-button>
+          </template>
         </el-table-column>
       </el-table>
       <!-- 分页区域 -->
@@ -49,10 +51,13 @@
 import {
   handleExamSitePage
 } from '@/apis/examSite/examSite'
+import { handleAccountRegister } from '@/apis/register'
 export default {
   name: 'ExamSitePage',
   data () {
     return {
+      examCategoryId: undefined,
+      examSubjectId: undefined,
       // 查询表单参数
       queryForm: {
         // 考试科目id
@@ -90,19 +95,48 @@ export default {
       this.getExamSitePage()
     },
     // 用户报名
-    handleRegister () {
+    handleAccountRegister (examSiteId) {
       if (this.$store.state.accountId === '') {
         // 没有登录则跳转到登录页
         this.$router.push({
-          path: 'login'
+          path: 'login',
+          query: { redirect: this.$router.currentRoute.fullPath }
         })
       } else {
-        console.log('报名了')
+        this.$confirm('是否确认报名该考点?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          const param = {
+            examCategoryId: this.examCategoryId,
+            examSubjectId: this.examSubjectId,
+            examSiteId: examSiteId,
+            accountId: this.$store.state.accountId,
+            accountName: this.$store.state.accountName
+          }
+          const { data: res } = await handleAccountRegister(param)
+          if (res.status !== '2000') {
+            return this.$message.error(res.message)
+          }
+          this.$message({
+            type: 'success',
+            message: res.message
+          })
+          // await this.getExamSubjectPage()
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消报名'
+          })
+        })
       }
     }
   },
   mounted () {
-    this.queryForm.examSubjectId = this.$route.query.id
+    this.examSubjectId = this.$route.query.s
+    this.examCategoryId = this.$route.query.c
+    this.queryForm.examSubjectId = this.$route.query.s
     this.getExamSitePage()
   }
 }

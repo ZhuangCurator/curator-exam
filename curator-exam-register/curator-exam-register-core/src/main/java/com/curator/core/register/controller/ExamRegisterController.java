@@ -1,14 +1,14 @@
 package com.curator.core.register.controller;
 
+import com.curator.api.register.pojo.dto.ExamRegisterInfoDTO;
 import com.curator.api.register.pojo.vo.info.ExamRegisterInfoInfo;
+import com.curator.api.register.pojo.vo.search.ExamRegisterInfoSearch;
 import com.curator.common.annotation.Log;
+import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.core.register.service.ExamRegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 考生报名信息 前端控制器
@@ -33,5 +33,17 @@ public class ExamRegisterController {
     @Log(controllerName = "ExamRegisterController", remark = "考生报名")
     ResultResponse<String> accountRegister(@RequestBody ExamRegisterInfoInfo info) {
         return examRegisterService.accountRegister(info);
+    }
+
+    /**
+     * 个人报名信息
+     *
+     * @param search 分页条件
+     * @return
+     */
+    @GetMapping("/pageWithRegisterInfo")
+    @Log(controllerName = "ExamRegisterController", remark = "个人报名信息")
+    ResultResponse<PageResult<ExamRegisterInfoDTO>> pageWithRegisterInfo(ExamRegisterInfoSearch search) {
+        return examRegisterService.pageWithRegisterInfo(search);
     }
 }

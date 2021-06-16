@@ -26,6 +26,11 @@ public class AccountDTO implements Serializable {
     private String accountName;
 
     /**
+     * 身份证号
+     */
+    private String idCard;
+
+    /**
      * 手机号
      */
     private String phone;

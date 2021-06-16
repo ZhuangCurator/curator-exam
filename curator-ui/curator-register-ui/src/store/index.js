@@ -10,13 +10,28 @@ export default new Vuex.Store({
     // 账户ID
     accountId: '',
     // 账户名称
-    accountName: ''
+    accountName: '',
+    // 当前菜单
+    activeMenu: 'notice'
   },
   mutations: {
     saveAccount (state, account) {
-      state.token = account.token
       state.accountId = account.accountId
       state.accountName = account.accountName
+    },
+    saveToken (state, token) {
+      state.token = token
+    },
+    resetState (state) {
+      state.token = ''
+      state.accountId = ''
+      state.accountName = ''
+    },
+    setActiveMenu (state, activeMenu) {
+      state.activeMenu = activeMenu
+    },
+    getActiveMenu (state) {
+      return state.activeMenu
     }
   },
   actions: {
@@ -26,7 +41,7 @@ export default new Vuex.Store({
         handleLoginAccountQuery().then(res => {
           console.log(res)
           const result = res.data
-          commit('saveAccount', result)
+          commit('saveAccount', result.data)
           resolve(result.data)
         }).catch(error => {
           reject(error)

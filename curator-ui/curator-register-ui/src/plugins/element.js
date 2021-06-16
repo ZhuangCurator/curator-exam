@@ -18,6 +18,7 @@ import {
   Select,
   Option,
   Message,
+  MessageBox,
   Tabs,
   TabPane
 } from 'element-ui'
@@ -43,3 +44,4 @@ Vue.use(Tabs)
 Vue.use(TabPane)
 
 Vue.prototype.$message = Message
+Vue.prototype.$confirm = MessageBox.confirm

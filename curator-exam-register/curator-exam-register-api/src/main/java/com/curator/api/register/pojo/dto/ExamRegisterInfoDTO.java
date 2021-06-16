@@ -1,9 +1,12 @@
 package com.curator.api.register.pojo.dto;
 
+import com.curator.api.register.enums.ExamStatusTypeEnum;
+import com.curator.common.util.Help;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -42,4 +45,60 @@ public class ExamRegisterInfoDTO implements Serializable {
      * 考试剩余时间（单位： 毫秒）
      */
     private Long examDuration;
+
+    /**
+     * 账户名称
+     */
+    private String accountName;
+
+    /**
+     * 考试类别
+     */
+    private String examCategoryId;
+
+    /**
+     * 考试类别名称
+     */
+    private String examCategoryName;
+
+    /**
+     * 考试科目
+     */
+    private String examSubjectId;
+
+    /**
+     * 考试科目名称
+     */
+    private String examSubjectName;
+
+    /**
+     * 准考证编号
+     */
+    private String admissionNumber;
+
+    /**
+     * 考试状态
+     */
+    private Integer examStatus;
+
+    /**
+     * 考试状态描述
+     */
+    private String examStatusDesc;
+
+    /**
+     * 考试成绩
+     */
+    private BigDecimal score;
+
+    public String getExamStatusDesc() {
+        if(examStatus != null) {
+            return ExamStatusTypeEnum.getDesc(examStatus);
+        }
+        return "";
+    }
+
+    public String getAdmissionNumber() {
+        return Help.isNotEmpty(admissionNumber) ? admissionNumber : "未分配准考证号";
+    }
 }

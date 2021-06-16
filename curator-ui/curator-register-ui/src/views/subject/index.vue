@@ -34,7 +34,7 @@
         <el-table-column label="考试结束时间" width="150" prop="examEndTime" align="center"></el-table-column>
         <el-table-column label="操作" width="120px;" align="center">
           <template slot-scope="scope">
-            <el-button type="success" icon="el-icon-setting" size="mini" @click="showExamSitePage(scope.row.examSubjectId)">考点列表</el-button>
+            <el-button type="success" icon="el-icon-setting" size="mini" @click="showExamSitePage(scope.row)">考点列表</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -100,11 +100,12 @@ export default {
       this.getExamCategoryList()
     },
     // 跳转考点界面
-    showExamSitePage (examSubjectId) {
+    showExamSitePage (examSubject) {
       this.$router.push({
         path: 'site',
         query: {
-          id: examSubjectId
+          s: examSubject.examSubjectId,
+          c: examSubject.examCategoryId
         }
       })
     }
