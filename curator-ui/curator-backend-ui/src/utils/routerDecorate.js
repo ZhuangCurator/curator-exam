@@ -15,5 +15,5 @@ export function filterAsyncRouter (asyncRouterMap) {
 }
 
 export const loadView = (view) => { // 路由懒加载
-  return (resolve) => require([`@/components/${view}`], resolve)
+  return (resolve) => require([`@/views/${view}`], resolve)
 }

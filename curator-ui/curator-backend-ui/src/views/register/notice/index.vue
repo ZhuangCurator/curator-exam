@@ -69,14 +69,14 @@
     </el-card>
 
     <!-- 添加考试公告对话框 -->
-    <el-dialog title="添加考试公告" :visible.sync="addDialogVisible" width="30%" @close="handleAddDialogClose">
+    <el-dialog title="添加考试公告" :visible.sync="addDialogVisible" width="66%" @close="handleAddDialogClose">
       <!-- 对话框主题区域 -->
       <el-form ref="addFormRef" :model="addForm" :rules="dialogFormRules" label-width="120px">
         <el-form-item label="考试公告名" prop="examNoticeName">
           <el-input v-model="addForm.examNoticeName"></el-input>
         </el-form-item>
         <el-form-item label="公告内容" prop="content">
-          <el-input v-model="addForm.content"></el-input>
+          <editor v-model="addForm.content" :isClear="isClear"></editor>
         </el-form-item>
       </el-form>
       <!-- 底部按钮区域 -->
@@ -87,14 +87,14 @@
     </el-dialog>
 
     <!-- 修改考试公告对话框 -->
-    <el-dialog title="编辑考试公告" :visible.sync="editDialogVisible" width="30%" @close="handleEditDialogClose">
+    <el-dialog title="编辑考试公告" :visible.sync="editDialogVisible" width="66%" @close="handleEditDialogClose">
       <!-- 对话框主题区域 -->
       <el-form ref="editFormRef" :model="editForm" :rules="dialogFormRules" label-width="120px">
         <el-form-item label="考试公告名" prop="examNoticeName">
           <el-input v-model="editForm.examNoticeName"></el-input>
         </el-form-item>
         <el-form-item label="公告内容" prop="content">
-          <el-input v-model="editForm.content"></el-input>
+          <editor v-model="editForm.content" :isClear="isClear"></editor>
         </el-form-item>
       </el-form>
       <!-- 底部按钮区域 -->
@@ -116,10 +116,14 @@ import {
 } from '@/apis/register/examNotice'
 import { showElement } from '@/utils/show'
 import { getSuperAdmin } from '@/utils/storage'
+import Editor from '@/components/editor'
 export default {
   name: 'ExamNoticePage',
+  components: { Editor },
   data () {
     return {
+      isClear: false,
+      content: '',
       columnShow: true,
       // 是否是超级管理员
       superAdmin: 0,

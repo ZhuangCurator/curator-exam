@@ -1,6 +1,6 @@
-import Login from '../components/login/index'
-import Home from '../components/home'
-import Welcome from '@/components/welcome'
+import Login from '../views/login/index'
+import Home from '../views/home'
+import Welcome from '@/views/welcome'
 
 // 默认的路由组件
 export default [

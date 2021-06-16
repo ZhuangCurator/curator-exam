@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>Welcome</h2>
-    <editor v-model="detail" :isClear="isClear" @change="change"></editor>
+    <editor :desc="content"  @change="change"></editor>
   </div>
 </template>
 
@@ -13,12 +13,13 @@ export default {
   data () {
     return {
       isClear: false,
-      detail: ''
+      content: 'aaa'
     }
   },
   methods: {
     change (val) {
-      console.log(val)
+      this.content = val
+      console.log(this.content)
     }
   }
 }
