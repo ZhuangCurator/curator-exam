@@ -134,7 +134,6 @@ import {
   handleExamSiteQuery
 } from '@/apis/register/examSite'
 import { showElement } from '@/utils/show'
-import { getSuperAdmin } from '@/utils/storage'
 
 export default {
   name: 'ExamSitePage',
@@ -237,7 +236,7 @@ export default {
     }
   },
   created () {
-    this.superAdmin = getSuperAdmin()
+    this.superAdmin = this.$store.state.superAdmin
     this.getExamSitePage()
   },
   updated () {

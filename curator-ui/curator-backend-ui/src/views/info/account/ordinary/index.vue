@@ -115,7 +115,7 @@ import {
   handleDeleteAccount
 } from '@/apis/info/account'
 import { showElement } from '@/utils/show'
-import { getSuperAdmin } from '@/utils/storage'
+
 export default {
   name: 'AccountPage',
   data () {
@@ -212,7 +212,7 @@ export default {
     }
   },
   created () {
-    this.superAdmin = getSuperAdmin()
+    this.superAdmin = this.$store.state.superAdmin
     this.getAccountPage()
   },
   updated () {

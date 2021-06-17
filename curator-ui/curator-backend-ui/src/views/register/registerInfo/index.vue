@@ -80,7 +80,6 @@ import {
   handleExamRegisterInfoQuery
 } from '@/apis/register/examRegister'
 import { showElement } from '@/utils/show'
-import { getSuperAdmin } from '@/utils/storage'
 
 export default {
   name: 'ExamRegisterInfoPage',
@@ -105,7 +104,7 @@ export default {
     }
   },
   created () {
-    this.superAdmin = getSuperAdmin()
+    this.superAdmin = this.$store.state.superAdmin
     this.getExamRegisterInfoPage()
   },
   updated () {

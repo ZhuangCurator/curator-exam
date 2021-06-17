@@ -133,7 +133,6 @@ import {
   handleGenerationRuleDetailQuery
 } from '@/apis/paper/generationRuleDetail'
 import { showElement } from '@/utils/show'
-import { getSuperAdmin } from '@/utils/storage'
 
 export default {
   name: 'GenerationRuleDetailPage',

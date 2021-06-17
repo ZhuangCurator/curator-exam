@@ -162,7 +162,7 @@
 import { handleUpdateAccount, handleAccountQuery, handleAccountPage, handleAddAccount, handleDeleteAccount, handleBindRoleWithAccount } from '@/apis/info/account'
 import { handleRoleList } from '@/apis/info/role'
 import { showElement } from '@/utils/show'
-import { getSuperAdmin } from '@/utils/storage'
+
 export default {
   name: 'AccountPage',
   data () {
@@ -311,7 +311,7 @@ export default {
     }
   },
   created () {
-    this.superAdmin = getSuperAdmin()
+    this.superAdmin = this.$store.state.superAdmin
     this.getAccountPage()
   },
   updated () {

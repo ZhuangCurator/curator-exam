@@ -118,7 +118,6 @@ import {
   handleQuestionBankQuery
 } from '@/apis/paper/questionBank'
 import { showElement } from '@/utils/show'
-import { getSuperAdmin } from '@/utils/storage'
 
 export default {
   name: 'QuestionBankPage',
@@ -174,7 +173,7 @@ export default {
     }
   },
   created () {
-    this.superAdmin = getSuperAdmin()
+    this.superAdmin = this.$store.state.superAdmin
     this.getQuestionBankPage()
   },
   updated () {

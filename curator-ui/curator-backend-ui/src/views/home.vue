@@ -11,7 +11,7 @@
         <el-col :span="16">
           <el-dropdown class="header_name">
             <span class="el-dropdown-link">
-              <span>{{ userName }}</span>
+              <span>{{  this.$store.state.userName }}</span>
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item >个人中心</el-dropdown-item>
@@ -63,7 +63,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getAccountName } from '@/utils/storage'
 
 export default {
   name: 'Home',
@@ -75,7 +74,7 @@ export default {
       isCollapse: false,
       // 菜单栏被激活的二级菜单
       activePath: '',
-      userName: ''
+      userName: this.$store.state.userName
     }
   },
   computed: {
@@ -114,7 +113,7 @@ export default {
   },
   created () {
     this.activePath = window.sessionStorage.getItem('activePath')
-    this.userName = getAccountName()
+    // this.userName = getAccountName()
   }
 }
 </script>

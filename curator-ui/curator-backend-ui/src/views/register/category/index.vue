@@ -169,7 +169,6 @@ import {
   handleExamCategoryQuery
 } from '@/apis/register/examCategory'
 import { showElement } from '@/utils/show'
-import { getSuperAdmin } from '@/utils/storage'
 
 export default {
   name: 'ExamCategoryPage',
@@ -252,7 +251,7 @@ export default {
     }
   },
   created () {
-    this.superAdmin = getSuperAdmin()
+    this.superAdmin = this.$store.state.superAdmin
     this.getExamCategoryPage()
   },
   updated () {

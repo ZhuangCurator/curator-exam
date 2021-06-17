@@ -47,7 +47,11 @@
           </template>
         </el-table-column>
         <el-table-column label="公告名称" prop="examNoticeName" align="center"></el-table-column>
-        <el-table-column label="公告内容" prop="content" align="center"></el-table-column>
+        <el-table-column label="公告内容" align="center" width="200px">
+          <template slot-scope="scope">
+            <el-button type="primary" icon="el-icon-document" size="mini" @click="showPreviewDialog(scope.row.content)">内容预览</el-button>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['register:examNotice:update']" @click="showEditDialog(scope.row.examNoticeId)">编辑</el-button>
@@ -75,8 +79,8 @@
         <el-form-item label="考试公告名" prop="examNoticeName">
           <el-input v-model="addForm.examNoticeName"></el-input>
         </el-form-item>
-        <el-form-item label="公告内容" prop="content">
-          <editor v-model="addForm.content" :isClear="isClear"></editor>
+        <el-form-item label="公告内容" prop="content" v-if="addDialogVisible">
+          <editor :content="addForm.content" :isClear="isClear" @change="changeContentWithAdd"></editor>
         </el-form-item>
       </el-form>
       <!-- 底部按钮区域 -->
@@ -93,8 +97,8 @@
         <el-form-item label="考试公告名" prop="examNoticeName">
           <el-input v-model="editForm.examNoticeName"></el-input>
         </el-form-item>
-        <el-form-item label="公告内容" prop="content">
-          <editor v-model="editForm.content" :isClear="isClear"></editor>
+        <el-form-item label="公告内容" prop="content"  v-if="editDialogVisible">
+          <editor :content="editForm.content" :isClear="isClear" @change="changeContentWithEdit"></editor>
         </el-form-item>
       </el-form>
       <!-- 底部按钮区域 -->
@@ -102,6 +106,12 @@
         <el-button @click="editDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="editExamNotice">确 定</el-button>
       </span>
+    </el-dialog>
+
+    <!-- 预览考试公告对话框 -->
+    <el-dialog title="预览考试公告" :visible.sync="previewDialogVisible" width="1020px">
+      <!-- 对话框主题区域 -->
+      <div class="content_main" style="width: 980px; padding: 0 10px;" v-html="previewContent"></div>
     </el-dialog>
   </div>
 </template>
@@ -115,7 +125,7 @@ import {
   handleExamNoticeQuery
 } from '@/apis/register/examNotice'
 import { showElement } from '@/utils/show'
-import { getSuperAdmin } from '@/utils/storage'
+
 import Editor from '@/components/editor'
 export default {
   name: 'ExamNoticePage',
@@ -147,6 +157,10 @@ export default {
         examNoticeName: undefined,
         content: undefined
       },
+      // 控制预览考试公告对话框的显示
+      previewDialogVisible: false,
+      // 预览考试公告内容
+      previewContent: undefined,
       // 控制修改考试公告对话框的显示
       editDialogVisible: false,
       // 修改考试公告表单数据
@@ -162,12 +176,6 @@ export default {
             required: true,
             message: '请输入考试公告名',
             trigger: 'blur'
-          },
-          {
-            min: 3,
-            max: 20,
-            message: '考试公告名长度在3~50字符之间',
-            trigger: 'blur'
           }
         ],
         content: [
@@ -181,7 +189,7 @@ export default {
     }
   },
   created () {
-    this.superAdmin = getSuperAdmin()
+    this.superAdmin = this.$store.state.superAdmin
     this.getExamNoticePage()
   },
   updated () {
@@ -239,6 +247,11 @@ export default {
         }
       })
     },
+    // 展示预览公告内容对话框
+    showPreviewDialog (content) {
+      this.previewContent = content
+      this.previewDialogVisible = true
+    },
     // 展示编辑考试公告对话框
     async showEditDialog (examNoticeId) {
       const { data: res } = await handleExamNoticeQuery(examNoticeId)
@@ -246,9 +259,9 @@ export default {
       if (res.status !== '2000') {
         return this.$message.error(res.message)
       }
+      this.editForm = res.data
       // 查询出考试公告 在展示编辑框
       this.editDialogVisible = true
-      this.editForm = res.data
     },
     // 监听 编辑考试公告对话框关闭事件
     handleEditDialogClose () {
@@ -289,6 +302,14 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    // 编辑对话框中 富文本框值
+    changeContentWithEdit (val) {
+      this.editForm.content = val
+    },
+    // 添加对话框中 富文本框值
+    changeContentWithAdd (val) {
+      this.addForm.content = val
     }
   }
 }

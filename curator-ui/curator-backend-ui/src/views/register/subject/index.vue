@@ -246,7 +246,7 @@ import {
   handleGenerationRuleList
 } from '@/apis/register/examSubject'
 import { showElement } from '@/utils/show'
-import { getSuperAdmin } from '@/utils/storage'
+
 import { handleRoleTypeList } from '@/apis/info/role'
 
 export default {
@@ -382,7 +382,7 @@ export default {
     }
   },
   created () {
-    this.superAdmin = getSuperAdmin()
+    this.superAdmin = this.$store.state.superAdmin
     this.showGenerationRuleList()
   },
   updated () {

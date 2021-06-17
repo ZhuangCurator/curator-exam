@@ -179,7 +179,6 @@ import {
 } from '@/apis/info/role'
 import { handlePowerGroupList, handleAddPowerGroupToRole } from '@/apis/info/powerGroup'
 import { showElement } from '@/utils/show'
-import { getSuperAdmin } from '@/utils/storage'
 
 export default {
   name: 'RolePage',
@@ -263,7 +262,7 @@ export default {
     }
   },
   created () {
-    this.superAdmin = getSuperAdmin()
+    this.superAdmin = this.$store.state.superAdmin
     this.showRoleTypeList()
     this.getRolePage()
   },

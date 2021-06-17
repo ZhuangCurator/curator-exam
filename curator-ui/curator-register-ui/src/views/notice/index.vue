@@ -32,7 +32,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="queryForm.current"
-        :page-sizes="[1, 2, 20, 50]"
+        :page-sizes="[1, 5, 10, 50]"
         :page-size="queryForm.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
@@ -56,7 +56,7 @@ export default {
         // 当前页
         current: 1,
         // 当前页大小
-        pageSize: 20
+        pageSize: 10
       },
       // 考试公告列表
       examNoticeList: [],

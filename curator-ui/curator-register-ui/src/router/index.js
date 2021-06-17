@@ -24,7 +24,10 @@ const routes = [
     children: [
       {
         path: '/notice',
-        component: Notice
+        component: Notice,
+        meta: {
+          title: '公告页'
+        }
       }
     ]
   },
@@ -35,7 +38,10 @@ const routes = [
     children: [
       {
         path: '/login',
-        component: Login
+        component: Login,
+        meta: {
+          title: '登录页'
+        }
       }
     ]
   },
@@ -46,7 +52,10 @@ const routes = [
     children: [
       {
         path: '/noticeContent',
-        component: NoticeContent
+        component: NoticeContent,
+        meta: {
+          title: '公告内容页'
+        }
       }
     ]
   },
@@ -57,7 +66,10 @@ const routes = [
     children: [
       {
         path: '/subject',
-        component: Subject
+        component: Subject,
+        meta: {
+          title: '考试科目页'
+        }
       }
     ]
   },
@@ -68,7 +80,10 @@ const routes = [
     children: [
       {
         path: '/site',
-        component: Site
+        component: Site,
+        meta: {
+          title: '考点页'
+        }
       }
     ]
   },
@@ -79,7 +94,10 @@ const routes = [
     children: [
       {
         path: '/score',
-        component: Score
+        component: Score,
+        meta: {
+          title: '报名信息页'
+        }
       }
     ]
   }
@@ -89,6 +107,25 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  window.document.title = to.meta.title === undefined ? '默认标题' : to.meta.title
+  // if (to.meta.requireAuth) {
+  //   let token = Cookies.get('access_token');
+  //   let anonymous = Cookies.get('user_name');
+  //   if (token) {
+  //
+  //     next({
+  //       path: '/login',
+  //       query: {
+  //         redirect: to.fullPath
+  //       }
+  //     })
+  //
+  //   }
+  // }
+  next()
 })
 
 export default router

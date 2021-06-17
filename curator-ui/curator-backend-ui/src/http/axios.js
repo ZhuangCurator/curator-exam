@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getToken } from '@/utils/storage'
+import store from '../store'
 
 axios.defaults.baseURL = 'http://localhost:9010'
 
@@ -9,7 +9,7 @@ axios.defaults.timeout = 10000
 // 设置请求拦截器
 axios.interceptors.request.use(config => {
   // 发送请求时带上token值
-  const token = getToken()
+  const token = store.state.token
   if (token) {
     config.headers.Authorization = token
   }

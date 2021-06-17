@@ -123,7 +123,6 @@
 
 <script>
 import { handleLogPage } from '@/apis/info/log'
-import { getSuperAdmin } from '@/utils/storage'
 
 export default {
   name: 'LogPage',
@@ -165,7 +164,7 @@ export default {
     }
   },
   created () {
-    this.superAdmin = getSuperAdmin()
+    this.superAdmin = this.$store.state.superAdmin
     this.getLogPage()
   },
   methods: {

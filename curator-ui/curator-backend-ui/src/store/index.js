@@ -8,18 +8,34 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    routers: []
+    routers: [],
+    userName: '',
+    token: '',
+    permissions: [],
+    superAdmin: 0
   },
   getters: {
-    routers: state => state.routers
+    routers: state => state.routers,
+    permissions: state => state.permissions
   },
   mutations: {
     setRouters (state, routers) {
-      localStorage.setItem('routers', JSON.stringify(routers))
       state.routers = routers
+    },
+    saveAccount (state, account) {
+      state.userName = account.userName
+      state.permissions = account.perms
+      state.superAdmin = account.superAdmin
+    },
+    setToken (state, token) {
+      state.token = token
     },
     cleanStore (state) {
       state.routers = []
+      state.accountName = ''
+      state.token = ''
+      state.permissions = []
+      state.superAdmin = 0
     }
   },
   actions: {
@@ -48,8 +64,12 @@ export default new Vuex.Store({
         })
       })
     },
-    handleStoreClean (context) {
-      context.commit('cleanStore')
+    handleSaveAccount ({ commit }, account) {
+      commit('saveAccount', account)
+    },
+    handleStoreClean ({ commit }) {
+      console.log('退出登录')
+      commit('cleanStore')
     }
   }
 })

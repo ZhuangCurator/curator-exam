@@ -168,7 +168,7 @@ import {
   handleGenerateExamPassword, handleAssignClassroom
 } from '@/apis/register/examRegister'
 import { showElement } from '@/utils/show'
-import { getSuperAdmin } from '@/utils/storage'
+
 import { handleDeletePowerGroup } from '@/apis/info/powerGroup'
 
 export default {
@@ -215,7 +215,7 @@ export default {
     }
   },
   created () {
-    this.superAdmin = getSuperAdmin()
+    this.superAdmin = this.$store.state.superAdmin
   },
   updated () {
     this.showTableColumn()

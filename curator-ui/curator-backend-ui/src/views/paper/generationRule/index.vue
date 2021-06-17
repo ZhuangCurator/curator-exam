@@ -141,7 +141,7 @@ import {
 } from '@/apis/paper/generationRule'
 import { handleQuestionBankList } from '@/apis/paper/questionBank'
 import { showElement } from '@/utils/show'
-import { getSuperAdmin } from '@/utils/storage'
+
 import { handleGenerationRuleList } from '@/apis/register/examSubject'
 
 export default {
@@ -209,7 +209,7 @@ export default {
     }
   },
   created () {
-    this.superAdmin = getSuperAdmin()
+    this.superAdmin = this.$store.state.superAdmin
     this.showQuestionBankList()
     this.getGenerationRulePage()
   },

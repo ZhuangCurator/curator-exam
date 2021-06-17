@@ -127,7 +127,6 @@ import {
 } from '@/apis/paper/question'
 import { handleBankQuestionPage, handleDeleteBankQuestion } from '@/apis/paper/questionBank'
 import { showElement } from '@/utils/show'
-import { getSuperAdmin } from '@/utils/storage'
 
 export default {
   name: 'BankQuestionPage',
@@ -178,7 +177,7 @@ export default {
     }
   },
   created () {
-    this.superAdmin = getSuperAdmin()
+    this.superAdmin = this.$store.state.superAdmin
   },
   updated () {
     this.showTableColumn()

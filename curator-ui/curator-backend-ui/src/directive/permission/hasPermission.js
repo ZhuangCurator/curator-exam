@@ -1,14 +1,14 @@
-import { getPermissions } from '@/utils/storage'
+import store from '../../store'
 export default {
   inserted (el, binding) {
     const { value } = binding
     const superPermission = '*:*:*'
-    const permissions = getPermissions().split(',')
+    const storePer = store.getters.permissions
     // 此自定义权限指令的值应为数组
     if (value && value instanceof Array && value.length > 0) {
       const permissionFlag = value
 
-      const hasPermissions = permissions.some(permission => {
+      const hasPermissions = storePer.some(permission => {
         // 账户为超级管理员或者说含有所需权限 返回true
         return superPermission === permission || permissionFlag.includes(permission)
       })

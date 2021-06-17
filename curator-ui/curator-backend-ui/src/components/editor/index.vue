@@ -10,7 +10,7 @@ import E from 'wangeditor'
 export default {
   name: 'editor',
   props: {
-    desc: {
+    content: {
       type: String,
       default: ''
     },
@@ -20,20 +20,15 @@ export default {
       default: false
     }
   },
-  model: {
-    prop: 'desc',
-    event: 'change'
-  },
   watch: {
     isClear (val) {
       if (val) {
         this.editor.txt.clear()
       }
     },
-    desc (value) {
-      console.log('1111' + value)
+    content (value) {
       if (value !== this.editor.txt.html()) {
-        this.editor.txt.html(this.desc)
+        this.editor.txt.html(this.content)
       }
     }
   },
@@ -113,6 +108,7 @@ export default {
       ]
       // 创建编辑器
       this.editor.create()
+      this.editor.txt.html(this.content)
     }
   },
   mounted () {

@@ -2,7 +2,7 @@
   <div class="noticeContent_container">
     <!-- 卡片视图区域-->
     <el-card class="box-card">
-      <div>
+      <div class="content-div">
         <div class="content_header">{{ examNotice.examNoticeName }}</div>
         <div class="content_time">发布日期: {{ examNotice.createTime }}</div>
         <el-divider></el-divider>
@@ -44,6 +44,11 @@ export default {
 </script>
 
 <style  lang="less" scoped>
+.content-div {
+  width: 980px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
 .content_header {
   width: 100%;
   line-height:50px;
