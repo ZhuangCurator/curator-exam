@@ -76,7 +76,7 @@
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['paper:question:update']" @click="showEditDialog(scope.row.questionId)">编辑</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['paper:question:deleted']" @click="deleteQuestion(scope.row.questionId)">删除</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['paper:question:delete']" @click="deleteQuestion(scope.row.questionId)">删除</el-button>
             <el-button type="info" icon="el-icon-setting" size="mini" v-has-perm="['paper:question:preview']" @click="showPreviewDialog(scope.row.questionId)">预览试题</el-button>
           </template>
         </el-table-column>

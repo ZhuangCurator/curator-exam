@@ -22,6 +22,7 @@
 
 <script>
 import { getSmsValidateCode, handleMobileLogin } from '@/apis/info/auth'
+import { saveToken } from '@/utils/storage'
 
 export default {
   name: 'loginMobile',
@@ -70,8 +71,8 @@ export default {
             this.$message.error(res.message)
           } else {
             this.$message.success(res.message)
-            // setToken(res.data.token)
-            this.$store.commit('setToken', res.data.token)
+            // 存储访问 token
+            saveToken(res.data.accessToken)
             await this.$router.push('/home')
           }
         }

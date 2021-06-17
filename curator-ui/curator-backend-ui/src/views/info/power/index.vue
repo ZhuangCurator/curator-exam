@@ -34,7 +34,7 @@
       </el-form>
       <el-row :gutter="20">
         <el-col :span="6">
-          <el-button type="primary" size="mini" v-has-perm="['info:power:add']" @click="showTopPowerAddDialog">添加目录</el-button>
+          <el-button type="primary" size="mini" v-has-perm="['role:dir:add']" @click="showTopPowerAddDialog">添加目录</el-button>
         </el-col>
       </el-row>
       <!--  权限列表区域 -->
@@ -59,9 +59,9 @@
         <el-table-column prop="powerOrder" align="center" label="排序" width="50px"></el-table-column>
         <el-table-column label="操作" align="center" width="350px" v-if="columnShow">
           <template slot-scope="scope">
-            <el-button type="primary" icon="el-icon-folder-add" size="mini" v-has-perm="['system:power:add']" @click="showAddDialog(scope.row)">添加下级权限</el-button>
-            <el-button type="info" icon="el-icon-edit" size="mini" v-has-perm="['system:power:update']" @click="showEditDialog(scope.row.powerId)">编辑</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['system:power:deleted']" @click="deletePower(scope.row.powerId)">删除</el-button>
+            <el-button type="primary" icon="el-icon-folder-add" size="mini" v-has-perm="['role:child:add']" @click="showAddDialog(scope.row)">添加下级权限</el-button>
+            <el-button type="info" icon="el-icon-edit" size="mini" v-has-perm="['info:role:update']" @click="showEditDialog(scope.row.powerId)">编辑</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['info:role:delete']" @click="deletePower(scope.row.powerId)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

@@ -7,12 +7,15 @@ import com.curator.api.paper.enums.QuestionTypeEnum;
 import com.curator.api.paper.enums.TestPaperStatusEnum;
 import com.curator.api.paper.pojo.dto.PaperQuestionDTO;
 import com.curator.api.paper.pojo.vo.TestPaperInfo;
+import com.curator.api.register.pojo.dto.ExamRegisterInfoDTO;
+import com.curator.api.register.provider.ExamRegisterInfoProvider;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.common.util.RedissonUtil;
 import com.curator.core.paper.entity.*;
 import com.curator.core.paper.mapper.*;
 import com.curator.core.paper.service.TestPaperService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,6 +51,28 @@ public class TestPaperServiceImpl implements TestPaperService {
     private QuestionMapper questionMapper;
     @Autowired
     private QuestionAnswerMapper questionAnswerMapper;
+    @DubboReference
+    private ExamRegisterInfoProvider registerInfoProvider;
+
+    @Override
+    public ResultResponse<ExamRegisterInfoDTO> accountLogin(String accountName, String admissionNumber) {
+        return registerInfoProvider.accountLogin(accountName, admissionNumber);
+    }
+
+    @Override
+    public ResultResponse<ExamRegisterInfoDTO> verifyPassword(TestPaperInfo info) {
+        ResultResponse<ExamRegisterInfoDTO> res = registerInfoProvider.checkExamPassword(info.getExamRegisterInfoId(), info.getExamPassword());
+        if(res.getSucceeded()) {
+            ExamRegisterInfoDTO dto = res.getData();
+            // 检查成功之后，更新试卷的开始时间和结束时间
+            TestPaper entity = new TestPaper();
+            entity.setTestPaperId(info.getTestPaperId());
+            entity.setPaperStartTime(dto.getExamStartTime());
+            entity.setPaperEndTime(dto.getExamEndTime());
+            testPaperMapper.updateById(entity);
+        }
+        return res;
+    }
 
     @Override
     public ResultResponse<String> initTestPaper(TestPaperInfo info) {
@@ -174,6 +199,8 @@ public class TestPaperServiceImpl implements TestPaperService {
         testPaper.setHandInTime(LocalDateTime.now());
         testPaper.setPaperStatus(TestPaperStatusEnum.OVER.getStatus());
         testPaperMapper.updateById(testPaper);
+        // 同步分数到报名信息中
+        registerInfoProvider.synchronizeScore(info.getExamRegisterInfoId(), testPaper.getExamPoint());
         return ResultResponse.<String>builder().success("阅卷成功!").data(String.valueOf(score)).build();
     }
 

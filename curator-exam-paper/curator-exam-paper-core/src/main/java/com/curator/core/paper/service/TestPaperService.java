@@ -2,10 +2,8 @@ package com.curator.core.paper.service;
 
 import com.curator.api.paper.pojo.dto.PaperQuestionDTO;
 import com.curator.api.paper.pojo.vo.TestPaperInfo;
-import com.curator.common.annotation.Log;
+import com.curator.api.register.pojo.dto.ExamRegisterInfoDTO;
 import com.curator.common.support.ResultResponse;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * 考生试卷 服务类
@@ -16,6 +14,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface TestPaperService {
 
     /**
+     * 考生登录
+     *
+     * @param accountName     姓名
+     * @param admissionNumber 准考证号
+     * @return
+     */
+    ResultResponse<ExamRegisterInfoDTO> accountLogin(String accountName, String admissionNumber);
+
+    /**
+     * 校验考试口令
+     *
+     * @param info 试卷信息
+     * @return
+     */
+    ResultResponse<ExamRegisterInfoDTO> verifyPassword(TestPaperInfo info);
+
+    /**
      * 考生初始化试卷
      *
      * @param info 试卷信息
@@ -24,7 +39,7 @@ public interface TestPaperService {
     ResultResponse<String> initTestPaper(TestPaperInfo info);
 
     /**
-     *  根据序号查询试题
+     * 根据序号查询试题
      *
      * @param info 试卷信息
      * @return
@@ -41,6 +56,7 @@ public interface TestPaperService {
 
     /**
      * 阅卷
+     *
      * @param info 试卷信息
      * @return
      */

@@ -48,4 +48,9 @@ dubbo:
     group: ${spring.profiles.active}
     timeout: 5000
   cloud:
-    subscribed-services: ''
+    subscribed-services: curator-exam-register-core
+  consumer:
+    # 启动时是否检查依赖的服务
+    check: false
+    # 消费服务分组
+    group: ${spring.profiles.active}

@@ -52,7 +52,7 @@
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['register:examClassroom:update']" @click="showEditDialog(scope.row.examClassroomId)">编辑</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['register:examClassroom:deleted']" @click="deleteExamClassroom(scope.row.examClassroomId)">删除</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['register:examClassroom:delete']" @click="deleteExamClassroom(scope.row.examClassroomId)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

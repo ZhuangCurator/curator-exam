@@ -28,7 +28,7 @@
       </el-form>
       <el-row :gutter="20">
         <el-col :span="6">
-          <el-button type="primary" size="mini" v-has-perm="['register:examNotice:add']" @click="showAddDialog">添加考试公告</el-button>
+          <el-button type="primary" size="mini" v-has-perm="['register:notice:add']" @click="showAddDialog">添加考试公告</el-button>
         </el-col>
       </el-row>
 
@@ -54,8 +54,8 @@
         </el-table-column>
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['register:examNotice:update']" @click="showEditDialog(scope.row.examNoticeId)">编辑</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['register:examNotice:deleted']" @click="deleteExamNotice(scope.row.examNoticeId)">删除</el-button>
+            <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['register:notice:update']" @click="showEditDialog(scope.row.examNoticeId)">编辑</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['register:notice:delete']" @click="deleteExamNotice(scope.row.examNoticeId)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

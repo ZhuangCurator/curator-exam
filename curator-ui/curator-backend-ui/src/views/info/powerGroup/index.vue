@@ -52,8 +52,8 @@
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['info:powerGroup:update']" @click="showEditDialog(scope.row.powerGroupId)">编辑</el-button>
-            <el-button type="info" icon="el-icon-setting" size="mini" v-has-perm="['info:powerGroup:bind']" @click="showPowerDialog(scope.row)">权限绑定</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['info:powerGroup:deleted']" @click="deletePowerGroup(scope.row.powerGroupId)">删除</el-button>
+            <el-button type="info" icon="el-icon-setting" size="mini" v-has-perm="['powerGroup:bind:power']" @click="showPowerDialog(scope.row)">权限绑定</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['info:powerGroup:delete']" @click="deletePowerGroup(scope.row.powerGroupId)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

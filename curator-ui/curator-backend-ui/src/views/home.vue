@@ -73,8 +73,7 @@ export default {
       // 菜单栏是否折叠
       isCollapse: false,
       // 菜单栏被激活的二级菜单
-      activePath: '',
-      userName: this.$store.state.userName
+      activePath: ''
     }
   },
   computed: {
@@ -85,23 +84,11 @@ export default {
   methods: {
     // 退出登录
     logout () {
-      window.sessionStorage.clear()
+      sessionStorage.clear()
       this.$store.dispatch('handleStoreClean')
       this.$router.push('/login')
     },
 
-    // 获取菜单列表
-    // async getMenuList () {
-    //   const params = {}
-    //   params.status = 0
-    //   params.menuType = 1
-    //   const { data: res } = await handleMenuList(params)
-    //   if (res.status === '2000') {
-    //     this.menuList = res.data
-    //   } else {
-    //     this.$message.error(res.message)
-    //   }
-    // },
     // 点击按钮，切换菜单栏的折叠与展开
     toggleCollapse () {
       this.isCollapse = !this.isCollapse
@@ -113,7 +100,6 @@ export default {
   },
   created () {
     this.activePath = window.sessionStorage.getItem('activePath')
-    // this.userName = getAccountName()
   }
 }
 </script>

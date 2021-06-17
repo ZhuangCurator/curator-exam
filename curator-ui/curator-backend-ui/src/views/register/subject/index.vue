@@ -46,7 +46,7 @@
       </el-form>
       <el-row :gutter="20">
         <el-col :span="6">
-          <el-button type="primary" size="mini" v-has-perm="['register:examSubject:add']" @click="showAddDialog">添加考试科目</el-button>
+          <el-button type="primary" size="mini" v-has-perm="['register:subject:add']" @click="showAddDialog">添加考试科目</el-button>
         </el-col>
       </el-row>
 
@@ -73,9 +73,9 @@
         <el-table-column label="及格线" width="70px;" prop="passingScore" align="center"></el-table-column>
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['register:examSubject:update']" @click="showEditDialog(scope.row.examSubjectId)">编辑</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['register:examSubject:deleted']" @click="deleteExamSubject(scope.row.examSubjectId)">删除</el-button>
-            <el-button type="info" icon="el-icon-setting" size="mini" v-has-perm="['register:subject:page']" @click="showSubjectSiteDialog(scope.row.examSubjectId)">考点列表</el-button>
+            <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['register:subject:update']" @click="showEditDialog(scope.row.examSubjectId)">编辑</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['register:subject:delete']" @click="deleteExamSubject(scope.row.examSubjectId)">删除</el-button>
+            <el-button type="info" icon="el-icon-setting" size="mini" v-has-perm="['subject:site:page']" @click="showSubjectSiteDialog(scope.row.examSubjectId)">考点列表</el-button>
           </template>
         </el-table-column>
       </el-table>

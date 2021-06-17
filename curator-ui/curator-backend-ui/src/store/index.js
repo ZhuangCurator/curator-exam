@@ -10,7 +10,6 @@ export default new Vuex.Store({
   state: {
     routers: [],
     userName: '',
-    token: '',
     permissions: [],
     superAdmin: 0
   },
@@ -23,17 +22,13 @@ export default new Vuex.Store({
       state.routers = routers
     },
     saveAccount (state, account) {
-      state.userName = account.userName
+      state.userName = account.accountName
       state.permissions = account.perms
       state.superAdmin = account.superAdmin
-    },
-    setToken (state, token) {
-      state.token = token
     },
     cleanStore (state) {
       state.routers = []
       state.accountName = ''
-      state.token = ''
       state.permissions = []
       state.superAdmin = 0
     }
@@ -42,7 +37,6 @@ export default new Vuex.Store({
     queryLoginAccount ({ commit }) {
       return new Promise((resolve, reject) => {
         handleLoginAccountQuery().then(res => {
-          console.log(res)
           const result = res.data
           resolve(result.data)
         }).catch(error => {
@@ -54,10 +48,8 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         handleRouterQuery().then(res => {
           const result = res.data
-          console.log('handleRouterQuery#result', JSON.stringify(result))
           const routers = filterAsyncRouter(result.data)
           commit('setRouters', routers)
-          console.log('handleRouterQuery#routers', JSON.stringify(routers))
           resolve(routers)
         }).catch(error => {
           reject(error)
@@ -68,7 +60,6 @@ export default new Vuex.Store({
       commit('saveAccount', account)
     },
     handleStoreClean ({ commit }) {
-      console.log('退出登录')
       commit('cleanStore')
     }
   }

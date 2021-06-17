@@ -54,7 +54,7 @@
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['paper:generationRule:update']" @click="showEditDialog(scope.row.generationRuleId)">编辑</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['paper:generationRule:deleted']" @click="deleteGenerationRule(scope.row.generationRuleId)">删除</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['paper:generationRule:delete']" @click="deleteGenerationRule(scope.row.generationRuleId)">删除</el-button>
             <el-button type="info" icon="el-icon-setting" size="mini" v-has-perm="['paper:ruleDetail:page']" @click="showRuleDetailView(scope.row.generationRuleId)">规则详情</el-button>
           </template>
         </el-table-column>

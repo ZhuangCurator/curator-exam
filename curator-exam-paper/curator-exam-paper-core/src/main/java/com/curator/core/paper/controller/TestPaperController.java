@@ -2,6 +2,7 @@ package com.curator.core.paper.controller;
 
 import com.curator.api.paper.pojo.dto.PaperQuestionDTO;
 import com.curator.api.paper.pojo.vo.TestPaperInfo;
+import com.curator.api.register.pojo.dto.ExamRegisterInfoDTO;
 import com.curator.common.annotation.Log;
 import com.curator.common.support.ResultResponse;
 import com.curator.core.paper.service.TestPaperService;
@@ -20,6 +21,31 @@ public class TestPaperController {
 
     @Autowired
     private TestPaperService testPaperService;
+
+    /**
+     * 考生登录
+     *
+     * @param accountName 姓名
+     * @param admissionNumber 准考证号
+     * @return
+     */
+    @GetMapping("/login")
+    @Log(controllerName = "TestPaperController", remark = "考生登录")
+    ResultResponse<ExamRegisterInfoDTO> accountLogin(String accountName, String admissionNumber) {
+        return testPaperService.accountLogin(accountName, admissionNumber);
+    }
+
+    /**
+     * 校验考试口令
+     *
+     * @param info 试卷信息
+     * @return
+     */
+    @GetMapping("/verifyPassword")
+    @Log(controllerName = "TestPaperController", remark = "校验考试口令")
+    ResultResponse<ExamRegisterInfoDTO> verifyPassword(TestPaperInfo info) {
+        return testPaperService.verifyPassword(info);
+    }
 
     /**
      * 考生初始化试卷

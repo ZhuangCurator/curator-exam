@@ -59,15 +59,15 @@ public class CaptchaController {
     }
 
     /**
-     * 单独校验短信验证码
+     * 单独校验验证码
      *
      * @param uuid 唯一标识
      * @param captcha 验证码
      * @return
      */
-    @GetMapping("/check/smsCode")
-    @Log(controllerName = "CaptchaController", remark = "单独校验短信验证码")
-    public ResultResponse<?> checkSmsCode(String uuid, String captcha) {
+    @GetMapping("/check/captcha")
+    @Log(controllerName = "CaptchaController", remark = "单独校验验证码")
+    public ResultResponse<?> checkCaptcha(String uuid, String captcha) {
         String redisKey = CommonConstant.CAPTCHA_CACHE_KEY + uuid;
         String codeInRedis = RedissonUtil.getCacheObject(redisKey);
         if (Help.isEmpty(codeInRedis)) {
@@ -80,4 +80,27 @@ public class CaptchaController {
         }
         return ResultResponse.builder().success("短信验证码校验成功!").build();
     }
+
+//    /**
+//     * 单独校验短信验证码
+//     *
+//     * @param uuid 唯一标识
+//     * @param captcha 验证码
+//     * @return
+//     */
+//    @GetMapping("/check/smsCode")
+//    @Log(controllerName = "CaptchaController", remark = "单独校验短信验证码")
+//    public ResultResponse<?> checkSmsCode(String uuid, String captcha) {
+//        String redisKey = CommonConstant.CAPTCHA_CACHE_KEY + uuid;
+//        String codeInRedis = RedissonUtil.getCacheObject(redisKey);
+//        if (Help.isEmpty(codeInRedis)) {
+//            return ResultResponse.builder().failure("验证码已过期!").build();
+//        } else if (!codeInRedis.equals(captcha)) {
+//            return ResultResponse.builder().failure("请输入正确的验证码!").build();
+//        } else {
+//            // 校验成功 删除缓存中的验证码
+//            RedissonUtil.deleteObject(redisKey);
+//        }
+//        return ResultResponse.builder().success("短信验证码校验成功!").build();
+//    }
 }

@@ -43,7 +43,7 @@
         <el-table-column label="地址" prop="address" align="center"></el-table-column>
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['register:subjectSite:deleted']" @click="deleteExamSubjectSite(scope.row.examSubjectSiteId)">删除</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['register:subjectSite:delete']" @click="deleteExamSubjectSite(scope.row.examSubjectSiteId)">删除</el-button>
             <el-button type="info" icon="el-icon-setting" size="mini" @click="showRegisterInfoPage(scope.row)">考生列表</el-button>
           </template>
         </el-table-column>

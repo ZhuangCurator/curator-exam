@@ -1,0 +1,30 @@
+/*全局样式表*/
+html, body, #app, .home {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/*卡片视图全局样式*/
+.el-card{
+    min-height: 400px;
+}
+
+.el-table {
+    margin-top: 15px;
+    font-size: 12px;
+}
+
+.el-pagination {
+    margin-top: 15px;
+}
+
+/* 表单项 label字体粗细 */
+label {
+    font-weight: 700;
+}
+
+/* 解决表头和内容列不对齐 */
+.el-table th.gutter {
+    display: table-cell !important;
+}

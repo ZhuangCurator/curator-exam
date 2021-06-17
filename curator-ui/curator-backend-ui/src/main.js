@@ -12,6 +12,7 @@ import './assets/font/iconfont.css'
 import './assets/css/global.css'
 
 Vue.config.productionTip = false
+Vue.config.devtools = true
 Vue.use(directive)
 Vue.component('v-distpicker', VDistpicker)
 

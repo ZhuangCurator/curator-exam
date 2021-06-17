@@ -123,7 +123,7 @@
         </el-table-column>
         <el-table-column label="操作"  align="center" v-if="columnShow">
           <template slot-scope="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['register:examClassroom:update']" @click="showReExamDialog(scope.row.examRegisterInfoId)">重考</el-button>
+            <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['register:people:reExam']" @click="showReExamDialog(scope.row.examRegisterInfoId)">重考</el-button>
           </template>
         </el-table-column>
       </el-table>

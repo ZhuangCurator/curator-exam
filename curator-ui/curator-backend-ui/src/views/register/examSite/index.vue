@@ -28,7 +28,7 @@
       </el-form>
       <el-row :gutter="20">
         <el-col :span="6">
-          <el-button type="primary" size="mini" v-has-perm="['register:subjectSite:add']" @click="showAddDialog">添加考点</el-button>
+          <el-button type="primary" size="mini" v-has-perm="['register:site:add']" @click="showAddDialog">添加考点</el-button>
         </el-col>
       </el-row>
 
@@ -54,8 +54,8 @@
         <el-table-column label="地址" prop="address" align="center"></el-table-column>
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['register:subjectSite:update']" @click="showEditDialog(scope.row.examSiteId)">编辑</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['register:subjectSite:deleted']" @click="deleteExamSite(scope.row.examSiteId)">删除</el-button>
+            <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['register:site:update']" @click="showEditDialog(scope.row.examSiteId)">编辑</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['register:site:delete']" @click="deleteExamSite(scope.row.examSiteId)">删除</el-button>
             <el-button type="info" icon="el-icon-setting" size="mini" @click="showClassroomPage(scope.row.examSiteId)">教室列表</el-button>
           </template>
         </el-table-column>

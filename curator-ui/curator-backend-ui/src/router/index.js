@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 
 import store from '@/store'
 import routes from './router'
+import { getToken } from '@/utils/storage'
 
 Vue.use(VueRouter)
 
@@ -12,20 +13,10 @@ const router = new VueRouter({
 
 // 挂载路由导航守卫
 router.beforeEach((to, from, next) => {
-  console.log('store: ' + store.state.routers)
-  // to: 代表将要访问的路径 from: 代表从哪个路径而来  next: 是一个函数，表示放行  next() 或next('/login')
   if (to.path === '/login') return next()
   // 如果没有token或者token为空 则跳转登录页
-  if (!store.state.token) {
-    console.log('to path: ' + to.path + ', token: ' + store.state.token)
-    // 尝试从sessionsStorage中恢复数据
-    console.log('sessionStorage: ' + sessionStorage.getItem('store'))
-    store.replaceState(Object.assign({}, store.state, JSON.parse(sessionStorage.getItem('store'))))
-    console.log('store: ' + store.state.token)
-    console.log('store: ' + store.state.routers)
-    if (!store.state.token) {
-      return next('/login')
-    }
+  if (!getToken()) {
+    return next('/login')
   } else {
     if (store.getters.routers.length === 0) {
       // 首先查询登录帐号

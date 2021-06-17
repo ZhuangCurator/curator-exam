@@ -28,6 +28,7 @@
 
 <script>
 import { getImageValidateCode, handleLogin } from '@/apis/info/auth'
+import { saveToken } from '@/utils/storage'
 
 export default {
   name: 'loginForm',
@@ -85,7 +86,8 @@ export default {
             this.$message.error(res.message)
           } else {
             this.$message.success(res.message)
-            this.$store.commit('setToken', res.data.accessToken)
+            // 存储访问 token
+            saveToken(res.data.accessToken)
             await this.$router.push('/home')
           }
         }

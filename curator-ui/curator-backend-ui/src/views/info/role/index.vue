@@ -68,7 +68,7 @@
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['info:role:update']" @click="showEditDialog(scope.row.roleId)">编辑</el-button>
             <el-button type="info" icon="el-icon-setting" size="mini" v-has-perm="['info:role:bind']" @click="showPowerGroupDialog(scope.row)">权限组绑定</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['info:role:deleted']" @click="deleteRole(scope.row.roleId)">删除</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['info:role:delete']" @click="deleteRole(scope.row.roleId)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

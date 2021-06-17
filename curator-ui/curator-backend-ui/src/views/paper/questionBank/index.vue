@@ -52,7 +52,7 @@
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['paper:questionBank:update']" @click="showEditDialog(scope.row.questionBankId)">编辑</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['paper:questionBank:deleted']" @click="deleteQuestionBank(scope.row.questionBankId)">删除</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['paper:questionBank:delete']" @click="deleteQuestionBank(scope.row.questionBankId)">删除</el-button>
             <el-button type="info" icon="el-icon-setting" size="mini" v-has-perm="['paper:question:bind']" @click="showQuestionView(scope.row.questionBankId)">试题管理</el-button>
           </template>
         </el-table-column>

@@ -36,7 +36,7 @@
       </el-form>
       <el-row :gutter="20">
         <el-col :span="6">
-          <el-button type="primary" @click="showAddDialog" v-has-perm="['system:account:add']">添加账户</el-button>
+          <el-button type="primary" @click="showAddDialog" v-has-perm="['info:sonAccount:add']">添加账户</el-button>
         </el-col>
       </el-row>
 
@@ -65,9 +65,9 @@
         <el-table-column label="电话" prop="phone" align="center"></el-table-column>
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['system:account:update']" @click="showEditDialog(scope.row.accountId)">编辑
+            <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['info:sonAccount:update']" @click="showEditDialog(scope.row.accountId)">编辑
             </el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['system:account:deleted']" @click="deleteAccount(scope.row.accountId)">删除
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['info:sonAccount:delete']" @click="deleteAccount(scope.row.accountId)">删除
             </el-button>
           </template>
         </el-table-column>

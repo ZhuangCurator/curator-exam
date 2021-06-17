@@ -47,4 +47,9 @@ public class TestPaperInfo implements Serializable {
      */
     private Integer handInReason;
 
+    /**
+     * 考试口令
+     */
+    private String examPassword;
+
 }

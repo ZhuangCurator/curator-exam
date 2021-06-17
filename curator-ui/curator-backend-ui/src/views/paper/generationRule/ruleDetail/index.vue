@@ -37,7 +37,7 @@
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['paper:ruleDetail:update']" @click="showEditDialog(scope.row.generationRuleDetailId)">编辑</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['paper:ruleDetail:deleted']" @click="deleteGenerationRuleDetail(scope.row.generationRuleDetailId)">删除</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['paper:ruleDetail:delete']" @click="deleteGenerationRuleDetail(scope.row.generationRuleDetailId)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
