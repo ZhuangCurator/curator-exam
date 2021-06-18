@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.curator.api.paper.enums.QuestionTypeEnum;
 import com.curator.api.paper.enums.TestPaperStatusEnum;
+import com.curator.api.paper.pojo.dto.GenerationRuleDetailDTO;
 import com.curator.api.paper.pojo.dto.PaperQuestionDTO;
 import com.curator.api.paper.pojo.vo.TestPaperInfo;
 import com.curator.api.register.pojo.dto.ExamRegisterInfoDTO;
@@ -118,6 +119,22 @@ public class TestPaperServiceImpl implements TestPaperService {
         }
         // 若都没有上述试卷,生成新试卷即可
         return generateTestPaper(info.getExamRegisterInfoId(), info.getGenerationRuleId());
+    }
+
+    @Override
+    public ResultResponse<List<GenerationRuleDetailDTO>> getQuestionTypeAndNum(String generationRuleId) {
+        QueryWrapper<PaperGenerationRuleDetail> wrapper = new QueryWrapper<>();
+        wrapper.eq("generation_rule_id", generationRuleId);
+        List<PaperGenerationRuleDetail> ruleDetailList = generationRuleDetailMapper.selectList(wrapper);
+        Comparator.comparing(PaperGenerationRuleDetail::getDetailSort);
+        List<GenerationRuleDetailDTO> filterList = ruleDetailList.stream()
+                .sorted(Comparator.comparing(PaperGenerationRuleDetail::getDetailSort))
+                .map(entity -> {
+                    GenerationRuleDetailDTO dto = new GenerationRuleDetailDTO();
+                    BeanUtils.copyProperties(entity, dto);
+                    return dto;
+                }).collect(Collectors.toList());
+        return ResultResponse.<List<GenerationRuleDetailDTO>>builder().success("试卷试题类型及数量查询成功").data(filterList).build();
     }
 
     @Override

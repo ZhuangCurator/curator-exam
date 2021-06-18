@@ -1,20 +1,19 @@
 <template>
   <div class="login_container">
-    <h3 class="header_title">馆长全国综合考试系统</h3>
-    <el-divider></el-divider>
+    <title-header></title-header>
     <div class="login_div">
       <el-form class="login_item" ref="loginFormRef" :model="loginForm" :rules="loginFormRules">
         <!-- 账户名 -->
         <el-form-item prop="accountName">
-          <el-input v-model="loginForm.accountName" placeholder="请输入姓名" prefix-icon="iconfont icon-user"></el-input>
+          <el-input v-model="loginForm.accountName" placeholder="请输入姓名" prefix-icon="el-icon-user"></el-input>
         </el-form-item>
         <!-- 密码 -->
-        <el-form-item prop="accountPassword">
-          <el-input v-model="loginForm.accountPassword" placeholder="请输入准考证号" type="password" prefix-icon="iconfont icon-mima"></el-input>
+        <el-form-item prop="admissionNumber">
+          <el-input v-model="loginForm.admissionNumber" placeholder="请输入准考证号" prefix-icon="el-icon-lock"></el-input>
         </el-form-item>
         <!-- 图片验证码 -->
         <el-form-item prop="captcha">
-          <el-input v-model="loginForm.captcha" prefix-icon="iconfont icon-yanzhengma" class="validate_input"
+          <el-input v-model="loginForm.captcha" prefix-icon="el-icon-picture-outline" class="validate_input"
                     placeholder="请输入图片验证码"></el-input>
           <div class="validate_image_box" @click="refreshValidateCode">
             <img :src="validateCodeImage" alt="">
@@ -22,7 +21,7 @@
         </el-form-item>
         <!-- 按钮区域  -->
         <el-form-item class="btn_item">
-          <el-button type="primary" @click="login">登录</el-button>
+          <el-button type="primary" @click="checkCaptcha">登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -30,16 +29,19 @@
 </template>
 
 <script>
-import { getImageValidateCode, handleLogin } from '@/apis/auth/auth'
+import TitleHeader from '@/components/TitleHeader'
+import { getImageValidateCode, handleCheckCaptcha } from '@/apis/auth'
+import { handlePaperLogin } from '@/apis/paper'
 
 export default {
   name: 'Login',
+  components: { TitleHeader },
   data () {
     return {
       // 登录表单数据绑定对象
       loginForm: {
         accountName: undefined,
-        accountPassword: undefined,
+        admissionNumber: undefined,
         captcha: undefined
       },
       // 登录表单验证规则对象
@@ -51,7 +53,7 @@ export default {
             trigger: 'blur'
           }
         ],
-        accountPassword: [
+        admissionNumber: [
           {
             required: true,
             message: '请输入准考证号',
@@ -71,29 +73,36 @@ export default {
     }
   },
   methods: {
+    // 检验验证码
+    async checkCaptcha () {
+      this.refreshValidateCode()
+      const data = { uuid: this.uuid, captcha: this.loginForm.captcha }
+      const { data: res } = await handleCheckCaptcha(data)
+      console.log(res)
+      if (res.status !== '2000') {
+        this.$message.error(res.message)
+      } else {
+        // 验证码验证成功,调用 登录方法
+        this.login()
+      }
+    },
     // 点击登录按钮，发起登录请求
     login () {
       // 首先进行表单的预验证
       this.$refs.loginFormRef.validate(async valid => {
         if (valid) {
           const data = this.loginForm
-          data.uuid = this.uuid
-          const { data: res } = await handleLogin(data)
+          const { data: res } = await handlePaperLogin(data)
           console.log(res)
           if (res.status !== '2000') {
             this.$message.error(res.message)
           } else {
             this.$message.success(res.message)
-            // 保存token
-            this.$store.commit('saveToken', res.data.accessToken)
-            // 查询登录账户信息
-            await this.$store.dispatch('queryLoginAccount')
-            if (!this.$route.query.redirect) {
-              this.$store.commit('setActiveMenu', 'subject')
-            }
-            // 则跳转至进入登录页前的路由
+            // 保存登录信息
+            await this.$store.dispatch('setLoginInfo', res.data)
+            // 则跳转至考试须知页
             await this.$router.push({
-              path: this.$route.query.redirect ? this.$route.query.redirect : 'subject'
+              path: 'notice'
             })
           }
         }
@@ -119,20 +128,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.header_title {
-  font-size: 30px;
-  color: #000;
-  margin: 40px auto;
-  text-align: center;
-  font-weight: 700;
-  letter-spacing: 17px;
-}
-.el-divider {
-  background-color: #1be;
-  width: 70%;
-  height: 4px;
-  margin: 40px auto;
-}
 .login_div {
   padding: 50px 0 0 0;
   margin: 40px auto;

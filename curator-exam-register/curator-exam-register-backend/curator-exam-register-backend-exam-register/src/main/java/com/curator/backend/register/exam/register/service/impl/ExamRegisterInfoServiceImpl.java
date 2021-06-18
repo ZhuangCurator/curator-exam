@@ -168,6 +168,8 @@ public class ExamRegisterInfoServiceImpl implements ExamRegisterInfoService {
                 }
             }
         }
+        // 首先将数据库中考生信息中的准考证号,教室号,座位号重置为默认状态
+        examRegisterInfoMapper.resetExamRegisterInfo(infoList.stream().map(ExamRegisterInfo::getExamRegisterInfoId).collect(Collectors.toList()));
         examRegisterInfoMapper.batchAssignClassroom(infoList, LocalDateTime.now());
         return ResultResponse.builder().success("教室分配成功").build();
     }

@@ -1,5 +1,6 @@
 package com.curator.core.register.provider;
 
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.curator.api.register.enums.ExamStatusTypeEnum;
@@ -12,8 +13,10 @@ import com.curator.core.register.entity.ExamSubject;
 import com.curator.core.register.mapper.ExamRegisterInfoMapper;
 import com.curator.core.register.mapper.ExamSubjectMapper;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.swing.text.TabableView;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -54,7 +57,7 @@ public class ExamRegisterInfoProviderImpl implements ExamRegisterInfoProvider {
             return ResultResponse.<ExamRegisterInfoDTO>builder().failure("科目考试已结束!").build();
         }
         ExamRegisterInfoDTO dto = new ExamRegisterInfoDTO();
-        dto.setExamRegisterInfoId(entity.getExamRegisterInfoId());
+        BeanUtils.copyProperties(entity, dto);
         dto.setGenerationRuleId(examSubject.getGenerationRuleId());
         return ResultResponse.<ExamRegisterInfoDTO>builder().success("考生登录成功!").data(dto).build();
     }
@@ -62,6 +65,9 @@ public class ExamRegisterInfoProviderImpl implements ExamRegisterInfoProvider {
     @Override
     public ResultResponse<ExamRegisterInfoDTO> checkExamPassword(String examRegisterInfoId, String examPassword) {
         ExamRegisterInfo examRegisterInfo = registerInfoMapper.selectById(examRegisterInfoId);
+        examRegisterInfo.setExamPassword(RandomUtil.randomNumbers(6));
+        // 更新口令
+        registerInfoMapper.update(examRegisterInfo, new UpdateWrapper<ExamRegisterInfo>().eq("exam_register_info_id", examRegisterInfoId));
         // 若口令相等 计算考试开始时间和结束时间
         if(Help.isNotEmpty(examRegisterInfo.getExamPassword()) && examPassword.equals(examRegisterInfo.getExamPassword())) {
             ExamRegisterInfoDTO dto = new ExamRegisterInfoDTO();

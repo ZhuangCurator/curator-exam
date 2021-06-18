@@ -1,5 +1,6 @@
 package com.curator.core.paper.controller;
 
+import com.curator.api.paper.pojo.dto.GenerationRuleDetailDTO;
 import com.curator.api.paper.pojo.dto.PaperQuestionDTO;
 import com.curator.api.paper.pojo.vo.TestPaperInfo;
 import com.curator.api.register.pojo.dto.ExamRegisterInfoDTO;
@@ -8,6 +9,8 @@ import com.curator.common.support.ResultResponse;
 import com.curator.core.paper.service.TestPaperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 考生试卷 前端核心控制器
@@ -57,6 +60,18 @@ public class TestPaperController {
     @Log(controllerName = "TestPaperController", remark = "考生初始化试卷")
     ResultResponse<String> initTestPaper(@RequestBody TestPaperInfo info) {
         return testPaperService.initTestPaper(info);
+    }
+
+    /**
+     * 试卷中试题类型和数量
+     *
+     * @param generationRuleId 组卷规则ID
+     * @return
+     */
+    @GetMapping("/questionType/{generationRuleId}")
+    @Log(controllerName = "TestPaperController", remark = "试卷中试题类型和数量")
+    ResultResponse<List<GenerationRuleDetailDTO>> getQuestionTypeAndNum(@PathVariable String generationRuleId) {
+        return testPaperService.getQuestionTypeAndNum(generationRuleId);
     }
 
     /**

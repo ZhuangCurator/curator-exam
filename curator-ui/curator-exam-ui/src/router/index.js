@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 
 import Login from '@/views/login'
 import Notice from '@/views/notice'
+import Paper from '@/views/paper'
 
 Vue.use(VueRouter)
 
@@ -32,6 +33,20 @@ const routes = [
         component: Notice,
         meta: {
           title: '考试须知页'
+        }
+      }
+    ]
+  },
+  {
+    path: '/',
+    component: Home,
+    redirect: '/paper',
+    children: [
+      {
+        path: '/paper',
+        component: Paper,
+        meta: {
+          title: '考试页'
         }
       }
     ]

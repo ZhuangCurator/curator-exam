@@ -26,6 +26,14 @@ public interface ExamRegisterInfoMapper extends BaseMapper<ExamRegisterInfo> {
     int batchUpdateExamPassword(@Param("idList") List<String> idList, @Param("examPassword") String examPassword, @Param("now") LocalDateTime now);
 
     /**
+     * 重置考生信息中的 准考证号/座位号/教室ID
+     *
+     * @param idList 考生信息ID集合
+     * @return
+     */
+    void resetExamRegisterInfo(@Param("idList") List<String> idList);
+
+    /**
      * 给考生分配教室
      *
      * @param list 考生信息

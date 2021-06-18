@@ -12,22 +12,22 @@ public enum QuestionTypeEnum {
      * 单选
      *
      */
-    SINGLE_CHOICE(1,"单选"),
+    SINGLE_CHOICE(1,"单选题"),
 
     /**
      * 多选
      */
-    MULTIPLE_CHOICE(2,"多选"),
+    MULTIPLE_CHOICE(2,"多选题"),
 
     /**
      * 判断
      */
-    JUDGMENT(3,"判断"),
+    JUDGMENT(3,"判断题"),
 
     /**
      * 填空
      */
-    FILL_BLANK(4,"填空");
+    FILL_BLANK(4,"填空题");
 
     private int status;
     private String desc;

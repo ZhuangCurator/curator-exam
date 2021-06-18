@@ -1,52 +1,54 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { handleLoginAccountQuery } from '@/apis/auth/auth'
-
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    token: '',
     // 账户ID
     accountId: '',
     // 账户名称
     accountName: '',
-    // 当前菜单
-    activeMenu: 'notice'
+    // 报名信息ID
+    examRegisterInfoId: '',
+    // 组卷规则ID
+    generationRuleId: '',
+    // 试卷ID
+    testPaperId: '',
+    // 考试时长
+    examDuration: 0
   },
   mutations: {
-    saveAccount (state, account) {
+    saveLoginInfo (state, account) {
       state.accountId = account.accountId
       state.accountName = account.accountName
+      state.examRegisterInfoId = account.examRegisterInfoId
+      state.generationRuleId = account.generationRuleId
     },
-    saveToken (state, token) {
-      state.token = token
+    setTestPaperId (state, testPaperId) {
+      state.testPaperId = testPaperId
+    },
+    setExamDuration (state, examDuration) {
+      state.examDuration = examDuration
     },
     resetState (state) {
-      state.token = ''
       state.accountId = ''
       state.accountName = ''
+      state.examRegisterInfoId = ''
+      state.generationRuleId = ''
     },
-    setActiveMenu (state, activeMenu) {
-      state.activeMenu = activeMenu
-    },
-    getActiveMenu (state) {
-      return state.activeMenu
+    subExamDuration (state) {
+      // 剩余时间减去一秒
+      state.examDuration -= 1000
     }
   },
   actions: {
-    // 查询登录账户
-    queryLoginAccount ({ commit }) {
-      return new Promise((resolve, reject) => {
-        handleLoginAccountQuery().then(res => {
-          console.log(res)
-          const result = res.data
-          commit('saveAccount', result.data)
-          resolve(result.data)
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    // 保存登录返回信息
+    setLoginInfo (context, info) {
+      context.commit('saveLoginInfo', info)
+    },
+    // 保存初始化完成的试卷ID
+    saveTestPaperId (context, testPaperId) {
+      context.commit('setTestPaperId', testPaperId)
     }
   },
   modules: {

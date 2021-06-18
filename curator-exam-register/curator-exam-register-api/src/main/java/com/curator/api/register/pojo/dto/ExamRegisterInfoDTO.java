@@ -47,6 +47,11 @@ public class ExamRegisterInfoDTO implements Serializable {
     private Long examDuration;
 
     /**
+     * 考生账户ID
+     */
+    private String accountId;
+
+    /**
      * 账户名称
      */
     private String accountName;

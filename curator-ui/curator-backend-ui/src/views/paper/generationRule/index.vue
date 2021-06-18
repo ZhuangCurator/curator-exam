@@ -10,7 +10,7 @@
     <!-- 卡片视图区域-->
     <el-card class="box-card">
       <!--  搜索与添加区域 -->
-      <el-form :model="queryForm" ref="queryFormRef" :inline="true" label-width="85px">
+      <el-form :model="queryForm" ref="queryFormRef" :inline="true" label-width="100px">
         <el-form-item label="组卷规则名称">
           <el-input
             v-model="queryForm.generationRuleName"
