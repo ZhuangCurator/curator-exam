@@ -2,6 +2,7 @@ package com.curator.core.paper.controller;
 
 import com.curator.api.paper.pojo.dto.GenerationRuleDetailDTO;
 import com.curator.api.paper.pojo.dto.PaperQuestionDTO;
+import com.curator.api.paper.pojo.dto.PaperQuestionGroupDTO;
 import com.curator.api.paper.pojo.vo.TestPaperInfo;
 import com.curator.api.register.pojo.dto.ExamRegisterInfoDTO;
 import com.curator.common.annotation.Log;
@@ -65,13 +66,13 @@ public class TestPaperController {
     /**
      * 试卷中试题类型和数量
      *
-     * @param generationRuleId 组卷规则ID
+     * @param info 试卷信息
      * @return
      */
-    @GetMapping("/questionType/{generationRuleId}")
+    @GetMapping("/paperQuestion/typeAndNum")
     @Log(controllerName = "TestPaperController", remark = "试卷中试题类型和数量")
-    ResultResponse<List<GenerationRuleDetailDTO>> getQuestionTypeAndNum(@PathVariable String generationRuleId) {
-        return testPaperService.getQuestionTypeAndNum(generationRuleId);
+    ResultResponse<List<PaperQuestionGroupDTO>> getQuestionTypeAndNum(TestPaperInfo info) {
+        return testPaperService.getQuestionTypeAndNum(info);
     }
 
     /**

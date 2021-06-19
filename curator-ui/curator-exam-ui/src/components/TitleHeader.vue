@@ -8,11 +8,18 @@
 <script>
 
 export default {
-  name: 'TitleHeader'
+  name: 'TitleHeader',
+  props: {
+    dividerWidth: {
+      type: Number,
+      default: 70
+    }
+  }
 }
 </script>
 
 <style lang="less" scoped>
+// // :style="{width: dividerWidth + '%'}
 .header_title {
   font-size: 30px;
   color: #000;

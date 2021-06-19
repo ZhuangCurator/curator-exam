@@ -7,6 +7,8 @@ import com.curator.api.paper.enums.QuestionTypeEnum;
 import com.curator.api.paper.enums.TestPaperStatusEnum;
 import com.curator.api.paper.pojo.dto.GenerationRuleDetailDTO;
 import com.curator.api.paper.pojo.dto.PaperQuestionDTO;
+import com.curator.api.paper.pojo.dto.PaperQuestionGroupDTO;
+import com.curator.api.paper.pojo.dto.TestPaperQuestionDTO;
 import com.curator.api.paper.pojo.vo.TestPaperInfo;
 import com.curator.api.register.pojo.dto.ExamRegisterInfoDTO;
 import com.curator.api.register.provider.ExamRegisterInfoProvider;
@@ -70,6 +72,7 @@ public class TestPaperServiceImpl implements TestPaperService {
             entity.setTestPaperId(info.getTestPaperId());
             entity.setPaperStartTime(dto.getExamStartTime());
             entity.setPaperEndTime(dto.getExamEndTime());
+            entity.setPaperStatus(TestPaperStatusEnum.PROCESSING.getStatus());
             testPaperMapper.updateById(entity);
         }
         return res;
@@ -122,19 +125,36 @@ public class TestPaperServiceImpl implements TestPaperService {
     }
 
     @Override
-    public ResultResponse<List<GenerationRuleDetailDTO>> getQuestionTypeAndNum(String generationRuleId) {
-        QueryWrapper<PaperGenerationRuleDetail> wrapper = new QueryWrapper<>();
-        wrapper.eq("generation_rule_id", generationRuleId);
-        List<PaperGenerationRuleDetail> ruleDetailList = generationRuleDetailMapper.selectList(wrapper);
-        Comparator.comparing(PaperGenerationRuleDetail::getDetailSort);
-        List<GenerationRuleDetailDTO> filterList = ruleDetailList.stream()
-                .sorted(Comparator.comparing(PaperGenerationRuleDetail::getDetailSort))
-                .map(entity -> {
-                    GenerationRuleDetailDTO dto = new GenerationRuleDetailDTO();
-                    BeanUtils.copyProperties(entity, dto);
-                    return dto;
-                }).collect(Collectors.toList());
-        return ResultResponse.<List<GenerationRuleDetailDTO>>builder().success("试卷试题类型及数量查询成功").data(filterList).build();
+    public ResultResponse<List<PaperQuestionGroupDTO>> getQuestionTypeAndNum(TestPaperInfo info) {
+        // 查询组卷规则详情
+        QueryWrapper<PaperGenerationRuleDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("generation_rule_id", info.getGenerationRuleId());
+        List<PaperGenerationRuleDetail> ruleDetailList = generationRuleDetailMapper.selectList(queryWrapper);
+        // 按组卷顺序排序
+        List<PaperGenerationRuleDetail> filterList = ruleDetailList.stream().
+                sorted(Comparator.comparing(PaperGenerationRuleDetail::getDetailSort))
+                .collect(Collectors.toList());
+
+        List<PaperQuestionGroupDTO> resultList = new ArrayList<>();
+        QueryWrapper<TestPaperQuestion> wrapper = new QueryWrapper<>();
+        wrapper.eq("test_paper_id", info.getTestPaperId());
+        List<TestPaperQuestion> paperQuestionList = testPaperQuestionMapper.selectList(wrapper);
+        // 按序号升序排序再按类型分组
+        Map<Integer, List<TestPaperQuestionDTO>> groupMap = paperQuestionList.stream()
+                .sorted(Comparator.comparing(TestPaperQuestion::getQuestionSort))
+                .map(this::convertEntity)
+                .collect(Collectors.groupingBy(TestPaperQuestionDTO::getQuestionType));
+        for (PaperGenerationRuleDetail paperGenerationRuleDetail : filterList) {
+            Integer questionType = paperGenerationRuleDetail.getQuestionType();
+            List<TestPaperQuestionDTO> dtoList = groupMap.get(questionType);
+            PaperQuestionGroupDTO questionGroupDTO = new PaperQuestionGroupDTO();
+            questionGroupDTO.setQuestionType(questionType);
+            questionGroupDTO.setQuestionTypeDesc(QuestionTypeEnum.getDesc(questionType));
+            questionGroupDTO.setQuestionAmount(dtoList.size());
+            questionGroupDTO.setPaperQuestionList(dtoList);
+            resultList.add(questionGroupDTO);
+        }
+        return ResultResponse.<List<PaperQuestionGroupDTO>>builder().success("试卷试题类型及数量查询成功").data(resultList).build();
     }
 
     @Override
@@ -422,5 +442,17 @@ public class TestPaperServiceImpl implements TestPaperService {
      */
     private String generateRedisKeyWithQuestion(String examRegisterInfoId, String testPaperId) {
         return "EXAMINFOID:TESTPAPERID:" + examRegisterInfoId + ":" + testPaperId;
+    }
+
+    /**
+     * 转换试卷试题对象
+     *
+     * @param entity
+     * @return
+     */
+    private TestPaperQuestionDTO convertEntity(TestPaperQuestion entity) {
+        TestPaperQuestionDTO target = new TestPaperQuestionDTO();
+        BeanUtils.copyProperties(entity, target);
+        return target;
     }
 }

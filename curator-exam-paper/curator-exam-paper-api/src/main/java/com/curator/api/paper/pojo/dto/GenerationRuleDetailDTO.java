@@ -47,6 +47,11 @@ public class GenerationRuleDetailDTO implements Serializable {
     private Integer questionNumber;
 
     /**
+     * 开始序列号
+     */
+    private Integer startSerialNum;
+
+    /**
      * 单个试题分数
      */
     private Integer questionPoint;

@@ -17,7 +17,12 @@ export function handleVerifyPassword (params) {
 
 // 试卷中试题类型和数量
 export function handleQuestionTypeAndNumQuery (params) {
-  return get('/examPaperCore/testPaper/questionType/' + params)
+  return get('/examPaperCore/testPaper/paperQuestion/typeAndNum', params)
+}
+
+// 试卷中单个试题
+export function handleSingleQuestionQuery (params) {
+  return get('/examPaperCore/testPaper/single/question', params)
 }
 
 // 保存用户答案

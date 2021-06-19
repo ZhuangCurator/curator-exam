@@ -65,9 +65,6 @@ public class ExamRegisterInfoProviderImpl implements ExamRegisterInfoProvider {
     @Override
     public ResultResponse<ExamRegisterInfoDTO> checkExamPassword(String examRegisterInfoId, String examPassword) {
         ExamRegisterInfo examRegisterInfo = registerInfoMapper.selectById(examRegisterInfoId);
-        examRegisterInfo.setExamPassword(RandomUtil.randomNumbers(6));
-        // 更新口令
-        registerInfoMapper.update(examRegisterInfo, new UpdateWrapper<ExamRegisterInfo>().eq("exam_register_info_id", examRegisterInfoId));
         // 若口令相等 计算考试开始时间和结束时间
         if(Help.isNotEmpty(examRegisterInfo.getExamPassword()) && examPassword.equals(examRegisterInfo.getExamPassword())) {
             ExamRegisterInfoDTO dto = new ExamRegisterInfoDTO();
@@ -90,6 +87,9 @@ public class ExamRegisterInfoProviderImpl implements ExamRegisterInfoProvider {
                     dto.setExamDuration(Duration.between(dto.getExamStartTime(), dto.getExamEndTime()).toMillis());
                 }
             }
+            examRegisterInfo.setExamPassword(RandomUtil.randomNumbers(6));
+            // 更新口令
+            registerInfoMapper.update(examRegisterInfo, new UpdateWrapper<ExamRegisterInfo>().eq("exam_register_info_id", examRegisterInfoId));
             return ResultResponse.<ExamRegisterInfoDTO>builder().success("考试口令检查成功！").data(dto).build();
         }
         return ResultResponse.<ExamRegisterInfoDTO>builder().failure("考试口令检查失败！").build();
