@@ -222,9 +222,6 @@ export default {
       }
     }
   },
-  created () {
-    this.getGenerationRuleDetailList()
-  },
   updated () {
     this.showTableColumn()
   },

@@ -4,7 +4,7 @@
     <div class="paper_div">
       <div class="time_div">
         距离考试结束还有：<span style="color: #ff0000;">{{ minutes }}分{{ seconds }}秒</span>
-        <el-button style="float: right; margin-top: -10px" type="primary" icon="el-icon-plus" >我要交卷</el-button>
+        <el-button style="float: right; margin-top: -10px" type="primary" icon="el-icon-plus" @click="handIn()">我要交卷</el-button>
       </div>
       <div class="paper_detail_div">
         <div class="question_type_div" >
@@ -37,6 +37,15 @@
               <el-checkbox v-for="(item, index) in this.currentQuestion.questionAnswerList" :label="choseOptions[index]" :key="index">{{ item.questionAnswerContent }}</el-checkbox>
             </el-checkbox-group>
           </div>
+          <div v-if="this.currentQuestion.questionType === 4">
+<!--            <el-input v-for="(item, index) in this.currentQuestion.questionAnswerList" :key="index" v-model="currentFillBlankAnswer[index].questionAnswerContent" style="margin-top: 10px">-->
+<!--              <template slot="prepend">答案 {{ index + 1}} :</template>-->
+<!--            </el-input>-->
+            <el-input v-for="(item, index) in this.currentQuestion.questionAnswerList" :key="index"
+                      v-model="currentFillBlankAnswer[index]" style="margin-top: 10px" @change="handleInputChange">
+              <template slot="prepend">答案 {{ index + 1}} :</template>
+            </el-input>
+          </div>
           <div style="margin-top: 40px">
             <el-button v-if="showPrevious" type="primary"  size="small" icon="el-icon-back" @click="showPreviousQuestion()">上一题</el-button>
             <el-button v-if="showNext" type="warning"  size="small" icon="el-icon-right" @click="showNextQuestion()">下一题</el-button>
@@ -52,7 +61,8 @@ import TitleHeader from '@/components/TitleHeader'
 import {
   handleQuestionTypeAndNumQuery,
   handleSingleQuestionQuery,
-  handleUserAnswerSave
+  handleUserAnswerSave,
+  handlePaperMark
 } from '@/apis/paper'
 export default {
   name: 'paper',
@@ -82,31 +92,13 @@ export default {
       // 当前单选判断题答案
       currentRadioAnswer: '',
       // 当前多选题答案
-      currentCheckboxAnswer: []
+      currentCheckboxAnswer: [],
+      // 当前填空题答案
+      currentFillBlankAnswer: [],
+      currentFillBlankAnswerLength: 0
     }
   },
   methods: {
-    // 考试结束倒计时
-    countdown () {
-      // 剩余毫秒
-      const milliSecond = this.$store.state.examDuration
-      // 强制交卷
-      if (milliSecond < 0) {
-        console.log('强制交卷了')
-        return
-      }
-      const min = parseInt((milliSecond / 1000) / 60 + '')
-      const sec = (milliSecond / 1000) % 60
-      // 赋值
-      this.minutes = min > 9 ? min : '0' + min
-      this.seconds = sec > 9 ? sec : '0' + sec
-      const that = this
-      // 时间自减一秒
-      this.$store.commit('subExamDuration')
-      setTimeout(function () {
-        that.countdown()
-      }, 1000)
-    },
     // 试卷试题类型和个数
     async queryQuestionTypeAndNum () {
       const param = { testPaperId: this.$store.state.testPaperId, generationRuleId: this.$store.state.generationRuleId }
@@ -123,16 +115,8 @@ export default {
     },
     // 查询试卷单个试题
     async queryPaperSingleQuestion () {
-      if (this.currentTagIndex === 1) {
-        this.showPrevious = false
-      } else {
-        this.showPrevious = true
-      }
-      if (this.currentTagIndex === this.maxTagIndex) {
-        this.showNext = false
-      } else {
-        this.showNext = true
-      }
+      this.showPrevious = this.currentTagIndex !== 1
+      this.showNext = this.currentTagIndex !== this.maxTagIndex
       const param = {
         testPaperId: this.$store.state.testPaperId,
         examRegisterInfoId: this.$store.state.examRegisterInfoId,
@@ -144,11 +128,26 @@ export default {
       } else {
         console.log(res.data)
         this.currentQuestion = res.data
+        if (this.currentQuestion.questionType === 4) {
+          this.currentFillBlankAnswerLength = this.currentQuestion.questionAnswerList.length
+        }
         if (this.currentQuestion.userAnswerList !== null) {
           if (this.currentQuestion.questionType === 1 || this.currentQuestion.questionType === 3) {
+            // 单选或判断
             this.currentRadioAnswer = this.currentQuestion.userAnswerList[0]
           } else if (this.currentQuestion.questionType === 2) {
+            // 多选
             this.currentCheckboxAnswer = this.currentQuestion.userAnswerList
+          } else if (this.currentQuestion.questionType === 4) {
+            // 填空
+            const userAnswer = this.currentQuestion.userAnswerList
+            for (let i = 0; i < this.currentFillBlankAnswerLength; i++) {
+              if (userAnswer[i] === 'blankEmpty') {
+                this.currentFillBlankAnswer[i] = ''
+              } else {
+                this.currentFillBlankAnswer[i] = userAnswer[i]
+              }
+            }
           }
         }
       }
@@ -168,6 +167,41 @@ export default {
         console.log(res)
       }
     },
+    // 主动交卷
+    handIn () {
+      this.$confirm('是否确认交卷?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        // 手动交卷
+        await this.markPaper(1)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消交卷!'
+        })
+      })
+    },
+    // 交卷
+    async markPaper (handInReason) {
+      const param = {
+        testPaperId: this.$store.state.testPaperId,
+        examRegisterInfoId: this.$store.state.examRegisterInfoId,
+        handInReason: handInReason
+      }
+      const { data: res } = await handlePaperMark(param)
+      if (res.status !== '2000') {
+        this.$message.error(res.message)
+      } else {
+        // 保存成绩
+        this.$store.commit('setGrades', res.data)
+        // 则跳转至考试成绩页
+        await this.$router.push({
+          path: 'grades'
+        })
+      }
+    },
     // 动态生成试题序号标签的 type
     handleTagType (item) {
       if (item.questionSort === this.currentTagIndex) {
@@ -185,6 +219,8 @@ export default {
       // 重置答案
       this.currentRadioAnswer = ''
       this.currentCheckboxAnswer = []
+      this.currentFillBlankAnswer = []
+      this.currentFillBlankAnswerLength = 0
       // 查询当前序号试题
       this.queryPaperSingleQuestion()
     },
@@ -208,6 +244,26 @@ export default {
       // 保存答案到数据库
       this.saveSingleQuestionAnswer(val.join('$:$'))
     },
+    // 处理输入框输入值
+    handleInputChange (val) {
+      console.log('val: ' + val)
+      if (!val || val.length === 0) {
+        this.handledQuestionArray.delete(this.currentTagIndex)
+      } else {
+        // 保存已作试题序号
+        this.handledQuestionArray.add(this.currentTagIndex)
+      }
+      const answer = []
+      for (let i = 0; i < this.currentFillBlankAnswerLength; i++) {
+        if (!this.currentFillBlankAnswer[i]) {
+          answer[i] = 'blankEmpty'
+        } else {
+          answer[i] = this.currentFillBlankAnswer[i].trim()
+        }
+      }
+      // 保存答案到数据库
+      this.saveSingleQuestionAnswer(answer.join('$:$'))
+    },
     // 展示上一题
     showPreviousQuestion () {
       this.handleTagClick(this.currentTagIndex - 1)
@@ -224,8 +280,27 @@ export default {
     this.queryPaperSingleQuestion()
   },
   mounted () {
-    // 进行倒计时
-    this.countdown()
+    // 考试结束倒计时
+    const timer = setInterval(() => {
+      // 剩余毫秒
+      const milliSecond = this.$store.state.examDuration
+      if (milliSecond < 0) {
+        clearInterval(timer)
+        console.log('强制交卷了')
+      }
+      // 剩余毫秒
+      const min = parseInt((milliSecond / 1000) / 60 + '')
+      const sec = (milliSecond / 1000) % 60
+      // 赋值
+      this.minutes = min > 9 ? min : '0' + min
+      this.seconds = sec > 9 ? sec : '0' + sec
+      // 时间自减一秒
+      this.$store.commit('subExamDuration')
+    }, 1000)
+    // 通过$once来监听定时器，在beforeDestroy钩子可以被清除。
+    this.$once('hook:beforeDestroy', () => {
+      clearInterval(timer)
+    })
   }
 }
 </script>
@@ -285,7 +360,15 @@ export default {
   margin-right: 0;
 }
 //  单选框 文本大小
-/deep/ .el-radio__label, .el-checkbox__label {
+/deep/ .el-radio__label {
   font-size: 20px;
+}
+
+/deep/ .el-checkbox__label {
+  font-size: 20px;
+}
+
+/deep/ .el-input-group__prepend {
+  padding: 0 7px;
 }
 </style>

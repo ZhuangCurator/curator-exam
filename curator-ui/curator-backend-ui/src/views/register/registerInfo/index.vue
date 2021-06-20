@@ -57,6 +57,11 @@
             {{ scope.row.passed === 1 ? '及格' : '不及格' }}
           </template>
         </el-table-column>
+        <el-table-column label="操作"  width="100px" align="center">
+          <template slot-scope="scope">
+            <el-button type="primary" icon="el-icon-edit" size="mini" @click="showReExamDialog(scope.row.examRegisterInfoId)">重考</el-button>
+          </template>
+        </el-table-column>
       </el-table>
 
       <!-- 分页区域 -->
@@ -70,6 +75,24 @@
         :total="total">
       </el-pagination>
     </el-card>
+    <!-- 考生重考对话框 -->
+    <el-dialog title="考生重考" :visible.sync="reExamDialogVisible" width="30%" @close="handleReExamDialogClose">
+      <!-- 对话框主题区域 -->
+      <el-form ref="reExamFormRef" :model="editForm" label-width="80px">
+        <el-form-item label="重考类型">
+          <el-input v-model="editForm.examRegisterInfoId" style="display:none"></el-input>
+          <el-radio-group v-model="editForm.paperStatus">
+            <el-radio :label="3">新卷重考</el-radio>
+            <el-radio :label="4">原卷重考</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <!-- 底部按钮区域 -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="reExamDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleReExamDialogConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -77,7 +100,7 @@
 import {
   handleUpdateExamRegisterInfo,
   handleExamRegisterInfoPage,
-  handleExamRegisterInfoQuery
+  handleExamRegisterInfoQuery, handleReExam
 } from '@/apis/register/examRegister'
 import { showElement } from '@/utils/show'
 
@@ -85,7 +108,6 @@ export default {
   name: 'ExamRegisterInfoPage',
   data () {
     return {
-      columnShow: true,
       // 是否是超级管理员
       superAdmin: 0,
       // 查询表单参数
@@ -100,7 +122,14 @@ export default {
       // 报名信息列表
       examRegisterInfoList: [],
       // 报名信息总数
-      total: 0
+      total: 0,
+      // 修改报名信息表单数据
+      editForm: {
+        examRegisterInfoId: undefined,
+        paperStatus: undefined
+      },
+      // 控制修改权限组对话框的显示
+      reExamDialogVisible: false
     }
   },
   created () {
@@ -111,10 +140,6 @@ export default {
     this.showTableColumn()
   },
   methods: {
-    // 根据权限数据展示操作列
-    showTableColumn () {
-      this.columnShow = showElement(['system:examRegisterInfo:update', 'system:examRegisterInfo:deleted', 'system:examRegisterInfo:bind'])
-    },
     // 查询表单重置
     resetQueryForm () {
       this.queryForm.accountName = undefined
@@ -139,6 +164,29 @@ export default {
     handleCurrentChange (newCurrent) {
       this.queryForm.current = newCurrent
       this.getExamRegisterInfoPage()
+    },
+    // 展示重考对话框
+    showReExamDialog (examRegisterInfoId) {
+      this.reExamDialogVisible = true
+      this.editForm.examRegisterInfoId = examRegisterInfoId
+    },
+    // 重考对话框关闭
+    handleReExamDialogClose () {
+      this.editForm.examRegisterInfoId = undefined
+      this.editForm.paperStatus = undefined
+    },
+    // 重考对话框确定
+    async handleReExamDialogConfirm () {
+      const { data: res } = await handleReExam(this.editForm)
+      if (res.status !== '2000') {
+        return this.$message.error(res.message)
+      }
+      this.$message({
+        type: 'success',
+        message: res.message
+      })
+      this.reExamDialogVisible = false
+      await this.getExamRegisterInfoPage()
     }
   }
 }

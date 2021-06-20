@@ -97,7 +97,7 @@ export default {
           if (res.status !== '2000') {
             this.$message.error(res.message)
           } else {
-            this.$message.success(res.message)
+            // this.$message.success(res.message)
             // 保存登录信息
             await this.$store.dispatch('setLoginInfo', res.data)
             // 则跳转至考试须知页

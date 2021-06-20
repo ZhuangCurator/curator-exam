@@ -59,7 +59,7 @@
         </foreach>
     </update>
     <update id="updateExamStatusAndScoreAndPassed">
-         update exam_register_info set exam_statue = 0, score = 0, is_passed = 0 , update_time = #{now}
+         update exam_register_info set exam_status = 0, score = 0, is_passed = 0 , update_time = #{now}
          where exam_register_info_id = #{examRegisterInfoId}
     </update>
     <update id="resetExamRegisterInfo">

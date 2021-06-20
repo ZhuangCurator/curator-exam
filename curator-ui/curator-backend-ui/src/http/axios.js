@@ -17,12 +17,13 @@ axios.interceptors.request.use(config => {
 })
 
 // get请求
-export function get (url, params) {
+export function get (url, params, responseType) {
   return new Promise((resolve, reject) => {
     axios({
       method: 'get',
       url: url,
-      params: params
+      params: params,
+      responseType: responseType || ''
     }).then(res => {
       resolve(res)
     }).catch(err => {

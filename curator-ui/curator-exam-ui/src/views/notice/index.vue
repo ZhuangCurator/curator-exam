@@ -68,7 +68,17 @@ export default {
       const param = { examRegisterInfoId: this.$store.state.examRegisterInfoId, generationRuleId: this.$store.state.generationRuleId }
       const { data: res } = await handlePaperInit(param)
       if (res.status !== '2000') {
-        this.$message.error(res.message)
+        // 初始化试卷出错,返回登录页,清除缓存
+        this.$message({
+          message: res.message,
+          type: 'error',
+          duration: 6000
+        })
+        this.$store.commit('resetState')
+        // 则跳转至登录页
+        await this.$router.push({
+          path: 'login'
+        })
       } else {
         // 保存试卷ID
         await this.$store.dispatch('saveTestPaperId', res.data)

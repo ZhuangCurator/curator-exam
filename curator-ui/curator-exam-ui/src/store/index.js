@@ -2,12 +2,17 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 Vue.use(Vuex)
 
-export default new Vuex.Store({
-  state: {
+// 声明这两个方便直接清空state
+const getDefaultState = () => {
+  return {
+    // 最终的考试成绩
+    grades: '',
     // 账户ID
     accountId: '',
     // 账户名称
     accountName: '',
+    // 准考证号
+    admissionNumber: '',
     // 报名信息ID
     examRegisterInfoId: '',
     // 组卷规则ID
@@ -16,11 +21,20 @@ export default new Vuex.Store({
     testPaperId: '',
     // 考试时长
     examDuration: 0
-  },
+  }
+}
+const state = getDefaultState()
+
+export default new Vuex.Store({
+  state: state,
   mutations: {
+    setGrades (state, grades) {
+      state.grades = grades
+    },
     saveLoginInfo (state, account) {
       state.accountId = account.accountId
       state.accountName = account.accountName
+      state.admissionNumber = account.admissionNumber
       state.examRegisterInfoId = account.examRegisterInfoId
       state.generationRuleId = account.generationRuleId
     },
@@ -31,10 +45,7 @@ export default new Vuex.Store({
       state.examDuration = examDuration
     },
     resetState (state) {
-      state.accountId = ''
-      state.accountName = ''
-      state.examRegisterInfoId = ''
-      state.generationRuleId = ''
+      state = getDefaultState()
     },
     subExamDuration (state) {
       // 剩余时间减去一秒

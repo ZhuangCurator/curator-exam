@@ -187,16 +187,15 @@ public class ExamRegisterInfoServiceImpl implements ExamRegisterInfoService {
     public List<ExamRegisterInfoExcelDTO> listWithExamRegisterInfoExcel(ExamRegisterInfoSearch search) {
         List<ExamRegisterInfoExcelDTO> resultList = new ArrayList<>();
         QueryWrapper<ExamRegisterInfo> wrapper = new QueryWrapper<>();
-        wrapper.eq("exam_category_id", search.getExamCategoryId())
-                .eq("exam_subject_id", search.getExamSubjectId())
+        wrapper.eq("exam_subject_id", search.getExamSubjectId())
                 .eq("exam_site_id", search.getExamSiteId())
                 .eq(Help.isNotEmpty(search.getPassed()), "is_passed", search.getPassed())
                 .like(Help.isNotEmpty(search.getAccountName()), "account_name", search.getAccountName())
                 .orderByDesc("create_time");
         List<ExamRegisterInfo> infoList = examRegisterInfoMapper.selectList(wrapper);
         if(Help.isNotEmpty(infoList)) {
-            ExamCategory examCategory = examCategoryMapper.selectById(search.getExamCategoryId());
             ExamSubject examSubject = examSubjectMapper.selectById(search.getExamSubjectId());
+            ExamCategory examCategory = examCategoryMapper.selectById(examSubject.getExamCategoryId());
             ExamSite examSite = examSiteMapper.selectById(search.getExamSiteId());
             resultList = infoList.parallelStream().map(info -> {
                 ExamRegisterInfoExcelDTO dto = new ExamRegisterInfoExcelDTO();

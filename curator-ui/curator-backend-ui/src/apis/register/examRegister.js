@@ -38,3 +38,8 @@ export function handleAssignClassroom (params) {
 export function handleReExam (params) {
   return put('/examRegisterBackend/examRegisterInfo/reExam', params)
 }
+
+// 导出报考人员名单
+export function handleExportExamRegisterInfo (params) {
+  return get('/examRegisterBackend/examRegisterInfo/export', params, 'blob')
+}

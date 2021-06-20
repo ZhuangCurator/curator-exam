@@ -67,14 +67,14 @@ public class ExamRegisterInfoExcelDTO implements Serializable {
      * 考生成绩
      */
     @ExcelProperty("考生成绩")
-    @ColumnWidth(10)
+    @ColumnWidth(20)
     private String score;
 
     /**
      * 是否及格
      */
     @ExcelProperty("是否及格")
-    @ColumnWidth(10)
+    @ColumnWidth(20)
     private String passedDesc;
 
 }

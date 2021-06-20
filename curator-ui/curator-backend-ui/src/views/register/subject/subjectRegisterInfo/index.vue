@@ -92,6 +92,7 @@
         <el-col :span="6">
           <el-button type="primary" @click="setExamPassword" v-has-perm="['register:exam:password']">设置口令</el-button>
           <el-button type="primary" @click="assignClassroom" v-has-perm="['register:assign:classroom']">分配教室</el-button>
+          <el-button type="primary" @click="exportRegisterInfo">导出人员名单</el-button>
         </el-col>
       </el-row>
       <!--  报名信息列表区域 -->
@@ -163,13 +164,13 @@
 
 <script>
 import {
-  handleUpdateExamRegisterInfo,
+  handleReExam,
   handleExamRegisterInfoPage,
-  handleGenerateExamPassword, handleAssignClassroom
+  handleGenerateExamPassword,
+  handleAssignClassroom,
+  handleExportExamRegisterInfo
 } from '@/apis/register/examRegister'
 import { showElement } from '@/utils/show'
-
-import { handleDeletePowerGroup } from '@/apis/info/powerGroup'
 
 export default {
   name: 'ExamRegisterInfoPage',
@@ -304,6 +305,24 @@ export default {
         })
       })
     },
+    // 导出人员名单
+    async exportRegisterInfo () {
+      this.queryForm.examSubjectId = this.examSubjectId
+      this.queryForm.examSiteId = this.examSiteId
+      const { data: res } = await handleExportExamRegisterInfo(this.queryForm)
+      const link = document.createElement('a')
+      const blob = new Blob([res], { type: res.type })
+      link.style.display = 'none'
+      link.href = URL.createObjectURL(blob)
+      let num = ''
+      for (let i = 0; i < 10; i++) {
+        num += Math.ceil(Math.random() * 10)
+      }
+      link.setAttribute('download', '考点报考人员信息_' + num + '.xlsx')
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    },
     // 展示重考对话框
     showReExamDialog (examRegisterInfoId) {
       this.reExamDialogVisible = true
@@ -316,7 +335,7 @@ export default {
     },
     // 重考对话框确定
     async handleReExamDialogConfirm () {
-      const { data: res } = await handleExamRegisterInfoPage(this.editForm)
+      const { data: res } = await handleReExam(this.editForm)
       if (res.status !== '2000') {
         return this.$message.error(res.message)
       }
@@ -324,6 +343,7 @@ export default {
         type: 'success',
         message: res.message
       })
+      this.reExamDialogVisible = false
       await this.getExamRegisterInfoPage()
     }
   },

@@ -5,6 +5,7 @@ import Home from '../views/Home.vue'
 import Login from '@/views/login'
 import Notice from '@/views/notice'
 import Paper from '@/views/paper'
+import Grades from '@/views/grades'
 
 Vue.use(VueRouter)
 
@@ -47,6 +48,20 @@ const routes = [
         component: Paper,
         meta: {
           title: '考试页'
+        }
+      }
+    ]
+  },
+  {
+    path: '/',
+    component: Home,
+    redirect: '/grades',
+    children: [
+      {
+        path: '/grades',
+        component: Grades,
+        meta: {
+          title: '考试成绩页'
         }
       }
     ]

@@ -209,7 +209,8 @@ public class TestPaperServiceImpl implements TestPaperService {
         paperQuestion.setHandled(1);
         paperQuestion.setUserAnswer(info.getUserAnswer());
         // 计算此题所获得的分数
-        if(Help.isEmpty(info.getUserAnswer())) {
+        if(Help.isEmpty(info.getUserAnswer()) || "blankEmpty".equals(info.getUserAnswer())) {
+            paperQuestion.setHandled(0);
             paperQuestion.setUserPoint(new BigDecimal(0));
         } else {
             paperQuestion.setUserPoint(calculateQuestionPoint(paperQuestion));
@@ -231,7 +232,7 @@ public class TestPaperServiceImpl implements TestPaperService {
         // 更新试卷分数
         TestPaper testPaper = new TestPaper();
         testPaper.setTestPaperId(info.getTestPaperId());
-        testPaper.setExamPoint(new BigDecimal(score));
+        testPaper.setExamPoint(new BigDecimal(score).setScale(1, BigDecimal.ROUND_HALF_UP));
         testPaper.setHandInReason(info.getHandInReason());
         testPaper.setHandInTime(LocalDateTime.now());
         testPaper.setPaperStatus(TestPaperStatusEnum.OVER.getStatus());
@@ -364,7 +365,7 @@ public class TestPaperServiceImpl implements TestPaperService {
             if(question.getOrdered() == 1) {
                 // 答案有序
                 for (int i = 0; i < userAnswerList.size(); i++) {
-                    String userAnswer = userAnswerList.get(i);
+                    String userAnswer = "blankEmpty".equals(userAnswerList.get(i)) ? "" : userAnswerList.get(i);
                     if(Help.isNotEmpty(userAnswer)) {
                         if(userAnswer.equals(questionAnswerList.get(i).getContent())) {
                             point = point.add(questionAnswerList.get(i).getQuestionPoint());
@@ -375,10 +376,11 @@ public class TestPaperServiceImpl implements TestPaperService {
                 // 答案无序
                 List<String> questionAnswerStrList = questionAnswerList.stream().map(QuestionAnswer::getContent).collect(Collectors.toList());
                 for (int i = 0; i < userAnswerList.size(); i++) {
-                    String userAnswer = userAnswerList.get(i);
+                    String userAnswer = "blankEmpty".equals(userAnswerList.get(i)) ? "" : userAnswerList.get(i);
                     if(Help.isNotEmpty(userAnswer)) {
                         if(questionAnswerStrList.contains(userAnswer)){
                             point = point.add(questionAnswerList.get(i).getQuestionPoint());
+                            questionAnswerStrList.remove(userAnswer);
                         }
                     }
                 }
@@ -411,18 +413,18 @@ public class TestPaperServiceImpl implements TestPaperService {
         BeanUtils.copyProperties(question, paperQuestionDTO);
         Question questionEntity = questionMapper.selectById(question.getQuestionId());
         paperQuestionDTO.setQuestionStem(questionEntity.getQuestionStem());
-        if (paperQuestionDTO.getQuestionType() != QuestionTypeEnum.FILL_BLANK.getStatus()) {
-            QueryWrapper<QuestionAnswer> wrapper = new QueryWrapper<>();
-            wrapper.eq("question_id", paperQuestionDTO.getQuestionId())
-                    .orderByAsc("question_answer_order");
-            List<QuestionAnswer> questionAnswerList = questionAnswerMapper.selectList(wrapper);
-            List<PaperQuestionDTO.PaperQuestionAnswer> list = questionAnswerList.stream().map(questionAnswer -> {
-                PaperQuestionDTO.PaperQuestionAnswer answerDTO = new PaperQuestionDTO.PaperQuestionAnswer();
-                answerDTO.setQuestionAnswerContent(questionAnswer.getContent());
-                return answerDTO;
-            }).collect(Collectors.toList());
-            paperQuestionDTO.setQuestionAnswerList(list);
-        }
+        // 查出答案具体内容
+        QueryWrapper<QuestionAnswer> wrapper = new QueryWrapper<>();
+        wrapper.eq("question_id", paperQuestionDTO.getQuestionId())
+                .orderByAsc("question_answer_order");
+        List<QuestionAnswer> questionAnswerList = questionAnswerMapper.selectList(wrapper);
+        List<PaperQuestionDTO.PaperQuestionAnswer> list = questionAnswerList.stream().map(questionAnswer -> {
+            PaperQuestionDTO.PaperQuestionAnswer answerDTO = new PaperQuestionDTO.PaperQuestionAnswer();
+            answerDTO.setQuestionAnswerContent(questionAnswer.getContent());
+            return answerDTO;
+        }).collect(Collectors.toList());
+        paperQuestionDTO.setQuestionAnswerList(list);
+        // 查出用户答案
         if(Help.isNotEmpty(question.getUserAnswer())) {
             List<String> userAnswerList = Help.split2List(question.getUserAnswer(), "\\$:\\$");
             paperQuestionDTO.setUserAnswerList(userAnswerList);

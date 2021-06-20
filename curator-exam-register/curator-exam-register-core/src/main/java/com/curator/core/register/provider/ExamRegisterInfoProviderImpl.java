@@ -104,6 +104,7 @@ public class ExamRegisterInfoProviderImpl implements ExamRegisterInfoProvider {
             examRegisterInfo.setPassed(1);
         }
         examRegisterInfo.setScore(score);
+        examRegisterInfo.setExamStatus(ExamStatusTypeEnum.ALREADY_OVER.getStatus());
         registerInfoMapper.update(examRegisterInfo, new UpdateWrapper<ExamRegisterInfo>().eq("exam_register_info_id", examRegisterInfoId));
         return ResultResponse.builder().success("成绩同步成功了！").build();
     }
