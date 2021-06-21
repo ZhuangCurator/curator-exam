@@ -182,7 +182,7 @@ export default {
   methods: {
     // 根据权限数据展示操作列
     showTableColumn () {
-      this.columnShow = showElement(['system:questionBank:update', 'system:questionBank:deleted', 'system:questionBank:bind'])
+      this.columnShow = showElement(['paper:questionBank:update', 'paper:questionBank:delete', 'paper:question:bind'])
     },
     // 查询表单重置
     resetQueryForm () {

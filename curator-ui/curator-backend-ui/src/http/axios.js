@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Loading } from 'element-ui'
 import { getToken } from '@/utils/storage'
 
 axios.defaults.baseURL = 'http://localhost:9010'
@@ -6,14 +7,22 @@ axios.defaults.baseURL = 'http://localhost:9010'
 // 设置请求超时时间
 axios.defaults.timeout = 10000
 
+let loadingInstance
 // 设置请求拦截器
 axios.interceptors.request.use(config => {
+  loadingInstance = Loading.service({ fullscreen: true, text: '拼命加载中...', background: 'rgba(0, 0, 0, 0.8)' })
   // 发送请求时带上token值
   const token = getToken()
   if (token) {
     config.headers.Authorization = token
   }
   return config
+})
+
+// http响应拦截器
+axios.interceptors.response.use(data => {
+  loadingInstance.close()
+  return data
 })
 
 // get请求

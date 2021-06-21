@@ -313,7 +313,7 @@ export default {
   methods: {
     // 根据权限数据展示操作列
     showTableColumn () {
-      this.columnShow = showElement(['info:account:update', 'info:account:deleted', 'system:account:bind'])
+      this.columnShow = showElement(['info:sonAccount:update', 'info:sonAccount:delete'])
     },
     // 查询表单重置
     resetQueryForm () {

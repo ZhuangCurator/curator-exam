@@ -80,11 +80,6 @@ public class ExamRegisterInfo implements Serializable {
     private Integer examStatus;
 
     /**
-     * 准考证url
-     */
-    private String admissionTicketUrl;
-
-    /**
      * 准考证编号
      */
     private String admissionNumber;

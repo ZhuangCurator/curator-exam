@@ -101,11 +101,6 @@ public class ExamRegisterInfoDTO implements Serializable {
     private String examStatusDesc;
 
     /**
-     * 准考证url
-     */
-    private String admissionTicketUrl;
-
-    /**
      * 准考证编号
      */
     private String admissionNumber;

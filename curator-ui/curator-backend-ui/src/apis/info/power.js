@@ -5,9 +5,14 @@ export function handleRouterQuery () {
   return get('/examInfoBackend/infoPower/router')
 }
 
-// 获取权限列表
-export function handlePowerList (params) {
-  return get('/examInfoBackend/infoPower/list', params)
+// 权限列表查询
+export function handleTreePower (params) {
+  return get('/examInfoBackend/infoPower/tree', params)
+}
+
+// 个人权限查询
+export function handlePowerList () {
+  return get('/examInfoBackend/infoPower/list')
 }
 
 // 获取单个权限数据

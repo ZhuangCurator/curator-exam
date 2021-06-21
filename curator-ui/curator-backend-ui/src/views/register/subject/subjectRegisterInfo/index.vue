@@ -224,7 +224,7 @@ export default {
   methods: {
     // 根据权限数据展示操作列
     showTableColumn () {
-      this.columnShow = showElement(['register:info:reExam'])
+      this.columnShow = showElement(['register:people:reExam'])
     },
     // 查询表单重置
     resetQueryForm () {

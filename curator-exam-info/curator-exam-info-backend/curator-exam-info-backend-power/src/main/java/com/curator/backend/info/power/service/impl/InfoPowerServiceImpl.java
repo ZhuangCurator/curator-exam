@@ -66,29 +66,7 @@ public class InfoPowerServiceImpl implements InfoPowerService {
         Set<String> powerSet = new HashSet<>();
         // 如果不是超级管理员
         if (!infoRole.getRoleName().equals(CommonConstant.DEFAULT_SUPER_ADMIN_ROLE)) {
-            // 查询账户本身具有的权限
-            QueryWrapper<InfoAccountPower> accountPowerWrapper = new QueryWrapper<>();
-            accountPowerWrapper.eq("account_id", accountId);
-            List<InfoAccountPower> accountPowerList = accountPowerMapper.selectList(accountPowerWrapper);
-            if (Help.isNotEmpty(accountPowerList)) {
-                powerSet.addAll(accountPowerList.parallelStream().map(InfoAccountPower::getPowerId).collect(Collectors.toSet()));
-            }
-            // 查询账户角色对应的权限组所包含的权限
-            QueryWrapper<InfoRolePowerGroup> rolePowerGroupWrapper = new QueryWrapper<>();
-            rolePowerGroupWrapper.eq("role_id", infoAccount.getRoleId());
-            List<InfoRolePowerGroup> rolePowerGroupList = rolePowerGroupMapper.selectList(rolePowerGroupWrapper);
-            if (Help.isNotEmpty(rolePowerGroupList)) {
-                // 得到权限组ID集合
-                List<String> powerGroupIdList = rolePowerGroupList.stream().map(InfoRolePowerGroup::getPowerGroupId)
-                        .collect(Collectors.toList());
-                // 查询权限
-                QueryWrapper<InfoGroupPower> groupPowerWrapper = new QueryWrapper<>();
-                groupPowerWrapper.in("power_group_id", powerGroupIdList);
-                List<InfoGroupPower> groupPowerList = groupPowerMapper.selectList(groupPowerWrapper);
-                if (Help.isNotEmpty(groupPowerList)) {
-                    powerSet.addAll(groupPowerList.parallelStream().map(InfoGroupPower::getPowerId).collect(Collectors.toSet()));
-                }
-            }
+            getAllPowerOfAccount(powerSet, infoAccount);
             if (Help.isEmpty(powerSet)) {
                 // 非超级管理员同时没有任何权限
                 return ResultResponse.<List<RouterDTO>>builder().failure("该账户没有权限访问系统!").build();
@@ -121,11 +99,6 @@ public class InfoPowerServiceImpl implements InfoPowerService {
                 .eq(Help.isNotEmpty(search.getPowerType()), "power_type", search.getPowerType())
                 .eq(Help.isNotEmpty(search.getPowerStatus()), "power_status", search.getPowerStatus())
                 .orderByDesc("create_time");
-        if (Boolean.FALSE.equals(search.getSuperAdmin())) {
-            String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
-            wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
-                    .or(w -> w.eq("parent_account_id", createAccountId)));
-        }
         List<InfoPower> list = powerMapper.selectList(wrapper);
         if (Help.isNotEmpty(list)) {
             Set<InfoPowerDTO> resultSet = list.stream().map(this::convertEntity).collect(Collectors.toSet());
@@ -142,6 +115,34 @@ public class InfoPowerServiceImpl implements InfoPowerService {
             result = resultSet.parallelStream().filter(power -> power.getParentId().equals(parentId)).sorted(Comparator.comparing(InfoPowerDTO::getPowerOrder)).collect(Collectors.toList());
             // 递归获取子权限
             result.forEach(parent -> selectPowerChild(parent, resultSet));
+        }
+        return ResultResponse.<List<InfoPowerDTO>>builder().success("权限树状列表查询成功").data(result).build();
+    }
+
+    @Override
+    public ResultResponse<List<InfoPowerDTO>> personalTreeWithInfoPower() {
+        // 树状结构
+        List<InfoPowerDTO> result = new ArrayList<>();
+        InfoAccount account = accountMapper.selectById(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
+        InfoRole infoRole = roleMapper.selectById(account.getRoleId());
+        if (CommonConstant.DEFAULT_SUPER_ADMIN_ROLE.equals(infoRole.getRoleName())) {
+            // 如果是超级管理员,那么返回所有权限
+            InfoPowerSearch search = new InfoPowerSearch();
+            return treeWithInfoPower(search);
+        } else {
+            Set<String> powerIdSet = new HashSet<>();
+            getAllPowerOfAccount(powerIdSet, account);
+            if (Help.isNotEmpty(powerIdSet)) {
+                QueryWrapper<InfoPower> powerQueryWrapper = new QueryWrapper<>();
+                powerQueryWrapper.in("power_id", powerIdSet);
+                List<InfoPower> powerList = powerMapper.selectList(powerQueryWrapper);
+                Set<InfoPowerDTO> resultSet = powerList.stream().map(this::convertEntity).collect(Collectors.toSet());
+                // 首选获取第一级权限
+                String parentId = "0";
+                result = resultSet.parallelStream().filter(power -> power.getParentId().equals(parentId)).sorted(Comparator.comparing(InfoPowerDTO::getPowerOrder)).collect(Collectors.toList());
+                // 递归获取子权限
+                result.forEach(parent -> selectPowerChild(parent, resultSet));
+            }
         }
         return ResultResponse.<List<InfoPowerDTO>>builder().success("权限树状列表查询成功").data(result).build();
     }
@@ -266,6 +267,38 @@ public class InfoPowerServiceImpl implements InfoPowerService {
     }
 
     /**
+     * 查询账号的所有权限
+     *
+     * @param powerIdSet
+     * @param account
+     */
+    private void getAllPowerOfAccount(Set<String> powerIdSet, InfoAccount account) {
+        // 查询账户本身具有的权限
+        QueryWrapper<InfoAccountPower> accountPowerWrapper = new QueryWrapper<>();
+        accountPowerWrapper.eq("account_id", account.getAccountId());
+        List<InfoAccountPower> accountPowerList = accountPowerMapper.selectList(accountPowerWrapper);
+        if (Help.isNotEmpty(accountPowerList)) {
+            accountPowerList.parallelStream().map(InfoAccountPower::getPowerId).forEach(powerId -> selectPowerParent(powerIdSet, powerId));
+        }
+        // 查询账户角色对应的权限组所包含的权限
+        QueryWrapper<InfoRolePowerGroup> rolePowerGroupWrapper = new QueryWrapper<>();
+        rolePowerGroupWrapper.eq("role_id", account.getRoleId());
+        List<InfoRolePowerGroup> rolePowerGroupList = rolePowerGroupMapper.selectList(rolePowerGroupWrapper);
+        if (Help.isNotEmpty(rolePowerGroupList)) {
+            // 得到权限组ID集合
+            List<String> powerGroupIdList = rolePowerGroupList.stream().map(InfoRolePowerGroup::getPowerGroupId)
+                    .collect(Collectors.toList());
+            // 查询权限
+            QueryWrapper<InfoGroupPower> groupPowerWrapper = new QueryWrapper<>();
+            groupPowerWrapper.in("power_group_id", powerGroupIdList);
+            List<InfoGroupPower> groupPowerList = groupPowerMapper.selectList(groupPowerWrapper);
+            if (Help.isNotEmpty(groupPowerList)) {
+                groupPowerList.parallelStream().map(InfoGroupPower::getPowerId).forEach(powerId -> selectPowerParent(powerIdSet, powerId));
+            }
+        }
+    }
+
+    /**
      * 查找当前权限的父级权限
      *
      * @param powerSet 权限集合
@@ -282,6 +315,29 @@ public class InfoPowerServiceImpl implements InfoPowerService {
             InfoPowerDTO parentPowerDTO = convertEntity(parentPower);
             powerSet.add(parentPowerDTO);
             selectPowerParent(powerSet, parentPowerDTO);
+        }
+    }
+
+    /**
+     * 查找当前权限的父级权限
+     *
+     * @param powerIdSet 权限集合
+     * @param powerId      当前权限id
+     */
+    private void selectPowerParent(Set<String> powerIdSet, String powerId) {
+        if(!powerIdSet.contains(powerId)) {
+            String parentId = "0";
+            powerIdSet.add(powerId);
+            if (!parentId.equals(powerId)) {
+                // 第一级权限的父级ID为0，若当前权限不是第一级，则还有父级权限
+                InfoPower power = powerMapper.selectById(powerId);
+                if (!powerIdSet.contains(power.getParentId())) {
+                    InfoPower parentPower = powerMapper.selectById(power.getParentId());
+                    if (Help.isNotEmpty(parentPower)) {
+                        selectPowerParent(powerIdSet, parentPower.getPowerId());
+                    }
+                }
+            }
         }
     }
 

@@ -260,7 +260,7 @@ export default {
   methods: {
     // 根据权限数据展示操作列
     showTableColumn () {
-      this.columnShow = showElement(['system:examCategory:update', 'system:examCategory:deleted', 'system:examCategory:bind'])
+      this.columnShow = showElement(['register:examCategory:update', 'register:examCategory:delete', 'register:subject:page'])
     },
     // 查询表单重置
     resetQueryForm () {

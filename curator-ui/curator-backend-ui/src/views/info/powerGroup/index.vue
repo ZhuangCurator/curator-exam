@@ -114,7 +114,7 @@
           <el-input v-model="authForm.powerGroupName" disabled></el-input>
         </el-form-item>
         <el-form-item label="菜单权限">
-          <el-tree :data="powerOptions" :default-checked-keys="authForm.powerIdList" :props="defaultProps" ref="menuTree" node-key="id" show-checkbox></el-tree>
+          <el-tree :data="powerOptions" :default-checked-keys="defaultPowerIdList" :props="defaultProps" ref="menuTree" node-key="id" show-checkbox></el-tree>
         </el-form-item>
       </el-form>
       <!-- 底部按钮区域 -->
@@ -207,6 +207,7 @@ export default {
       },
       // 控制分配权限对话框的显示
       authDialogVisible: false,
+      defaultPowerIdList: [],
       // 分配权限表单数据
       authForm: {
         powerGroupId: undefined,
@@ -225,7 +226,7 @@ export default {
   methods: {
     // 根据权限数据展示操作列
     showTableColumn () {
-      this.columnShow = showElement(['system:powerGroup:update', 'system:powerGroup:deleted', 'system:powerGroup:bind'])
+      this.columnShow = showElement(['info:powerGroup:update', 'info:powerGroup:delete', 'powerGroup:bind:power'])
     },
     // 查询表单重置
     resetQueryForm () {
@@ -333,6 +334,7 @@ export default {
       this.powerOptions = result
       this.authDialogVisible = true
       this.authForm = powerGroup
+      this.defaultPowerIdList = powerGroup.powerIdList
     },
     // 递归遍历权限树,得到新的树
     formatPowerList (arr) {
@@ -354,12 +356,11 @@ export default {
     handleAuthDialogClose () {
       // 清空字段
       this.$refs.authFormRef.resetFields()
-      this.menuOptions = []
     },
     // 处理分配权限对话框确定按钮
     async handleAuthDialogConfirm () {
       const result = []
-      this.$refs.menuTree.getCheckedNodes(false, true).some(node => {
+      this.$refs.menuTree.getCheckedNodes(false, false).some(node => {
         result.push(node.id)
       })
       this.authForm.powerIdList = result

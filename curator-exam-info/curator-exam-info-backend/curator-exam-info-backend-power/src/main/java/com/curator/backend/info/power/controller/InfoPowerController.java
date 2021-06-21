@@ -39,15 +39,26 @@ public class InfoPowerController {
     }
 
     /**
-     * 树状权限查询
+     * 权限列表查询(仅供超管使用)
      *
      * @param search 查询条件
      * @return {@link ResultResponse}
      */
-    @GetMapping("/list")
+    @GetMapping("/tree")
     @Log(controllerName = "InfoPowerController", remark = "权限列表查询")
     ResultResponse<List<InfoPowerDTO>> treeWithInfoPower(InfoPowerSearch search) {
         return powerService.treeWithInfoPower(search);
+    }
+
+    /**
+     * 个人权限查询
+     *
+     * @return {@link ResultResponse}
+     */
+    @GetMapping("/list")
+    @Log(controllerName = "InfoPowerController", remark = "个人权限查询")
+    ResultResponse<List<InfoPowerDTO>> personalTreeWithInfoPower() {
+        return powerService.personalTreeWithInfoPower();
     }
 
     /**

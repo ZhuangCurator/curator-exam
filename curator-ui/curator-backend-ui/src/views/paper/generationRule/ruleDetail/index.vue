@@ -228,7 +228,7 @@ export default {
   methods: {
     // 根据权限数据展示操作列
     showTableColumn () {
-      this.columnShow = showElement(['system:ruleDetail:update', 'system:ruleDetail:deleted', 'system:ruleDetail:bind'])
+      this.columnShow = showElement(['paper:ruleDetail:update', 'paper:ruleDetail:delete'])
     },
     // 查询表单重置
     resetQueryForm () {

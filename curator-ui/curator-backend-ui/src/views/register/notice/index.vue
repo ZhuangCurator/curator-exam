@@ -198,7 +198,7 @@ export default {
   methods: {
     // 根据权限数据展示操作列
     showTableColumn () {
-      this.columnShow = showElement(['system:examNotice:update', 'system:examNotice:deleted'])
+      this.columnShow = showElement(['register:notice:update', 'register:notice:delete'])
     },
     // 查询表单重置
     resetQueryForm () {

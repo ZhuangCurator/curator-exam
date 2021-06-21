@@ -34,6 +34,13 @@ public interface InfoPowerService {
     ResultResponse<List<InfoPowerDTO>> treeWithInfoPower(InfoPowerSearch search);
 
     /**
+     * 个人权限查询
+     *
+     * @return {@link ResultResponse}
+     */
+    ResultResponse<List<InfoPowerDTO>> personalTreeWithInfoPower();
+
+    /**
      * 查询权限
      *
      * @param infoPowerId 权限ID

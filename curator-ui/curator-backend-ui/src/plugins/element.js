@@ -39,7 +39,8 @@ import {
   CheckboxGroup,
   CheckboxButton,
   Checkbox,
-  Tag
+  Tag,
+  Loading
 } from 'element-ui'
 
 Vue.use(Button)
@@ -83,3 +84,4 @@ Vue.use(Tag)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
+// Vue.prototype.$loading = Loading

@@ -219,7 +219,7 @@ export default {
   methods: {
     // 根据权限数据展示操作列
     showTableColumn () {
-      this.columnShow = showElement(['system:generationRule:update', 'system:generationRule:deleted', 'system:generationRule:bind'])
+      this.columnShow = showElement(['paper:generationRule:update', 'paper:generationRule:delete', 'paper:ruleDetail:page'])
     },
     // 查询表单重置
     resetQueryForm () {

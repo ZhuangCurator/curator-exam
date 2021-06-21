@@ -67,7 +67,7 @@
         <el-table-column label="操作" width="300px;" align="center" v-if="columnShow">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['info:role:update']" @click="showEditDialog(scope.row.roleId)">编辑</el-button>
-            <el-button type="info" icon="el-icon-setting" size="mini" v-has-perm="['info:role:bind']" @click="showPowerGroupDialog(scope.row)">权限组绑定</el-button>
+            <el-button type="info" icon="el-icon-setting" size="mini" @click="showPowerGroupDialog(scope.row)">权限组绑定</el-button>
             <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['info:role:delete']" @click="deleteRole(scope.row.roleId)">删除</el-button>
           </template>
         </el-table-column>
@@ -272,7 +272,7 @@ export default {
   methods: {
     // 根据权限数据展示操作列
     showTableColumn () {
-      this.columnShow = showElement(['system:role:update', 'system:role:deleted', 'system:role:bind'])
+      this.columnShow = showElement(['info:role:update', 'info:role:delete'])
     },
     // 查询表单重置
     resetQueryForm () {

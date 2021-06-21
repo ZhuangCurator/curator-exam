@@ -34,7 +34,7 @@
       </el-form>
       <el-row :gutter="20">
         <el-col :span="6">
-          <el-button type="primary" size="mini" v-has-perm="['role:dir:add']" @click="showTopPowerAddDialog">添加目录</el-button>
+          <el-button type="primary" size="mini" v-has-perm="['power:dir:add']" @click="showTopPowerAddDialog">添加目录</el-button>
         </el-col>
       </el-row>
       <!--  权限列表区域 -->
@@ -59,9 +59,9 @@
         <el-table-column prop="powerOrder" align="center" label="排序" width="50px"></el-table-column>
         <el-table-column label="操作" align="center" width="350px" v-if="columnShow">
           <template slot-scope="scope">
-            <el-button type="primary" icon="el-icon-folder-add" size="mini" v-has-perm="['role:child:add']" @click="showAddDialog(scope.row)">添加下级权限</el-button>
-            <el-button type="info" icon="el-icon-edit" size="mini" v-has-perm="['info:role:update']" @click="showEditDialog(scope.row.powerId)">编辑</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['info:role:delete']" @click="deletePower(scope.row.powerId)">删除</el-button>
+            <el-button type="primary" icon="el-icon-folder-add" size="mini" v-has-perm="['power:child:add']" @click="showAddDialog(scope.row)">添加下级权限</el-button>
+            <el-button type="info" icon="el-icon-edit" size="mini" v-has-perm="['info:power:update']" @click="showEditDialog(scope.row.powerId)">编辑</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-has-perm="['info:power:delete']" @click="deletePower(scope.row.powerId)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -175,7 +175,7 @@
 </template>
 
 <script>
-import { handlePowerList, handlePowerQuery, handleAddPower, handleUpdatePower, handleDeletePower, handleUpdatePowerStatus } from '@/apis/info/power'
+import { handleTreePower, handlePowerQuery, handleAddPower, handleUpdatePower, handleDeletePower, handleUpdatePowerStatus } from '@/apis/info/power'
 import TreeSelect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { showElement } from '@/utils/show'
@@ -302,7 +302,7 @@ export default {
   methods: {
     // 根据权限数据展示操作列
     showTableColumn () {
-      this.columnShow = showElement(['info:power:update', 'info:power:deleted', 'info:power:add'])
+      this.columnShow = showElement(['info:power:update', 'info:power:delete'])
     },
     // 查询表单重置
     resetQueryForm () {
@@ -312,7 +312,7 @@ export default {
     },
     // 获取权限数据列表
     async getPowerList () {
-      const { data: res } = await handlePowerList(this.queryForm)
+      const { data: res } = await handleTreePower(this.queryForm)
       console.log(res.data)
       this.tableDataList = res.data
     },
@@ -332,7 +332,7 @@ export default {
       const { data: res } = await handlePowerQuery(powerId)
       if (res.status !== '2000') return this.$message.error(res.message())
       // 获取所有的权限数据
-      const { data: result } = await handlePowerList()
+      const { data: result } = await handleTreePower()
       if (result.status !== '2000') return this.$message.error(result.message)
       const topPower = { powerId: 0, powerName: '顶级权限', children: [] }
       topPower.children = result.data

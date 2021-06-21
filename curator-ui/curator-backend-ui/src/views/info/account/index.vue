@@ -98,7 +98,7 @@
         <el-form-item label="电话" prop="phone">
           <el-input v-model="addForm.phone"></el-input>
         </el-form-item>
-        <el-form-item label="角色" prop="roleIdList">
+        <el-form-item label="角色" prop="roleId">
           <el-select v-model="addForm.roleId" filterable remote :remote-method="showRoleList" placeholder="请选择角色">
             <el-option
               v-for="item in roleList"
@@ -108,7 +108,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <template v-if="superAdmin === '1'">
+        <template v-if="this.$store.state.superAdmin === 1">
           <el-form-item label="省份" prop="province">
             <v-distpicker only-province @province="onChangeProvince"></v-distpicker>
           </el-form-item>
@@ -251,6 +251,13 @@ export default {
             trigger: 'blur'
           }
         ],
+        roleId: [
+          {
+            required: true,
+            message: '请选择角色',
+            trigger: 'blur'
+          }
+        ],
         province: [
           {
             required: true,
@@ -320,7 +327,7 @@ export default {
   methods: {
     // 根据权限数据展示操作列
     showTableColumn () {
-      this.columnShow = showElement(['info:account:update', 'info:account:deleted', 'system:account:bind'])
+      this.columnShow = showElement(['info:account:update', 'info:account:delete'])
     },
     // 查询表单重置
     resetQueryForm () {

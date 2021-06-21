@@ -245,7 +245,7 @@ export default {
   methods: {
     // 根据权限数据展示操作列
     showTableColumn () {
-      this.columnShow = showElement(['system:subjectSite:update', 'system:subjectSite:deleted', 'system:subjectSite:bind'])
+      this.columnShow = showElement(['register:site:update', 'register:site:delete'])
     },
     // 查询表单重置
     resetQueryForm () {
