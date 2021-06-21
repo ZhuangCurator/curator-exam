@@ -62,7 +62,7 @@
     </el-card>
 
     <!-- 添加考点对话框 -->
-    <el-dialog title="添加考点" :visible.sync="addDialogVisible" width="41%" @close="handleAddDialogClose">
+    <el-dialog title="添加考点" :visible.sync="addDialogVisible" width="30%" @close="handleAddDialogClose">
       <!-- 对话框主题区域 -->
       <el-form ref="addFormRef" :model="addForm" :rules="dialogFormRules" label-width="120px">
         <el-form-item label="考点" prop="generationRuleId">

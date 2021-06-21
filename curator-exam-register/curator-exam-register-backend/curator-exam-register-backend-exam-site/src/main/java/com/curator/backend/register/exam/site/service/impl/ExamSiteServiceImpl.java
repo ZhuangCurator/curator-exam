@@ -15,7 +15,9 @@ import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
+import com.curator.common.util.JsonUtil;
 import com.curator.common.util.ServletUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +46,10 @@ public class ExamSiteServiceImpl implements ExamSiteService {
         QueryWrapper<ExamSite> wrapper = new QueryWrapper<>();
         if (Boolean.FALSE.equals(search.getSuperAdmin())) {
             String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+            String childrenAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_CHILDREN_ID);
+            List<String> childrenAccountIdList = JsonUtil.string2Obj(childrenAccountId, new TypeReference<List<String>>(){});
             wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
-                    .or(w -> w.eq("parent_account_id", createAccountId)));
+                    .or(Help.isNotEmpty(childrenAccountIdList), w -> w.in("create_account_id", childrenAccountIdList)));
         }
         wrapper.like(Help.isNotEmpty(search.getExamSiteName()), "exam_site_name", search.getExamSiteName())
                 .eq(Help.isNotEmpty(search.getProvince()), "province", search.getProvince())

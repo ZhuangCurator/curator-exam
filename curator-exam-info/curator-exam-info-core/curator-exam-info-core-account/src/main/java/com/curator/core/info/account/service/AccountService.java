@@ -4,6 +4,7 @@ import com.curator.api.info.pojo.dto.AccountDTO;
 import com.curator.api.info.pojo.vo.AccountInfo;
 import com.curator.common.support.ResultResponse;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -19,6 +20,14 @@ public interface AccountService {
      * @return
      */
     ResultResponse<Set<String>> getAccountAllPerms(String accountId);
+
+    /**
+     * 得到账户的所有层级的下级账户ID
+     *
+     * @param accountId 账户id
+     * @return
+     */
+    ResultResponse<List<String>> getAllChildrenAccount(String accountId);
 
     /**
      * 普通账户注册

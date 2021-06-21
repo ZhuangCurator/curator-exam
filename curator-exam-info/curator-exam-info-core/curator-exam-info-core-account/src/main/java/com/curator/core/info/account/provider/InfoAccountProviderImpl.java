@@ -7,6 +7,7 @@ import com.curator.core.info.account.service.AccountService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -22,6 +23,11 @@ public class InfoAccountProviderImpl implements InfoAccountProvider {
     @Override
     public ResultResponse<Set<String>> getAccountAllPerms(String accountId) {
         return accountService.getAccountAllPerms(accountId);
+    }
+
+    @Override
+    public ResultResponse<List<String>> getAllChildrenAccount(String accountId) {
+        return accountService.getAllChildrenAccount(accountId);
     }
 
     @Override

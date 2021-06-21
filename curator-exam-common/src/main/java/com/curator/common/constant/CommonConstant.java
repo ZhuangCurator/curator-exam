@@ -64,6 +64,11 @@ public class CommonConstant {
     public static final String HTTP_HEADER_ACCOUNT_PARENT_ID = "parentAccountId";
 
     /**
+     * 下级账户id标识
+     */
+    public static final String HTTP_HEADER_ACCOUNT_CHILDREN_ID = "childrenAccountIdList";
+
+    /**
      * 账户名标识
      */
     public static final String HTTP_HEADER_ACCOUNT_NAME = "accountName";

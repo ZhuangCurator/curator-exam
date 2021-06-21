@@ -22,12 +22,15 @@ import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
+import com.curator.common.util.JsonUtil;
 import com.curator.common.util.ServletUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,11 +56,6 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
     public ResultResponse<PageResult<ExamSubjectDTO>> pageWithExamSubject(ExamSubjectSearch search) {
         Page<ExamSubject> page = new Page<>(search.getCurrent(), search.getPageSize());
         QueryWrapper<ExamSubject> wrapper = new QueryWrapper<>();
-        if (Boolean.FALSE.equals(search.getSuperAdmin())) {
-            String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
-            wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
-                    .or(w -> w.eq("parent_account_id", createAccountId)));
-        }
         wrapper.like(Help.isNotEmpty(search.getExamSubjectName()), "exam_subject_name", search.getExamSubjectName())
                 .eq(Help.isNotEmpty(search.getExamCategoryId()), "exam_category_id", search.getExamCategoryId())
                 .ge(Help.isNotEmpty(search.getRegisterStartTime()), "register_start_time", search.getRegisterStartTime())
@@ -82,11 +80,6 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
         wrapper.like(Help.isNotEmpty(search.getExamSubjectName()), "exam_subject_name", search.getExamSubjectName())
                 .eq(Help.isNotEmpty(search.getExamCategoryId()), "exam_category_id", search.getExamCategoryId())
                 .orderByDesc("create_time");
-        if (Boolean.FALSE.equals(search.getSuperAdmin())) {
-            String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
-            wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
-                    .or(w -> w.eq("parent_account_id", createAccountId)));
-        }
         List<ExamSubject> list = examSubjectMapper.selectList(wrapper);
         List<ExamSubjectDTO> resultList = list.stream().map(this::convertEntity).collect(Collectors.toList());
 
@@ -106,6 +99,8 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
             return res;
         }
         ExamSubject entity = convertInfo(info);
+        entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
+        entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
         // 查询当前考试类目下科目的最大序列号
         Integer serialNum = examSubjectMapper.selectMaxSerialNum(entity.getExamCategoryId());
         if(serialNum != null) {
@@ -113,8 +108,6 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
         } else {
             entity.setSerialNum(1);
         }
-        entity.setCreateAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID));
-        entity.setParentAccountId(ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID));
         examSubjectMapper.insert(entity);
         return ResultResponse.<ExamSubjectDTO>builder().success("考试科目添加成功").data(convertEntity(entity)).build();
     }
@@ -138,6 +131,9 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
 
     @Override
     public ResultResponse<PageResult<ExamSubjectSiteDTO>> pageWithExamSubjectSite(ExamSubjectSiteSearch search) {
+        String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+        String childrenAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_CHILDREN_ID);
+        List<String> childrenAccountIdList = JsonUtil.string2Obj(childrenAccountId, new TypeReference<List<String>>(){});
         Page<ExamSubjectSite> page = new Page<>(search.getCurrent(), search.getPageSize());
         QueryWrapper<ExamSubjectSite> wrapper = new QueryWrapper<>();
 
@@ -146,6 +142,8 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
                 .eq(Help.isNotEmpty(search.getCity()), "city", search.getCity())
                 .eq(Help.isNotEmpty(search.getDistrict()), "district", search.getDistrict())
                 .orderByDesc("create_time");
+        wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
+                .or(Help.isNotEmpty(childrenAccountIdList), w -> w.in("create_account_id", childrenAccountIdList)));
         IPage<ExamSubjectSite> iPage = subjectSiteMapper.selectPage(page, wrapper);
         List<ExamSubjectSiteDTO> resultList = iPage.getRecords().stream()
                 .map(this::convertEntity).collect(Collectors.toList());

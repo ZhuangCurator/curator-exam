@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,9 +25,14 @@ public class LoginAccountDTO implements Serializable {
     private String accountId;
 
     /**
-     * 父账户ID
+     * 该账户的父账户ID
      */
     private String parentAccountId;
+
+    /**
+     * 该账户的所有层级的下级账户ID
+     */
+    private List<String> childrenAccountIdList;
 
     /**
      * 账户名

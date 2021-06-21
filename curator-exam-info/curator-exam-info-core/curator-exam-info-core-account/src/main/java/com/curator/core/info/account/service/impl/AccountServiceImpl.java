@@ -26,6 +26,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -99,6 +100,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public ResultResponse<List<String>> getAllChildrenAccount(String accountId) {
+        List<String> childrenIdList = new ArrayList<>();
+        getAllChildren(childrenIdList, accountId);
+        return ResultResponse.<List<String>>builder().success("所有下级账户查询成功").data(childrenIdList).build();
+    }
+
+    @Override
     public ResultResponse<AccountDTO> saveInfoAccount(AccountInfo info) {
         InfoAccount entity = convertInfo(info);
         // 判断账户名是否重复
@@ -167,6 +175,24 @@ public class AccountServiceImpl implements AccountService {
             return powerList.stream().map(InfoPower::getPowerPerms).collect(Collectors.toSet());
         }
         return null;
+    }
+
+    /**
+     * 得到该账户的所有下级账户
+     *
+     * @param accountIdList
+     * @param accountId
+     */
+    private void getAllChildren(List<String> accountIdList, String accountId) {
+        QueryWrapper<InfoAccount> wrapper = new QueryWrapper<>();
+        wrapper.eq("create_account_id", accountId);
+        List<InfoAccount> accountList = accountMapper.selectList(wrapper);
+        if(Help.isNotEmpty(accountList)) {
+            accountList.forEach(account -> {
+                accountIdList.add(accountId);
+                getAllChildren(accountIdList, account.getAccountId());
+            });
+        }
     }
 
     /**

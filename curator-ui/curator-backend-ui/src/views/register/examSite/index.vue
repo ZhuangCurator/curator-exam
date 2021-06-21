@@ -278,8 +278,11 @@ export default {
       // 清空字段
       this.$refs.addFormRef.resetFields()
       this.addForm.province = undefined
+      this.addForm.provinceName = undefined
       this.addForm.city = undefined
+      this.addForm.cityName = undefined
       this.addForm.district = undefined
+      this.addForm.districtName = undefined
     },
     // 展示添加考点对话框
     showAddDialog () {
@@ -313,8 +316,11 @@ export default {
       // 清空字段
       this.$refs.editFormRef.resetFields()
       this.editForm.province = undefined
+      this.editForm.provinceName = undefined
       this.editForm.city = undefined
+      this.editForm.cityName = undefined
       this.editForm.district = undefined
+      this.editForm.districtName = undefined
     },
     // 确定编辑考点
     editExamSite () {

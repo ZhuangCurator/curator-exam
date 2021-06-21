@@ -20,10 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -95,7 +92,7 @@ public class LoginServiceImpl implements LoginService {
         LoginAccountDTO accountDTO = LoginAccountDTO.builder()
                 .token(token)
                 .accountId(account.getAccountId())
-                .parentAccountId(account.getParentAccountId())
+                .parentAccountId(account.getCreateAccountId())
                 .accountName(account.getAccountName())
                 .province(account.getProvince())
                 .city(account.getCity())
@@ -110,6 +107,11 @@ public class LoginServiceImpl implements LoginService {
             accountDTO.setRoleName(Boolean.TRUE.equals(roleNameRes.getSucceeded()) ? roleNameRes.getData() : "角色不存在");
             accountDTO.setRoleType(account.getRoleType());
             accountDTO.setPerms(Boolean.TRUE.equals(permsRes.getSucceeded()) ? permsRes.getData() : new HashSet<>());
+        }
+        if(!"0".equals(account.getCreateAccountId())) {
+            // createAccountId 为0的是超级账户或普通账户
+            List<String> childrenIdList = accountProvider.getAllChildrenAccount(account.getAccountId()).getData();
+            accountDTO.setChildrenAccountIdList(childrenIdList);
         }
         // 保存或更新用户token
         Map<String, Object> map = new HashMap<>(8);

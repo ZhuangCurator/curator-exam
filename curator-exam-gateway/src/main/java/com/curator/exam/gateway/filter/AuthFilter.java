@@ -92,6 +92,7 @@ public class AuthFilter implements GlobalFilter {
             ServerHttpRequest mutableReq = webExchange.getRequest().mutate()
                     .header(CommonConstant.HTTP_HEADER_ACCOUNT_ID, accountDTO.getAccountId())
                     .header(CommonConstant.HTTP_HEADER_ACCOUNT_PARENT_ID, accountDTO.getParentAccountId())
+                    .header(CommonConstant.HTTP_HEADER_ACCOUNT_CHILDREN_ID, JsonUtil.obj2String(accountDTO.getChildrenAccountIdList()))
                     .header(CommonConstant.HTTP_HEADER_ACCOUNT_PROVINCE, accountDTO.getProvince())
                     .header(CommonConstant.HTTP_HEADER_ACCOUNT_CITY, accountDTO.getCity())
                     .header(CommonConstant.HTTP_HEADER_ACCOUNT_NAME, accountName)
