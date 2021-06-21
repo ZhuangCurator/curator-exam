@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.curator.api.info.pojo.dto.AccountDTO;
+import com.curator.api.info.provider.InfoAccountProvider;
 import com.curator.api.info.provider.InfoCityProvider;
 import com.curator.backend.register.exam.site.entity.ExamSite;
 import com.curator.backend.register.exam.site.entity.dto.ExamSiteDTO;
@@ -39,6 +41,8 @@ public class ExamSiteServiceImpl implements ExamSiteService {
     private ExamSiteMapper examSiteMapper;
     @DubboReference
     private InfoCityProvider cityProvider;
+    @DubboReference
+    private InfoAccountProvider infoAccountProvider;
 
     @Override
     public ResultResponse<PageResult<ExamSiteDTO>> pageWithExamSite(ExamSiteSearch search) {
@@ -76,9 +80,11 @@ public class ExamSiteServiceImpl implements ExamSiteService {
                 .eq(Help.isNotEmpty(search.getDistrict()), "district", search.getDistrict())
                 .orderByDesc("create_time");
         if (Boolean.FALSE.equals(search.getSuperAdmin())) {
+            String childrenAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_CHILDREN_ID);
             String createAccountId = ServletUtil.getRequest().getHeader(CommonConstant.HTTP_HEADER_ACCOUNT_ID);
+            List<String> childrenAccountIdList = JsonUtil.string2Obj(childrenAccountId, new TypeReference<List<String>>(){});
             wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
-                    .or(w -> w.eq("parent_account_id", createAccountId)));
+                    .or(Help.isNotEmpty(childrenAccountIdList), w -> w.in("create_account_id", childrenAccountIdList)));
         }
         List<ExamSite> list = examSiteMapper.selectList(wrapper);
         List<ExamSiteDTO> resultList = list.stream().map(this::convertEntity).collect(Collectors.toList());
@@ -172,6 +178,10 @@ public class ExamSiteServiceImpl implements ExamSiteService {
             }
             if(Help.isNotEmpty(entity.getDistrict())) {
                 target.setDistrictName(cityProvider.getCityName(entity.getDistrict()).getData());
+            }
+            AccountDTO accountDTO = infoAccountProvider.getAccount(entity.getCreateAccountId()).getData();
+            if(Help.isNotEmpty(accountDTO)) {
+                target.setCreateAccountName(accountDTO.getAccountName());
             }
         }
         return target;

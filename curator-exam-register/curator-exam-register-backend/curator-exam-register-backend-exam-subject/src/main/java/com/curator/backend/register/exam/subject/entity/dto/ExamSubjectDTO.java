@@ -79,6 +79,11 @@ public class ExamSubjectDTO implements Serializable {
     private String createAccountId;
 
     /**
+     * 创建账户名称
+     */
+    private String createAccountName;
+
+    /**
      * 创建账户父账户 id
      */
     private String parentAccountId;

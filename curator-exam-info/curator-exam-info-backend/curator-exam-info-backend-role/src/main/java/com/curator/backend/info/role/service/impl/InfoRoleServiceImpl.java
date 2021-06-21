@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.curator.api.info.enums.InfoRoleStatusEnum;
 import com.curator.api.info.enums.InfoRoleTypeEnum;
+import com.curator.api.info.pojo.dto.AccountDTO;
+import com.curator.api.info.provider.InfoAccountProvider;
 import com.curator.backend.info.role.entity.InfoRole;
 import com.curator.backend.info.role.entity.dto.InfoRoleDTO;
 import com.curator.backend.info.role.entity.vo.info.InfoRoleInfo;
@@ -17,6 +19,7 @@ import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.common.util.ServletUtil;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +41,8 @@ public class InfoRoleServiceImpl implements InfoRoleService {
 
     @Autowired
     private InfoRoleMapper roleMapper;
+    @DubboReference
+    private InfoAccountProvider infoAccountProvider;
 
     @Override
     public ResultResponse<PageResult<InfoRoleDTO>> pageWithInfoRole(InfoRoleSearch search) {
@@ -139,6 +144,10 @@ public class InfoRoleServiceImpl implements InfoRoleService {
             List<String> powerGroupIdList = roleMapper.getPowerGroupIdWithRole(entity.getRoleId());
             if(Help.isNotEmpty(powerGroupIdList)) {
                 target.setPowerGroupIdList(powerGroupIdList);
+            }
+            AccountDTO accountDTO = infoAccountProvider.getAccount(entity.getCreateAccountId()).getData();
+            if(Help.isNotEmpty(accountDTO)) {
+                target.setCreateAccountName(accountDTO.getAccountName());
             }
         }
         return target;

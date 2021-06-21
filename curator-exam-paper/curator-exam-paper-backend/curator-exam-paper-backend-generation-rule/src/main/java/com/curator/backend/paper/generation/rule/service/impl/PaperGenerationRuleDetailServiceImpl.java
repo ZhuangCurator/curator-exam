@@ -2,6 +2,8 @@ package com.curator.backend.paper.generation.rule.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.curator.api.info.pojo.dto.AccountDTO;
+import com.curator.api.info.provider.InfoAccountProvider;
 import com.curator.backend.paper.generation.rule.entity.PaperGenerationRule;
 import com.curator.backend.paper.generation.rule.entity.PaperGenerationRuleDetail;
 import com.curator.backend.paper.generation.rule.entity.dto.PaperGenerationRuleDetailDTO;
@@ -13,6 +15,7 @@ import com.curator.common.constant.CommonConstant;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.common.util.ServletUtil;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,8 @@ public class PaperGenerationRuleDetailServiceImpl implements PaperGenerationRule
     private PaperGenerationRuleDetailMapper generationRuleDetailMapper;
     @Autowired
     private PaperGenerationRuleMapper generationRuleMapper;
+    @DubboReference
+    private InfoAccountProvider infoAccountProvider;
 
     @Override
     public ResultResponse<List<PaperGenerationRuleDetailDTO>> listWithPaperGenerationRuleDetail(String generationRuleId) {
@@ -107,6 +112,10 @@ public class PaperGenerationRuleDetailServiceImpl implements PaperGenerationRule
         PaperGenerationRuleDetailDTO target = new PaperGenerationRuleDetailDTO();
         if (Help.isNotEmpty(entity)) {
             BeanUtils.copyProperties(entity, target);
+            AccountDTO accountDTO = infoAccountProvider.getAccount(entity.getCreateAccountId()).getData();
+            if(Help.isNotEmpty(accountDTO)) {
+                target.setCreateAccountName(accountDTO.getAccountName());
+            }
         }
         return target;
     }

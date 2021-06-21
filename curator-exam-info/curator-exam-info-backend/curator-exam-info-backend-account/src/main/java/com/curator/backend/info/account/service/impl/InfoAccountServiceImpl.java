@@ -271,6 +271,10 @@ public class InfoAccountServiceImpl implements InfoAccountService {
             } else {
                 target.setRoleName("该账户没有分配角色");
             }
+            InfoAccount createAccount = accountMapper.selectById(entity.getCreateAccountId());
+            if(Help.isNotEmpty(createAccount)) {
+                target.setCreateAccountName(createAccount.getAccountName());
+            }
         }
         return target;
     }

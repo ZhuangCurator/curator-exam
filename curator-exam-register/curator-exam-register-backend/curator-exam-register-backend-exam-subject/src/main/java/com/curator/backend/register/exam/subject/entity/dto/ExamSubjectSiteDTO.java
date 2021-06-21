@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -84,5 +85,35 @@ public class ExamSubjectSiteDTO implements Serializable {
      * 详细地址
      */
     private String address;
+
+    /**
+     * 创建账户 id
+     */
+    private String createAccountId;
+
+    /**
+     * 创建账户名称
+     */
+    private String createAccountName;
+
+    /**
+     * 创建账户父账户 id
+     */
+    private String parentAccountId;
+
+    /**
+     * 1 表示删除，0 表示未删除
+     */
+    private Integer deleted;
+
+    /**
+     * 插入时间
+     */
+    private LocalDateTime createTime;
+
+    /**
+     * 更新时间
+     */
+    private LocalDateTime updateTime;
 
 }

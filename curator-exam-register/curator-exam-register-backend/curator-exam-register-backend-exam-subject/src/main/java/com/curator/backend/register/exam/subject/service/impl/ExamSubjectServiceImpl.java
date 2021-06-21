@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.curator.api.info.pojo.dto.AccountDTO;
+import com.curator.api.info.provider.InfoAccountProvider;
 import com.curator.api.info.provider.InfoCityProvider;
 import com.curator.backend.register.exam.site.entity.ExamSite;
 import com.curator.backend.register.exam.site.mapper.ExamSiteMapper;
@@ -51,6 +53,8 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
     private ExamSubjectSiteMapper subjectSiteMapper;
     @DubboReference
     private InfoCityProvider cityProvider;
+    @DubboReference
+    private InfoAccountProvider infoAccountProvider;
 
     @Override
     public ResultResponse<PageResult<ExamSubjectDTO>> pageWithExamSubject(ExamSubjectSearch search) {
@@ -142,8 +146,10 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
                 .eq(Help.isNotEmpty(search.getCity()), "city", search.getCity())
                 .eq(Help.isNotEmpty(search.getDistrict()), "district", search.getDistrict())
                 .orderByDesc("create_time");
-        wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
-                .or(Help.isNotEmpty(childrenAccountIdList), w -> w.in("create_account_id", childrenAccountIdList)));
+        if (Boolean.FALSE.equals(search.getSuperAdmin())) {
+            wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
+                    .or(Help.isNotEmpty(childrenAccountIdList), w -> w.in("create_account_id", childrenAccountIdList)));
+        }
         IPage<ExamSubjectSite> iPage = subjectSiteMapper.selectPage(page, wrapper);
         List<ExamSubjectSiteDTO> resultList = iPage.getRecords().stream()
                 .map(this::convertEntity).collect(Collectors.toList());
@@ -248,6 +254,10 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
         ExamSubjectDTO target = new ExamSubjectDTO();
         if (Help.isNotEmpty(entity)) {
             BeanUtils.copyProperties(entity, target);
+            AccountDTO accountDTO = infoAccountProvider.getAccount(entity.getCreateAccountId()).getData();
+            if(Help.isNotEmpty(accountDTO)) {
+                target.setCreateAccountName(accountDTO.getAccountName());
+            }
         }
         return target;
     }
@@ -290,6 +300,10 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
             }
             if(Help.isNotEmpty(entity.getDistrict())) {
                 target.setDistrictName(cityProvider.getCityName(entity.getDistrict()).getData());
+            }
+            AccountDTO accountDTO = infoAccountProvider.getAccount(entity.getCreateAccountId()).getData();
+            if(Help.isNotEmpty(accountDTO)) {
+                target.setCreateAccountName(accountDTO.getAccountName());
             }
         }
         return target;

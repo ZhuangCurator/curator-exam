@@ -10,7 +10,7 @@
     <!-- 卡片视图区域-->
     <el-card class="box-card">
       <!--  搜索与添加区域 -->
-      <el-form :model="queryForm" ref="queryFormRef" :inline="true" label-width="100px">
+      <el-form :model="queryForm" ref="queryFormRef" :inline="true" label-width="80px">
         <el-form-item label="考点名称">
           <el-input
             v-model="queryForm.examSiteName"
@@ -34,6 +34,21 @@
 
       <!--  考点列表区域 -->
       <el-table :data="examSubjectSiteList" border stripe>
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" class="table-expand">
+              <el-form-item label="创建账户">
+                <span>{{ props.row.createAccountName }}</span>
+              </el-form-item>
+              <el-form-item label="创建时间">
+                <span>{{ props.row.createTime }}</span>
+              </el-form-item>
+              <el-form-item label="更新时间">
+                <span>{{ props.row.updateTime }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
         <el-table-column label="考点名" prop="examSiteName" align="center"></el-table-column>
         <el-table-column label="人数限制" prop="numberLimit" align="center"></el-table-column>
         <el-table-column label="已报人数" prop="registerNumber" align="center"></el-table-column>
@@ -167,6 +182,7 @@ export default {
     // 得到考点分页数据
     async getExamSubjectSitePage () {
       this.queryForm.examSubjectId = this.examSubjectId
+      this.queryForm.superAdmin = this.superAdmin
       const { data: res } = await handleExamSitePageWithSubject(this.queryForm)
       console.log(res.data)
       if (res.status !== '2000') return this.$message.error(res.message)

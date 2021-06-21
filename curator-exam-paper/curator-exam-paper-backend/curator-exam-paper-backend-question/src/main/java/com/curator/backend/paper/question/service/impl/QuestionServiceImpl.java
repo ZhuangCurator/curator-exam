@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.curator.api.info.provider.InfoAccountProvider;
 import com.curator.api.paper.enums.QuestionTypeEnum;
 import com.curator.backend.paper.question.entity.Question;
 import com.curator.backend.paper.question.entity.QuestionAnswer;
@@ -22,6 +23,7 @@ import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.common.util.RedissonUtil;
 import com.curator.common.util.ServletUtil;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -269,10 +271,6 @@ public class QuestionServiceImpl implements QuestionService {
             } else if(entity.getQuestionType() == QuestionTypeEnum.FILL_BLANK.getStatus()) {
                 target.setQuestionAnswerRightedList(list.stream().map(QuestionAnswer::getContent).collect(Collectors.toList()));
             }
-//            if(Help.isNotEmpty(list)) {
-//                List<QuestionAnswerDTO> resultList = list.parallelStream().map(this::convertEntity).collect(Collectors.toList());
-//                target.setQuestionAnswerDTOList(resultList);
-//            }
         }
         return target;
     }

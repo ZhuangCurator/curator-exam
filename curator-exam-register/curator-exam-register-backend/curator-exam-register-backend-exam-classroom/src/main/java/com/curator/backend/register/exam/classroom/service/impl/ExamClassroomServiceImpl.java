@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.curator.api.info.pojo.dto.AccountDTO;
+import com.curator.api.info.provider.InfoAccountProvider;
 import com.curator.backend.register.exam.classroom.entity.ExamClassroom;
 import com.curator.backend.register.exam.classroom.entity.dto.ExamClassroomDTO;
 import com.curator.backend.register.exam.classroom.entity.vo.info.ExamClassroomInfo;
@@ -17,6 +19,7 @@ import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.common.util.ServletUtil;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +40,8 @@ public class ExamClassroomServiceImpl implements ExamClassroomService {
     private ExamClassroomMapper examClassroomMapper;
     @Autowired
     private ExamSiteMapper examSiteMapper;
+    @DubboReference
+    private InfoAccountProvider infoAccountProvider;
 
     @Override
     public ResultResponse<PageResult<ExamClassroomDTO>> pageWithExamClassroom(ExamClassroomSearch search) {
@@ -162,6 +167,10 @@ public class ExamClassroomServiceImpl implements ExamClassroomService {
         ExamClassroomDTO target = new ExamClassroomDTO();
         if (Help.isNotEmpty(entity)) {
             BeanUtils.copyProperties(entity, target);
+            AccountDTO accountDTO = infoAccountProvider.getAccount(entity.getCreateAccountId()).getData();
+            if(Help.isNotEmpty(accountDTO)) {
+                target.setCreateAccountName(accountDTO.getAccountName());
+            }
         }
         return target;
     }

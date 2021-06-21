@@ -10,7 +10,7 @@
     <!-- 卡片视图区域-->
     <el-card class="box-card">
       <!--  搜索与添加区域 -->
-      <el-form :model="queryForm" ref="queryFormRef" :inline="true" label-width="100px">
+      <el-form :model="queryForm" ref="queryFormRef" :inline="true" label-width="75px">
         <el-form-item label="考点名称">
           <el-input
             v-model="queryForm.examSiteName"
@@ -37,6 +37,9 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" class="table-expand">
+              <el-form-item label="创建账户">
+                <span>{{ props.row.createAccountName }}</span>
+              </el-form-item>
               <el-form-item label="创建时间">
                 <span>{{ props.row.createTime }}</span>
               </el-form-item>

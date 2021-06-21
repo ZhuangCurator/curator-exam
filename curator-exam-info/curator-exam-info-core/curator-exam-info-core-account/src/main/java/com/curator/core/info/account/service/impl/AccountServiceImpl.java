@@ -189,7 +189,7 @@ public class AccountServiceImpl implements AccountService {
         List<InfoAccount> accountList = accountMapper.selectList(wrapper);
         if(Help.isNotEmpty(accountList)) {
             accountList.forEach(account -> {
-                accountIdList.add(accountId);
+                accountIdList.add(account.getAccountId());
                 getAllChildren(accountIdList, account.getAccountId());
             });
         }

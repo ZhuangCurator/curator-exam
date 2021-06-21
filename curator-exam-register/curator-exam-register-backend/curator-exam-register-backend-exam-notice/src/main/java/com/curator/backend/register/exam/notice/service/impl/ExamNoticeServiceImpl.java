@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.curator.api.info.pojo.dto.AccountDTO;
+import com.curator.api.info.provider.InfoAccountProvider;
 import com.curator.backend.register.exam.notice.entity.ExamNotice;
 import com.curator.backend.register.exam.notice.entity.dto.ExamNoticeDTO;
 import com.curator.backend.register.exam.notice.entity.vo.info.ExamNoticeInfo;
@@ -15,6 +17,7 @@ import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.common.util.ServletUtil;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,8 @@ public class ExamNoticeServiceImpl implements ExamNoticeService {
 
     @Autowired
     private ExamNoticeMapper examNoticeMapper;
+    @DubboReference
+    private InfoAccountProvider infoAccountProvider;
 
     @Override
     public ResultResponse<PageResult<ExamNoticeDTO>> pageWithExamNotice(ExamNoticeSearch search) {
@@ -124,6 +129,10 @@ public class ExamNoticeServiceImpl implements ExamNoticeService {
         ExamNoticeDTO target = new ExamNoticeDTO();
         if (Help.isNotEmpty(entity)) {
             BeanUtils.copyProperties(entity, target);
+            AccountDTO accountDTO = infoAccountProvider.getAccount(entity.getCreateAccountId()).getData();
+            if(Help.isNotEmpty(accountDTO)) {
+                target.setCreateAccountName(accountDTO.getAccountName());
+            }
         }
         return target;
     }

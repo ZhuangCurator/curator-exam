@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.curator.backend.info.account.entity.InfoAccount;
+import com.curator.backend.info.account.mapper.InfoAccountMapper;
 import com.curator.backend.info.power.entity.InfoGroupPower;
 import com.curator.backend.info.power.entity.InfoPowerGroup;
 import com.curator.backend.info.power.entity.InfoRolePowerGroup;
@@ -41,6 +43,8 @@ public class InfoPowerGroupServiceImpl implements InfoPowerGroupService {
     private InfoGroupPowerMapper groupPowerMapper;
     @Autowired
     private InfoRolePowerGroupMapper rolePowerGroupMapper;
+    @Autowired
+    private InfoAccountMapper accountMapper;
 
     @Override
     public ResultResponse<PageResult<InfoPowerGroupDTO>> pageWithInfoPowerGroup(InfoPowerGroupSearch search) {
@@ -172,6 +176,10 @@ public class InfoPowerGroupServiceImpl implements InfoPowerGroupService {
             if(Help.isNotEmpty(list)) {
                 List<String> powerIdList = list.stream().map(InfoGroupPower::getPowerId).collect(Collectors.toList());
                 target.setPowerIdList(powerIdList);
+            }
+            InfoAccount createAccount = accountMapper.selectById(entity.getCreateAccountId());
+            if(Help.isNotEmpty(createAccount)) {
+                target.setCreateAccountName(createAccount.getAccountName());
             }
         }
         return target;

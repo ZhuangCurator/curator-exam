@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.curator.api.info.pojo.dto.AccountDTO;
+import com.curator.api.info.provider.InfoAccountProvider;
 import com.curator.backend.register.exam.category.entity.ExamCategory;
 import com.curator.backend.register.exam.category.entity.dto.ExamCategoryDTO;
 import com.curator.backend.register.exam.category.entity.vo.info.ExamCategoryInfo;
@@ -15,6 +17,7 @@ import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.common.util.ServletUtil;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,8 @@ public class ExamCategoryServiceImpl implements ExamCategoryService {
 
     @Autowired
     private ExamCategoryMapper examCategoryMapper;
+    @DubboReference
+    private InfoAccountProvider infoAccountProvider;
 
     @Override
     public ResultResponse<PageResult<ExamCategoryDTO>> pageWithExamCategory(ExamCategorySearch search) {
@@ -149,6 +154,10 @@ public class ExamCategoryServiceImpl implements ExamCategoryService {
         ExamCategoryDTO target = new ExamCategoryDTO();
         if (Help.isNotEmpty(entity)) {
             BeanUtils.copyProperties(entity, target);
+            AccountDTO accountDTO = infoAccountProvider.getAccount(entity.getCreateAccountId()).getData();
+            if(Help.isNotEmpty(accountDTO)) {
+                target.setCreateAccountName(accountDTO.getAccountName());
+            }
         }
         return target;
     }

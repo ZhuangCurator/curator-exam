@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.curator.api.info.pojo.dto.AccountDTO;
+import com.curator.api.info.provider.InfoAccountProvider;
 import com.curator.backend.paper.generation.rule.entity.PaperGenerationRule;
 import com.curator.backend.paper.generation.rule.entity.dto.PaperGenerationRuleDTO;
 import com.curator.backend.paper.generation.rule.entity.vo.info.PaperGenerationRuleInfo;
@@ -15,6 +17,7 @@ import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.common.util.ServletUtil;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,8 @@ public class PaperGenerationRuleServiceImpl implements PaperGenerationRuleServic
     
     @Autowired
     private PaperGenerationRuleMapper generationRuleMapper;
+    @DubboReference
+    private InfoAccountProvider infoAccountProvider;
 
     @Override
     public ResultResponse<PageResult<PaperGenerationRuleDTO>> pageWithPaperGenerationRule(PaperGenerationRuleSearch search) {
@@ -113,6 +118,10 @@ public class PaperGenerationRuleServiceImpl implements PaperGenerationRuleServic
             if(Help.isNotEmpty(entity.getQuestionBankId())) {
                 String questionBankName = generationRuleMapper.selectQuestionBankName(entity.getQuestionBankId());
                 target.setQuestionBankName(questionBankName);
+            }
+            AccountDTO accountDTO = infoAccountProvider.getAccount(entity.getCreateAccountId()).getData();
+            if(Help.isNotEmpty(accountDTO)) {
+                target.setCreateAccountName(accountDTO.getAccountName());
             }
         }
         return target;

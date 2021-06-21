@@ -45,6 +45,9 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" class="table-expand">
+              <el-form-item label="创建账户">
+                <span>{{ props.row.createAccountName }}</span>
+              </el-form-item>
               <el-form-item label="创建时间">
                 <span>{{ props.row.createTime }}</span>
               </el-form-item>
