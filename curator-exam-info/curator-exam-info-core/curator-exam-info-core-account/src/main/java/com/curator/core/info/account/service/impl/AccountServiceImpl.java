@@ -190,7 +190,7 @@ public class AccountServiceImpl implements AccountService {
         if(Help.isNotEmpty(accountList)) {
             accountList.forEach(account -> {
                 accountIdList.add(account.getAccountId());
-                getAllChildren(accountIdList, account.getAccountId());
+                getAllNextLevelAccount(accountIdList, account.getAccountId());
             });
         }
     }
