@@ -40,7 +40,9 @@
               <el-form-item label="身份证号" prop="idCard">
                 <el-input v-model="addForm.idCard"></el-input>
               </el-form-item>
-              <el-form-item label="邮箱" prop="email">
+              <el-form-item label="省市区" prop="email">
+                <el-cascader size="medium" :options="options" v-model="selectedOptions" @change="handleChange"></el-cascader>
+              </el-form-item><el-form-item label="邮箱" prop="email">
                 <el-input v-model="addForm.email"></el-input>
               </el-form-item>
               <el-form-item label="电话" prop="phone">
@@ -60,7 +62,7 @@
 
 <script>
 import { getImageValidateCode, handleLogin, handleRegister } from '@/apis/auth/auth'
-
+import { regionData } from 'element-china-area-data'
 export default {
   name: 'Login',
   data () {
@@ -91,6 +93,8 @@ export default {
     }
     return {
       activeName: 'loginForm',
+      options: regionData,
+      selectedOptions: [],
       // 登录表单数据绑定对象
       loginForm: {
         accountName: '',
@@ -215,6 +219,10 @@ export default {
     // 刷新图片验证码
     refreshValidateCode () {
       this.getValidateCodeImage()
+    },
+    handleChange (value) {
+      console.log(value)
+      console.log(this.selectedOptions)
     },
     // 点击确定按钮，发起注册请求
     register () {

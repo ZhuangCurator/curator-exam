@@ -10,7 +10,7 @@
     <!-- 卡片视图区域-->
     <el-card class="box-card">
       <!--  搜索与添加区域 -->
-      <el-form :model="queryForm" ref="queryFormRef" :inline="true" label-width="80px">
+      <el-form :model="queryForm" ref="queryFormRef" :inline="true" label-width="70px">
         <el-form-item label="考点名称">
           <el-input
             v-model="queryForm.examSiteName"

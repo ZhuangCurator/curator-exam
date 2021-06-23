@@ -100,9 +100,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public ResultResponse<List<String>> getAllChildrenAccount(String accountId) {
+    public ResultResponse<List<String>> getAllNextLevelAccount(String accountId) {
         List<String> childrenIdList = new ArrayList<>();
-        getAllChildren(childrenIdList, accountId);
+        getAllNextLevelAccount(childrenIdList, accountId);
         return ResultResponse.<List<String>>builder().success("所有下级账户查询成功").data(childrenIdList).build();
     }
 
@@ -183,7 +183,7 @@ public class AccountServiceImpl implements AccountService {
      * @param accountIdList
      * @param accountId
      */
-    private void getAllChildren(List<String> accountIdList, String accountId) {
+    private void getAllNextLevelAccount(List<String> accountIdList, String accountId) {
         QueryWrapper<InfoAccount> wrapper = new QueryWrapper<>();
         wrapper.eq("create_account_id", accountId);
         List<InfoAccount> accountList = accountMapper.selectList(wrapper);

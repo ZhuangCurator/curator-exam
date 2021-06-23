@@ -28,7 +28,7 @@ public interface InfoAccountProvider {
      * @param accountId 账户id
      * @return
      */
-    ResultResponse<List<String>> getAllChildrenAccount(String accountId);
+    ResultResponse<List<String>> getAllNextLevelAccount(String accountId);
 
     /**
      * 查询账户

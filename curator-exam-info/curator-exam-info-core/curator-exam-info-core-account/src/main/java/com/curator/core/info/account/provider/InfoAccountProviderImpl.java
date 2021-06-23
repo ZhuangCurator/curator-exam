@@ -26,8 +26,8 @@ public class InfoAccountProviderImpl implements InfoAccountProvider {
     }
 
     @Override
-    public ResultResponse<List<String>> getAllChildrenAccount(String accountId) {
-        return accountService.getAllChildrenAccount(accountId);
+    public ResultResponse<List<String>> getAllNextLevelAccount(String accountId) {
+        return accountService.getAllNextLevelAccount(accountId);
     }
 
     @Override

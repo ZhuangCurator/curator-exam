@@ -108,9 +108,10 @@ public class LoginServiceImpl implements LoginService {
             accountDTO.setRoleType(account.getRoleType());
             accountDTO.setPerms(Boolean.TRUE.equals(permsRes.getSucceeded()) ? permsRes.getData() : new HashSet<>());
         }
-        if(!"0".equals(account.getCreateAccountId())) {
-            // createAccountId 为0的是超级账户或普通账户
-            List<String> childrenIdList = accountProvider.getAllChildrenAccount(account.getAccountId()).getData();
+        // 为0的是超级账户或普通账户
+        String defaultId = "0";
+        if(!defaultId.equals(account.getCreateAccountId())) {
+            List<String> childrenIdList = accountProvider.getAllNextLevelAccount(account.getAccountId()).getData();
             accountDTO.setChildrenAccountIdList(childrenIdList);
         }
         // 保存或更新用户token

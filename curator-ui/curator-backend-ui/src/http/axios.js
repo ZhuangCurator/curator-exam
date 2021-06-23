@@ -23,6 +23,9 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(data => {
   loadingInstance.close()
   return data
+}, err => {
+  loadingInstance.close()
+  return Promise.reject(err)
 })
 
 // get请求

@@ -62,7 +62,7 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column type="selection" width="35"></el-table-column>
+        <el-table-column type="selection" width="38"></el-table-column>
         <el-table-column label="题干" prop="questionStem" align="center"></el-table-column>
         <el-table-column label="试题难度" width="70px" prop="questionDifficultyDesc" align="center"></el-table-column>
         <el-table-column label="试题类型" width="70px" prop="questionTypeDesc" align="center"></el-table-column>

@@ -146,7 +146,7 @@ public class ExamSubjectServiceImpl implements ExamSubjectService {
                 .eq(Help.isNotEmpty(search.getCity()), "city", search.getCity())
                 .eq(Help.isNotEmpty(search.getDistrict()), "district", search.getDistrict())
                 .orderByDesc("create_time");
-        if (Boolean.FALSE.equals(search.getSuperAdmin())) {
+        if(!search.getSuperAdmin()) {
             wrapper.and(wr -> wr.eq("create_account_id", createAccountId)
                     .or(Help.isNotEmpty(childrenAccountIdList), w -> w.in("create_account_id", childrenAccountIdList)));
         }

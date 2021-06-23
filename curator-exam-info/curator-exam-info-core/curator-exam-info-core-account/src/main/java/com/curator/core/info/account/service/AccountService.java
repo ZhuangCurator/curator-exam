@@ -27,7 +27,7 @@ public interface AccountService {
      * @param accountId 账户id
      * @return
      */
-    ResultResponse<List<String>> getAllChildrenAccount(String accountId);
+    ResultResponse<List<String>> getAllNextLevelAccount(String accountId);
 
     /**
      * 普通账户注册
