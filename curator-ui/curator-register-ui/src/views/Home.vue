@@ -16,7 +16,7 @@
       <div class="menu-div">
         <el-menu :default-active="this.$store.state.activeMenu" router mode="horizontal" @select="handleSelect">
           <el-menu-item index="notice" key="1">考试公告</el-menu-item>
-          <el-menu-item index="subject" key="2">考试报名</el-menu-item>
+          <el-menu-item index="category" key="2">考试报名</el-menu-item>
           <el-menu-item index="score" key="3">成绩查询</el-menu-item>
         </el-menu>
       </div>

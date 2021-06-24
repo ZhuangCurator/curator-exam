@@ -1,5 +1,6 @@
 package com.curator.api.register.pojo.vo.search;
 
+import com.curator.common.support.BaseSearch;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,7 +14,7 @@ import java.io.Serializable;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class ExamCategorySearch implements Serializable {
+public class ExamCategorySearch extends BaseSearch {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,5 +27,10 @@ public class ExamCategorySearch implements Serializable {
      * 市(代码)
      */
     private String city;
+
+    /**
+     * 考试类别名称
+     */
+    private String examCategoryName;
 
 }

@@ -83,6 +83,11 @@ public class InfoAccount implements Serializable {
     private String city;
 
     /**
+     * 区县(代码)
+     */
+    private String district;
+
+    /**
      * 父账号id
      */
     private String parentId;

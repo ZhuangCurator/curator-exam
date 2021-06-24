@@ -96,6 +96,7 @@ public class LoginServiceImpl implements LoginService {
                 .accountName(account.getAccountName())
                 .province(account.getProvince())
                 .city(account.getCity())
+                .district(account.getDistrict())
                 .loginTime(loginTime)
                 .expireTime(loginTime + CommonConstant.TOKEN_EXPIRE_TIME)
                 .build();

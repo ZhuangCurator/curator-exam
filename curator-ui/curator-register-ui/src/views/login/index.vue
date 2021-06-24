@@ -40,8 +40,8 @@
               <el-form-item label="身份证号" prop="idCard">
                 <el-input v-model="addForm.idCard"></el-input>
               </el-form-item>
-              <el-form-item label="省市区" prop="email">
-                <el-cascader size="medium" :options="options" v-model="selectedOptions" @change="handleChange"></el-cascader>
+              <el-form-item label="省市区" prop="district">
+                <el-cascader size="large" :options="options" @change="handleChangeRegionData" style="width: 100%"></el-cascader>
               </el-form-item><el-form-item label="邮箱" prop="email">
                 <el-input v-model="addForm.email"></el-input>
               </el-form-item>
@@ -63,6 +63,7 @@
 <script>
 import { getImageValidateCode, handleLogin, handleRegister } from '@/apis/auth/auth'
 import { regionData } from 'element-china-area-data'
+import { saveToken } from '@/utils/storage'
 export default {
   name: 'Login',
   data () {
@@ -94,7 +95,6 @@ export default {
     return {
       activeName: 'loginForm',
       options: regionData,
-      selectedOptions: [],
       // 登录表单数据绑定对象
       loginForm: {
         accountName: '',
@@ -132,7 +132,10 @@ export default {
         accountName: undefined,
         email: undefined,
         phone: undefined,
-        idCard: undefined
+        idCard: undefined,
+        province: undefined,
+        city: undefined,
+        district: undefined
       },
       // 添加账户表单校验规则
       addFormRules: {
@@ -175,6 +178,13 @@ export default {
             validator: checkIdCard,
             trigger: 'blur'
           }
+        ],
+        district: [
+          {
+            required: true,
+            message: '请选择省市区',
+            trigger: 'blur'
+          }
         ]
       }
     }
@@ -194,7 +204,8 @@ export default {
           } else {
             this.$message.success(res.message)
             // 保存token
-            this.$store.commit('saveToken', res.data.accessToken)
+            // 存储访问 token
+            saveToken(res.data.accessToken)
             // 查询登录账户信息
             await this.$store.dispatch('queryLoginAccount')
             if (!this.$route.query.redirect) {
@@ -220,9 +231,11 @@ export default {
     refreshValidateCode () {
       this.getValidateCodeImage()
     },
-    handleChange (value) {
-      console.log(value)
-      console.log(this.selectedOptions)
+    // 省市区控件发生改变触发
+    handleChangeRegionData (value) {
+      this.addForm.province = value[0]
+      this.addForm.city = value[1]
+      this.addForm.district = value[2]
     },
     // 点击确定按钮，发起注册请求
     register () {

@@ -44,4 +44,20 @@ public class AccountInfo implements Serializable {
      * 邮箱
      */
     private String email;
+
+
+    /**
+     * 省
+     */
+    private String province;
+
+    /**
+     * 市
+     */
+    private String city;
+
+    /**
+     * 区县
+     */
+    private String district;
 }

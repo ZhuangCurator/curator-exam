@@ -62,6 +62,12 @@ export default {
       queryForm: {
         // 考试科目id
         examSubjectId: undefined,
+        // 省
+        province: undefined,
+        // 市
+        city: undefined,
+        // 区县
+        district: undefined,
         // 考点名
         examSiteName: undefined,
         // 当前页
@@ -78,6 +84,9 @@ export default {
   methods: {
     // 得到考试考点分页数据
     async getExamSitePage () {
+      this.queryForm.province = this.$store.state.province
+      this.queryForm.city = this.$store.state.city
+      this.queryForm.district = this.$store.state.district
       const { data: res } = await handleExamSitePage(this.queryForm)
       console.log(res.data)
       if (res.status !== '2000') return this.$message.error(res.message)

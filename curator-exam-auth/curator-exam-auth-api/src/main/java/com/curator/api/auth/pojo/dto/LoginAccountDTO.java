@@ -50,6 +50,11 @@ public class LoginAccountDTO implements Serializable {
     private String city;
 
     /**
+     * 区县(代码)
+     */
+    private String district;
+
+    /**
      * 登录唯一标识
      */
     private String token;

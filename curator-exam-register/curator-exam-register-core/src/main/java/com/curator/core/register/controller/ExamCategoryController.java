@@ -3,6 +3,7 @@ package com.curator.core.register.controller;
 import com.curator.api.register.pojo.dto.ExamCategoryDTO;
 import com.curator.api.register.pojo.vo.search.ExamCategorySearch;
 import com.curator.common.annotation.Log;
+import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.core.register.service.ExamCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,9 @@ public class ExamCategoryController {
      * @param search 查询条件
      * @return
      */
-    @GetMapping("/list")
+    @GetMapping("/page")
     @Log(controllerName = "ExamCategoryController", remark = "考试类别列表查询")
-    ResultResponse<List<ExamCategoryDTO>> listWithExamCategory(ExamCategorySearch search) {
-        return examCategoryService.listWithExamCategory(search);
+    ResultResponse<PageResult<ExamCategoryDTO>> pageWithExamCategory(ExamCategorySearch search) {
+        return examCategoryService.pageWithExamCategory(search);
     }
 }

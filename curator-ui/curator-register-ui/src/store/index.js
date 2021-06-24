@@ -11,6 +11,12 @@ export default new Vuex.Store({
     accountId: '',
     // 账户名称
     accountName: '',
+    // 省
+    province: '',
+    // 市
+    city: '',
+    // 区县
+    district: '',
     // 当前菜单
     activeMenu: 'notice'
   },
@@ -18,14 +24,16 @@ export default new Vuex.Store({
     saveAccount (state, account) {
       state.accountId = account.accountId
       state.accountName = account.accountName
-    },
-    saveToken (state, token) {
-      state.token = token
+      state.province = account.province
+      state.city = account.city
+      state.district = account.district
     },
     resetState (state) {
-      state.token = ''
       state.accountId = ''
       state.accountName = ''
+      state.province = ''
+      state.city = ''
+      state.district = ''
     },
     setActiveMenu (state, activeMenu) {
       state.activeMenu = activeMenu

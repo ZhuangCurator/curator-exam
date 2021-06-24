@@ -2,6 +2,7 @@ package com.curator.core.register.service;
 
 import com.curator.api.register.pojo.dto.ExamSubjectDTO;
 import com.curator.api.register.pojo.vo.search.ExamSubjectSearch;
+import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 
 import java.util.List;
@@ -20,5 +21,5 @@ public interface ExamSubjectService {
      * @param search 查询条件
      * @return
      */
-    ResultResponse<List<ExamSubjectDTO>> listWithExamSubject(ExamSubjectSearch search);
+    ResultResponse<PageResult<ExamSubjectDTO>> pageWithExamSubject(ExamSubjectSearch search);
 }

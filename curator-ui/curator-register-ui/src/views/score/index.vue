@@ -54,13 +54,6 @@ export default {
     }
   },
   created () {
-    if (this.$store.state.accountId === '') {
-      // 没有登录则跳转到登录页
-      this.$router.push({
-        path: 'login',
-        query: { redirect: this.$router.currentRoute.fullPath }
-      })
-    }
     this.getRegisterInfoPage()
   },
   methods: {
