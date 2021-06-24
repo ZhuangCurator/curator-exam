@@ -57,10 +57,8 @@ public class ExamRegisterController {
 
     @GetMapping("/pdf")
     void pdfAdmissionTicket () throws IOException {
-        ClassPathResource classPathResource = new ClassPathResource("static/fonts/AdobeKaitiStd-Regular.otf");
-        XEasyPdfDocument document = XEasyPdfHandler.Document.build();
                 // 添加页面
-        document.addPage(
+        XEasyPdfHandler.Document.build().addPage(
                 // 构建页面
                 XEasyPdfHandler.Page.build(
                         XEasyPdfHandler.Table.build(
@@ -117,6 +115,6 @@ public class ExamRegisterController {
                         ,XEasyPdfHandler.Text.build( "完结").setStyle(XEasyPdfTextStyle.CENTER)
                 )
                 // 设置字体路径，并保存
-        ).setFontPath(classPathResource.getPath()).save("/home/jun/Desktop/text.pdf").close();
+        ).setFontPath("static/fonts/1571279005.ttf").save("/home/jun/Desktop/text.pdf").close();
     }
 }
