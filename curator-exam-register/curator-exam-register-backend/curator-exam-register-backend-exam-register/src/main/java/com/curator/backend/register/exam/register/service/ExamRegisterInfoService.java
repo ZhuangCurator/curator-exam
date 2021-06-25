@@ -2,8 +2,8 @@ package com.curator.backend.register.exam.register.service;
 
 import com.curator.backend.register.exam.register.entity.dto.ExamRegisterInfoDTO;
 import com.curator.backend.register.exam.register.entity.dto.ExamRegisterInfoExcelDTO;
-import com.curator.backend.register.exam.register.entity.vo.search.ExamRegisterInfoSearch;
 import com.curator.backend.register.exam.register.entity.vo.info.ExamRegisterInfoInfo;
+import com.curator.backend.register.exam.register.entity.vo.search.ExamRegisterInfoSearch;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 
@@ -56,4 +56,12 @@ public interface ExamRegisterInfoService  {
      * @return
      */
     List<ExamRegisterInfoExcelDTO> listWithExamRegisterInfoExcel(ExamRegisterInfoSearch search);
+
+    /**
+     * 查询考试试卷
+     *
+     * @param examRegisterInfoId 报名信息ID
+     * @return
+     */
+    ResultResponse<String> selectTestPaper(String examRegisterInfoId);
 }

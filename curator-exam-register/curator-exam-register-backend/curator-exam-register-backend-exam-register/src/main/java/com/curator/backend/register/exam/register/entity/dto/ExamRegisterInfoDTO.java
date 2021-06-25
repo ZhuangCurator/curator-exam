@@ -46,6 +46,11 @@ public class ExamRegisterInfoDTO implements Serializable {
     private String examSubjectName;
 
     /**
+     * 试卷生成规则ID
+     */
+    private String generationRuleId;
+
+    /**
      * 考点ID
      */
     private String examSiteId;

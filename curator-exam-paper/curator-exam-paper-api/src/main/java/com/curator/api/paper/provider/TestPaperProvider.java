@@ -18,4 +18,12 @@ public interface TestPaperProvider {
      * @return 试卷id
      */
     ResultResponse<String> reExam(String examRegisterInfoId, Integer paperStatus);
+
+    /**
+     * 查询此次报名所做的试卷
+     *
+     * @param examRegisterInfoId 考生报名信息id
+     * @return
+     */
+    ResultResponse<String> selectTestPaper(String examRegisterInfoId);
 }

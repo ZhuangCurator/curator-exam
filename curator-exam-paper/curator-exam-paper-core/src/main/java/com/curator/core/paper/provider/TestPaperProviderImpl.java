@@ -38,4 +38,17 @@ public class TestPaperProviderImpl implements TestPaperProvider {
         }
         return ResultResponse.<String>builder().success("考生试卷设置重考成功").build();
     }
+
+    @Override
+    public ResultResponse<String> selectTestPaper(String examRegisterInfoId) {
+        // 查看考生 考试已结束的试卷
+        QueryWrapper<TestPaper> wrapper = new QueryWrapper<>();
+        wrapper.eq("exam_register_info_id", examRegisterInfoId)
+               .eq("paper_status",  TestPaperStatusEnum.OVER.getStatus());
+        TestPaper testPaper = testPaperMapper.selectOne(wrapper);
+        if(Help.isNotEmpty(testPaper)) {
+            return ResultResponse.<String>builder().success("考生试卷查询成功").data(testPaper.getTestPaperId()).build();
+        }
+        return ResultResponse.<String>builder().failure("该考生不存在考试已结束的试卷").build();
+    }
 }

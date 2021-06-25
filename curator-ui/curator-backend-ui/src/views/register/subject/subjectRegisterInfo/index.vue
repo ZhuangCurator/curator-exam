@@ -122,9 +122,10 @@
             {{ scope.row.passed === 1 ? '及格' : '不及格' }}
           </template>
         </el-table-column>
-        <el-table-column label="操作"  align="center" v-if="columnShow">
+        <el-table-column label="操作" width="250px" align="center" v-if="columnShow">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" v-has-perm="['register:people:reExam']" @click="showReExamDialog(scope.row.examRegisterInfoId)">重考</el-button>
+            <el-button type="primary" icon="el-icon-edit" size="mini" @click="showReviewExam(scope.row)">考试回顾</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -168,7 +169,7 @@ import {
   handleExamRegisterInfoPage,
   handleGenerateExamPassword,
   handleAssignClassroom,
-  handleExportExamRegisterInfo
+  handleExportExamRegisterInfo, handleTestPaperQuery
 } from '@/apis/register/examRegister'
 import { showElement } from '@/utils/show'
 
@@ -345,6 +346,34 @@ export default {
       })
       this.reExamDialogVisible = false
       await this.getExamRegisterInfoPage()
+    },
+    // 跳转到试卷界面
+    async showReviewExam (info) {
+      if (info.examStatus === 0) {
+        this.$message({
+          type: 'error',
+          message: '该考生还未开始考试,不允许进行此操作'
+        })
+      } else if (info.examStatus === 2) {
+        this.$message({
+          type: 'error',
+          message: '该考生缺席此次考试,不允许进行此操作'
+        })
+      } else {
+        const { data: res } = await handleTestPaperQuery(info.examRegisterInfoId)
+        if (res.status !== '2000') {
+          return this.$message.error(res.message)
+        }
+        console.log(res)
+        await this.$router.push({
+          path: '/paper/paperPage',
+          query: {
+            e: info.examRegisterInfoId,
+            p: res.data,
+            g: info.generationRuleId
+          }
+        })
+      }
     }
   },
   mounted () {

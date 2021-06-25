@@ -1,11 +1,14 @@
 <template>
   <div class="paper_container">
-    <title-header :dividerWidth="80"></title-header>
-    <div class="paper_div">
-      <div class="time_div">
-        距离考试结束还有：<span style="color: #ff0000;">{{ minutes }}分{{ seconds }}秒</span>
-        <el-button style="float: right; margin-top: -10px" type="primary" icon="el-icon-plus" @click="handIn()">我要交卷</el-button>
-      </div>
+    <!-- 面包屑导航区域 -->
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>考试试卷管理</el-breadcrumb-item>
+      <el-breadcrumb-item>考试试卷列表</el-breadcrumb-item>
+    </el-breadcrumb>
+    <!-- 卡片视图区域-->
+    <el-card class="box-card">
+      <div class="paper_div">
       <div class="paper_detail_div">
         <div class="question_type_div" >
           <p class="title_desc">答题卡</p>
@@ -28,21 +31,18 @@
           <!--  题干 -->
           <p v-html="this.currentTagIndex + '. ' + this.currentQuestion.questionStem" style="font-size: 20px"></p>
           <div v-if="this.currentQuestion.questionType === 1  || this.currentQuestion.questionType === 3">
-            <el-radio-group v-model="currentRadioAnswer" @change="handleRadioChange">
+            <el-radio-group v-model="currentRadioAnswer" @change="handleRadioChange" disabled>
               <el-radio v-for="(item, index) in this.currentQuestion.questionAnswerList" :label="choseOptions[index]" :key="index">{{ item.questionAnswerContent }}</el-radio>
             </el-radio-group>
           </div>
           <div v-if="this.currentQuestion.questionType === 2">
-            <el-checkbox-group v-model="currentCheckboxAnswer" @change="handleCheckboxChange">
+            <el-checkbox-group v-model="currentCheckboxAnswer" @change="handleCheckboxChange" disabled>
               <el-checkbox v-for="(item, index) in this.currentQuestion.questionAnswerList" :label="choseOptions[index]" :key="index">{{ item.questionAnswerContent }}</el-checkbox>
             </el-checkbox-group>
           </div>
           <div v-if="this.currentQuestion.questionType === 4">
-<!--            <el-input v-for="(item, index) in this.currentQuestion.questionAnswerList" :key="index" v-model="currentFillBlankAnswer[index].questionAnswerContent" style="margin-top: 10px">-->
-<!--              <template slot="prepend">答案 {{ index + 1}} :</template>-->
-<!--            </el-input>-->
             <el-input v-for="(item, index) in this.currentQuestion.questionAnswerList" :key="index"
-                      v-model="currentFillBlankAnswer[index]" style="margin-top: 10px" @change="handleInputChange">
+                      v-model="currentFillBlankAnswer[index]" style="margin-top: 10px" @change="handleInputChange" disabled>
               <template slot="prepend">答案 {{ index + 1}} :</template>
             </el-input>
           </div>
@@ -53,26 +53,25 @@
         </div>
       </div>
     </div>
+    </el-card>
   </div>
 </template>
 
 <script>
-import TitleHeader from '@/components/TitleHeader'
 import {
   handleQuestionTypeAndNumQuery,
   handleSingleQuestionQuery,
   handleUserAnswerSave,
   handlePaperMark
-} from '@/apis/paper'
+} from '@/apis/paper/paper'
 export default {
   name: 'paper',
-  components: { TitleHeader },
   data () {
     return {
+      testPaperId: undefined,
+      examRegisterInfoId: undefined,
+      generationRuleId: undefined,
       // 倒计时默认分钟
-      minutes: '00',
-      // 倒计时默认秒数
-      seconds: '00',
       // 是否展示上一题
       showPrevious: true,
       // 是否展示下一题
@@ -101,7 +100,7 @@ export default {
   methods: {
     // 试卷试题类型和个数
     async queryQuestionTypeAndNum () {
-      const param = { testPaperId: this.$store.state.testPaperId, generationRuleId: this.$store.state.generationRuleId }
+      const param = { testPaperId: this.testPaperId, generationRuleId: this.generationRuleId }
       const { data: res } = await handleQuestionTypeAndNumQuery(param)
       if (res.status !== '2000') {
         this.$message.error(res.message)
@@ -118,8 +117,8 @@ export default {
       this.showPrevious = this.currentTagIndex !== 1
       this.showNext = this.currentTagIndex !== this.maxTagIndex
       const param = {
-        testPaperId: this.$store.state.testPaperId,
-        examRegisterInfoId: this.$store.state.examRegisterInfoId,
+        testPaperId: this.testPaperId,
+        examRegisterInfoId: this.examRegisterInfoId,
         paperQuestionSort: this.currentTagIndex
       }
       const { data: res } = await handleSingleQuestionQuery(param)
@@ -165,41 +164,6 @@ export default {
         this.$message.error(res.message)
       } else {
         console.log(res)
-      }
-    },
-    // 主动交卷
-    handIn () {
-      this.$confirm('是否确认交卷?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(async () => {
-        // 手动交卷
-        await this.markPaper(1)
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消交卷!'
-        })
-      })
-    },
-    // 交卷
-    async markPaper (handInReason) {
-      const param = {
-        testPaperId: this.$store.state.testPaperId,
-        examRegisterInfoId: this.$store.state.examRegisterInfoId,
-        handInReason: handInReason
-      }
-      const { data: res } = await handlePaperMark(param)
-      if (res.status !== '2000') {
-        this.$message.error(res.message)
-      } else {
-        // 保存成绩
-        this.$store.commit('setGrades', res.data)
-        // 则跳转至考试成绩页
-        await this.$router.push({
-          path: 'grades'
-        })
       }
     },
     // 动态生成试题序号标签的 type
@@ -273,34 +237,14 @@ export default {
       this.handleTagClick(this.currentTagIndex + 1)
     }
   },
-  created () {
+  mounted () {
+    this.testPaperId = this.$route.query.p
+    this.examRegisterInfoId = this.$route.query.e
+    this.generationRuleId = this.$route.query.g
     // 查询左侧的试题类型和序号
     this.queryQuestionTypeAndNum()
     // 默认查找第一题
     this.queryPaperSingleQuestion()
-  },
-  mounted () {
-    // 考试结束倒计时
-    const timer = setInterval(() => {
-      // 剩余毫秒
-      const milliSecond = this.$store.state.examDuration
-      if (milliSecond < 0) {
-        clearInterval(timer)
-        console.log('强制交卷了')
-      }
-      // 剩余毫秒
-      const min = parseInt((milliSecond / 1000) / 60 + '')
-      const sec = parseInt((milliSecond / 1000) % 60 + '')
-      // 赋值
-      this.minutes = min > 9 ? min : '0' + min
-      this.seconds = sec > 9 ? sec : '0' + sec
-      // 时间自减一秒
-      this.$store.commit('subExamDuration')
-    }, 1000)
-    // 通过$once来监听定时器，在beforeDestroy钩子可以被清除。
-    this.$once('hook:beforeDestroy', () => {
-      clearInterval(timer)
-    })
   }
 }
 </script>
@@ -309,6 +253,10 @@ export default {
 .paper_container {
   height: 100%;
   width: 100%;
+}
+.box-card {
+  height: 100%;
+  align-items: center;
 }
 .time_div {
   height: 50px;
@@ -319,7 +267,7 @@ export default {
 }
 .paper_div {
   height: 100%;
-  width: 70%;
+  width: 100%;
   margin: 0 auto;
 }
 .paper_detail_div .question_type_div {

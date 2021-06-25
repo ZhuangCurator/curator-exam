@@ -43,3 +43,8 @@ export function handleReExam (params) {
 export function handleExportExamRegisterInfo (params) {
   return get('/examRegisterBackend/examRegisterInfo/export', params, 'blob')
 }
+
+// 查询考试试卷
+export function handleTestPaperQuery (params) {
+  return get('/examRegisterBackend/examRegisterInfo/testPaper/' + params)
+}

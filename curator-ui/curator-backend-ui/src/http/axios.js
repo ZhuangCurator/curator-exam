@@ -1,5 +1,7 @@
 import axios from 'axios'
-import { Loading } from 'element-ui'
+// 引入进度条
+import 'nprogress/nprogress.css'
+import NProgress from 'nprogress'
 import { getToken } from '@/utils/storage'
 
 axios.defaults.baseURL = 'http://localhost:9010'
@@ -10,7 +12,7 @@ axios.defaults.timeout = 10000
 let loadingInstance
 // 设置请求拦截器
 axios.interceptors.request.use(config => {
-  loadingInstance = Loading.service({ fullscreen: true, text: '拼命加载中...', background: 'rgba(0, 0, 0, 0.8)' })
+  NProgress.start()
   // 发送请求时带上token值
   const token = getToken()
   if (token) {
@@ -21,11 +23,8 @@ axios.interceptors.request.use(config => {
 
 // http响应拦截器
 axios.interceptors.response.use(data => {
-  loadingInstance.close()
+  NProgress.done()
   return data
-}, err => {
-  loadingInstance.close()
-  return Promise.reject(err)
 })
 
 // get请求

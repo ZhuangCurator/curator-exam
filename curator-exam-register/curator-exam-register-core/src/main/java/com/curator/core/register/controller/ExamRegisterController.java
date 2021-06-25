@@ -114,7 +114,7 @@ public class ExamRegisterController {
                         // 构建文本
                         ,XEasyPdfHandler.Text.build( "完结").setStyle(XEasyPdfTextStyle.CENTER)
                 )
-                // 设置字体路径，并保存
+                // 设置字体路径，并保存  /home/jun/Desktop/1571279005.ttf
         ).setFontPath("static/fonts/1571279005.ttf").save("/home/jun/Desktop/text.pdf").close();
     }
 }

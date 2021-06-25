@@ -354,8 +354,9 @@ public class TestPaperServiceImpl implements TestPaperService {
         Question question = questionMapper.selectById(paperQuestion.getQuestionId());
         QueryWrapper<QuestionAnswer> wrapper = new QueryWrapper<>();
         wrapper.eq("question_id", paperQuestion.getQuestionId())
+                .eq("is_righted", 1)
                 .orderByAsc("question_answer_order");
-        // 试题答案集合
+        // 试题正确答案集合
         List<QuestionAnswer> questionAnswerList = questionAnswerMapper.selectList(wrapper);
         // 考生答案集合
         List<String> userAnswerList = Help.split2List(paperQuestion.getUserAnswer(), "\\$:\\$");
@@ -368,39 +369,46 @@ public class TestPaperServiceImpl implements TestPaperService {
                     String userAnswer = "blankEmpty".equals(userAnswerList.get(i)) ? "" : userAnswerList.get(i);
                     if(Help.isNotEmpty(userAnswer)) {
                         if(userAnswer.equals(questionAnswerList.get(i).getContent())) {
-                            point = point.add(questionAnswerList.get(i).getQuestionPoint());
+                            point = point.add(BigDecimal.valueOf(question.getQuestionPoint()/questionAnswerList.size()));
                         }
                     }
                 }
             } else {
                 // 答案无序
                 List<String> questionAnswerStrList = questionAnswerList.stream().map(QuestionAnswer::getContent).collect(Collectors.toList());
-                for (int i = 0; i < userAnswerList.size(); i++) {
-                    String userAnswer = "blankEmpty".equals(userAnswerList.get(i)) ? "" : userAnswerList.get(i);
-                    if(Help.isNotEmpty(userAnswer)) {
-                        if(questionAnswerStrList.contains(userAnswer)){
-                            point = point.add(questionAnswerList.get(i).getQuestionPoint());
+                for (String s : userAnswerList) {
+                    String userAnswer = "blankEmpty".equals(s) ? "" : s;
+                    if (Help.isNotEmpty(userAnswer)) {
+                        if (questionAnswerStrList.contains(userAnswer)) {
+                            point = point.add(BigDecimal.valueOf(question.getQuestionPoint() / questionAnswerList.size()));
                             questionAnswerStrList.remove(userAnswer);
                         }
                     }
                 }
             }
-        }else {
-            // 单选题、多选题、判断题 比对序号
-            for (QuestionAnswer questionAnswer : questionAnswerList) {
-                String answerStr = (char) ((questionAnswer.getQuestionAnswerOrder() - 1) % 26 + (int) 'A') + "";
-                if(userAnswerList.contains(answerStr)){
-                    if(questionAnswer.getRighted() == 1) {
-                        point = point.add(questionAnswer.getQuestionPoint());
-                    }else {
-                        // 选中了错误答案即一分都没有
-                        point = new BigDecimal(0);
-                        break;
-                    }
+        }else if(paperQuestion.getQuestionType() == QuestionTypeEnum.MULTIPLE_CHOICE.getStatus()) {
+            // 多选题 比对序号,少一个扣 0.5 分 (多选题没有全部答案都是正确的题目)
+            // 是否含有错误答案
+            boolean hasError = false;
+            List<String> questionAnswerStrList = questionAnswerList.stream().map(questionAnswer ->
+                    (char) ((questionAnswer.getQuestionAnswerOrder() - 1) % 26 + (int) 'A') + "").collect(Collectors.toList());
+            for (String userAnswer : userAnswerList) {
+                if(!questionAnswerStrList.contains(userAnswer)){
+                    // 选中了错误答案即一分都没有
+                    hasError = true;
+                    break;
                 }
             }
+            if (!hasError) {
+                point = BigDecimal.valueOf(question.getQuestionPoint() - ((questionAnswerStrList.size() - userAnswerList.size()) * 0.5));
+            }
+        }else {
+            // 单选题、判断题 比对序号
+            String answerStr = (char) ((questionAnswerList.get(0).getQuestionAnswerOrder() - 1) % 26 + (int) 'A') + "";
+            if (userAnswerList.get(0).equals(answerStr)) {
+                point = BigDecimal.valueOf(question.getQuestionPoint());
+            }
         }
-
         return point;
     }
 

@@ -214,7 +214,10 @@ public class ExamRegisterInfoServiceImpl implements ExamRegisterInfoService {
         return resultList;
     }
 
-
+    @Override
+    public ResultResponse<String> selectTestPaper(String examRegisterInfoId) {
+        return testPaperProvider.selectTestPaper(examRegisterInfoId);
+    }
 
     /**
      * 将 数据库对象 转为 数据传输对象
@@ -230,6 +233,7 @@ public class ExamRegisterInfoServiceImpl implements ExamRegisterInfoService {
             target.setExamCategoryName(examCategory.getExamCategoryName());
             ExamSubject examSubject = examSubjectMapper.selectById(entity.getExamSubjectId());
             target.setExamSubjectName(examSubject.getExamSubjectName());
+            target.setGenerationRuleId(examSubject.getGenerationRuleId());
             ExamSite examSite = examSiteMapper.selectById(entity.getExamSiteId());
             target.setExamSiteName(examSite.getExamSiteName());
             if(Help.isNotEmpty(entity.getExamClassroomId())) {

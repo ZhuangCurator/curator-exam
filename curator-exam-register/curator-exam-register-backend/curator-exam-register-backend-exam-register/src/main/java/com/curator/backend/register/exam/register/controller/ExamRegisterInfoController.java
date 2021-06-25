@@ -93,4 +93,16 @@ public class ExamRegisterInfoController {
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream(), ExamRegisterInfoExcelDTO.class).sheet("模板").doWrite(dataList);
     }
+
+    /**
+     * 查询考试试卷
+     *
+     * @param examRegisterInfoId 报名信息ID
+     * @return
+     */
+    @GetMapping("/testPaper/{examRegisterInfoId}")
+    @Log(controllerName = "ExamRegisterInfoController", remark = "查询考试试卷")
+    ResultResponse<String> selectTestPaper(@PathVariable String examRegisterInfoId) {
+        return examRegisterInfoService.selectTestPaper(examRegisterInfoId);
+    }
 }
