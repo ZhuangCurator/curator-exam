@@ -129,6 +129,21 @@ public class ExamRegisterServiceImpl implements ExamRegisterService {
         return ResultResponse.<PageResult<ExamRegisterInfoDTO>>builder().success("考试信息页查询成功").data(resultPage).build();
     }
 
+    @Override
+    public ResultResponse<ExamRegisterInfoDTO> getRegisterInfo(String examRegisterInfoId) {
+        ExamRegisterInfo info = registerInfoMapper.selectById(examRegisterInfoId);
+        return ResultResponse.<ExamRegisterInfoDTO>builder().success("考试信息查询成功").data(convertEntity(info)).build();
+    }
+
+    @Override
+    public ResultResponse<?> previewAdmissionTicket(String examRegisterInfoId) {
+        ExamRegisterInfo info = registerInfoMapper.selectById(examRegisterInfoId);
+        if(Help.isEmpty(info.getAdmissionNumber())) {
+            return ResultResponse.builder().failure("准考证编号未生成，请继续等待！").build();
+        }
+        return ResultResponse.builder().success("准考证编号已生成！").build();
+    }
+
     /**
      * 将 数据库对象 转为 数据传输对象
      *
