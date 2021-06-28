@@ -7,6 +7,18 @@ import com.curator.common.annotation.Log;
 import com.curator.common.support.PageResult;
 import com.curator.common.support.ResultResponse;
 import com.curator.core.register.service.ExamRegisterService;
+import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +28,11 @@ import wiki.xsx.core.pdf.component.text.XEasyPdfTextStyle;
 import wiki.xsx.core.pdf.doc.XEasyPdfDocument;
 import wiki.xsx.core.pdf.handler.XEasyPdfHandler;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * 考生报名信息 前端控制器
@@ -56,65 +72,24 @@ public class ExamRegisterController {
     }
 
     @GetMapping("/pdf")
-    void pdfAdmissionTicket () throws IOException {
-                // 添加页面
-        XEasyPdfHandler.Document.build().addPage(
-                // 构建页面
-                XEasyPdfHandler.Page.build(
-                        XEasyPdfHandler.Table.build(
-                                XEasyPdfHandler.Table.Row.build(
-                                        XEasyPdfHandler.Table.Row.Cell.build(200, 70).addContent(
-                                                XEasyPdfHandler.Text.build(
-                                                        "第一行第一列"
-                                                )
-                                        ),
-                                        XEasyPdfHandler.Table.Row.Cell.build(200, 70).addContent(
-                                                XEasyPdfHandler.Text.build(
-                                                        "第一行第二列"
-                                                )
-                                        )
-                                ),
-                                XEasyPdfHandler.Table.Row.build(
-                                        XEasyPdfHandler.Table.Row.Cell.build(200, 70).addContent(
-                                                XEasyPdfHandler.Text.build(
-                                                        "第二行第一列"
-                                                )
-                                        ),
-                                        XEasyPdfHandler.Table.Row.Cell.build(200, 70).addContent(
-                                                XEasyPdfHandler.Text.build(
-                                                        "第二行第二列"
-                                                )
-                                        )
-                                )
-                        ),
-                        // 构建文本
-                        XEasyPdfHandler.Text.build(
-                                "Hello World(这是一个DEMO)"
-                        ).setStyle(XEasyPdfTextStyle.CENTER).setFontSize(20F).setMargin(10F)
-                        // 构建文本
-                        ,XEasyPdfHandler.Text.build(
-                                "        这里是正文（这是一个基于PDFBOX开源工具，专注于PDF文件导出功能，" +
-                                        "以组件形式进行拼接，简单、方便，上手及其容易，" +
-                                        "目前有TEXT(文本)、LINE(分割线)等组件，后续还会补充更多组件，满足各种需求）。"
-                        ).setStyle(XEasyPdfTextStyle.LEFT).setFontSize(14F).setMargin(10F)
-                        // 构建文本
-                        ,XEasyPdfHandler.Text.build(
-                                "-- by xsx"
-                        ).setStyle(XEasyPdfTextStyle.RIGHT).setFontSize(12F).setMarginTop(10F).setMarginRight(10F)
-                        // 构建文本
-                        ,XEasyPdfHandler.Text.build(
-                                "2020.03.12"
-                        ).setStyle(XEasyPdfTextStyle.RIGHT).setFontSize(12F).setMarginTop(10F).setMarginRight(10F)
-                        // 构建实线分割线
-                        ,XEasyPdfHandler.SplitLine.SolidLine.build().setMarginTop(10F)
-                        // 构建虚线分割线
-                        ,XEasyPdfHandler.SplitLine.DottedLine.build().setLineLength(10F).setMarginTop(10F).setLineWidth(10F)
-                        // 构建实线分割线
-                        ,XEasyPdfHandler.SplitLine.SolidLine.build().setMarginTop(10F)
-                        // 构建文本
-                        ,XEasyPdfHandler.Text.build( "完结").setStyle(XEasyPdfTextStyle.CENTER)
-                )
-                // 设置字体路径，并保存  /home/jun/Desktop/1571279005.ttf
-        ).setFontPath("static/fonts/1571279005.ttf").save("/home/jun/Desktop/text.pdf").close();
+    void pdfAdmissionTicket (HttpServletResponse response) throws Exception {
+        Document document =new Document(PageSize.A5);
+        PdfWriter.getInstance(document,response.getOutputStream());
+        document.open();
+        BaseFont bfChinese = BaseFont.createFont("static/fonts/AdobeKaitiStd-Regular.otf", BaseFont.IDENTITY_H,
+                BaseFont.NOT_EMBEDDED);
+        Font textfont =new Font(bfChinese,10, Font.BOLD);
+        Paragraph pt = new Paragraph("馆长全国综合考试", new Font(bfChinese,12, Font.NORMAL));
+        // 居中
+        pt.setAlignment(1);
+        // 段落下空白
+        pt.setSpacingAfter(10f);
+        Paragraph pt2 = new Paragraph("准考证", new Font(bfChinese,14, Font.BOLD));
+        // 居中
+        pt2.setAlignment(1);
+        // 段落下空白
+        pt2.setSpacingAfter(10f);
+        document.add(pt);
+        document.add(pt2);
     }
 }
