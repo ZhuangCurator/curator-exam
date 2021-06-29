@@ -72,7 +72,15 @@ public class ExamRegisterController {
         return examRegisterService.previewAdmissionTicket(examRegisterInfoId);
     }
 
+    /**
+     * 打印准考证
+     *
+     * @param examRegisterInfoId 考试报名信息id
+     * @param response
+     * @throws Exception
+     */
     @GetMapping("/pdf")
+    @Log(controllerName = "ExamRegisterController", remark = "打印准考证")
     void pdfAdmissionTicket(String examRegisterInfoId, HttpServletResponse response) throws Exception {
 
         ExamRegisterInfoDTO source = examRegisterService.getRegisterInfo(examRegisterInfoId).getData();
@@ -141,14 +149,14 @@ public class ExamRegisterController {
         addCell(table, "考试地址", textFont, 1, 3, 60);
         addCell(table, source.getExamSiteAddress() + "\r\n" + source.getExamClassroomAddress(), textFont, 4, 3, 60);
 
-        Paragraph p1 = new Paragraph("疫情防控期间现场考试考生须知",  new Font(bfChinese, 13, Font.BOLD));
+        Paragraph p1 = new Paragraph("现场考试考生须知",  new Font(bfChinese, 13, Font.BOLD));
         p1.setAlignment(1);
-        Paragraph p2 = new Paragraph("        1.从考试日前14天开始，须自测体温，按照“一日一测，异常情况随时报”的疫情报告制度，及时将异常情况报告所在单位或社区防疫部门;\r\n"
-                + "        2.不隐瞒或谎报旅居史、接触史、健康状况等疫情防控重点信息，自觉配合工作人员进行防疫检测、询问、排查、送诊等;\r\n"
-                + "        3.考生须自备签字笔、消毒纸巾和一次性医用外科口罩，进入考点后须全程佩戴口罩。接受身份识别验证等特殊情况时自觉摘除口罩;\r\n"
-                + "        4.考生沿指定路线前往等候区，不得进入与考试无关的场所，严禁接触正常上课的学校老师和学生;\r\n"
-                + "        5.完成考试并确认已提交考卷后，按地标指示或现场考务人员的指引迅速离开考场和考点;\r\n"
-                + "        6.考生在考试期间，应自觉服从考务工作人员的指挥，相互配合，互相理解，共同做好疫情防控特殊时期的考试工作;", textFont);
+        Paragraph p2 = new Paragraph("        1.考生应认真核实准考证所列各项信息是否准确，如有问题，应在考试之前向考点确认;\r\n"
+                + "        2.考生须持准考证和报名时使用的身份证件进入考场;\r\n"
+                + "        3.考试当天，考生应依照准考证表明时间准时到达考场。考试正式开始后，迟到考生禁止入场;\r\n"
+                + "        4.严禁将纸张、文字资料、通讯设备和存储器等带至座位。已带入考场的要切断电源，按照监考人员的要求放在指定地点。凡将上述设备带至座位者，一律按严重违规处理，取消其考试资格;\r\n"
+                + "        5.考场内必须保持安静，严禁交头接耳，不得窥视他人的答题。若有作弊行为，将取消其考试资格;\r\n"
+                + "        6.考试期间不得提前离场。考试结束后经监考人员许可后，方可离开考场;", textFont);
 
         PdfPCell cell = new PdfPCell();
         cell.addElement(p1);
@@ -157,7 +165,7 @@ public class ExamRegisterController {
 
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        cell.setFixedHeight(300);
+        cell.setFixedHeight(250);
         table.addCell(cell);
         document.add(table);
 
