@@ -57,6 +57,11 @@ public class ExamRegisterInfoDTO implements Serializable {
     private String accountName;
 
     /**
+     * 身份证号
+     */
+    private String idCard;
+
+    /**
      * 考试类别
      */
     private String examCategoryId;
@@ -75,6 +80,41 @@ public class ExamRegisterInfoDTO implements Serializable {
      * 考试科目名称
      */
     private String examSubjectName;
+
+    /**
+     * 考点ID
+     */
+    private String examSiteId;
+
+    /**
+     * 考点名称
+     */
+    private String examSiteName;
+
+    /**
+     * 考点地址
+     */
+    private String examSiteAddress;
+
+    /**
+     * 教室ID
+     */
+    private String examClassroomId;
+
+    /**
+     * 教室名称
+     */
+    private String examClassroomName;
+
+    /**
+     *  教室地址
+     */
+    private String examClassroomAddress;
+
+    /**
+     * 座位号
+     */
+    private Integer seatNumber;
 
     /**
      * 准考证编号

@@ -16,10 +16,7 @@ import com.curator.common.support.ResultResponse;
 import com.curator.common.util.Help;
 import com.curator.common.util.RedissonUtil;
 import com.curator.core.register.entity.*;
-import com.curator.core.register.mapper.ExamCategoryMapper;
-import com.curator.core.register.mapper.ExamRegisterInfoMapper;
-import com.curator.core.register.mapper.ExamSiteMapper;
-import com.curator.core.register.mapper.ExamSubjectMapper;
+import com.curator.core.register.mapper.*;
 import com.curator.core.register.service.ExamRegisterService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
@@ -46,6 +43,8 @@ public class ExamRegisterServiceImpl implements ExamRegisterService {
     private ExamSubjectMapper examSubjectMapper;
     @Autowired
     private ExamSiteMapper examSiteMapper;
+    @Autowired
+    private ExamClassroomMapper examClassroomMapper;
     @DubboReference
     private InfoAccountProvider accountProvider;
 
@@ -164,6 +163,19 @@ public class ExamRegisterServiceImpl implements ExamRegisterService {
                 ExamSubject examSubject = examSubjectMapper.selectById(entity.getExamSubjectId());
                 if (Help.isNotEmpty(examSubject)) {
                     target.setExamSubjectName(examSubject.getExamSubjectName());
+                    target.setExamStartTime(examSubject.getExamStartTime());
+                    target.setExamEndTime(examSubject.getExamEndTime());
+                }
+            }
+            ExamSite examSite = examSiteMapper.selectById(entity.getExamSiteId());
+            target.setExamSiteName(examSite.getExamSiteName());
+            target.setExamSiteAddress(examSite.getAddress());
+
+            if(Help.isNotEmpty(entity.getExamClassroomId())) {
+                ExamClassroom classroom = examClassroomMapper.selectById(entity.getExamClassroomId());
+                if(Help.isNotEmpty(classroom)) {
+                    target.setExamClassroomName(classroom.getExamClassroomName());
+                    target.setExamClassroomAddress(classroom.getAddress());
                 }
             }
         }

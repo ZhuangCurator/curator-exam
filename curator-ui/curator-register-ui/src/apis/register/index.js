@@ -9,3 +9,13 @@ export function handlePageWithRegisterInfo (params) {
 export function handleAccountRegister (params) {
   return post('/examRegisterCore/examRegisterInfo/register', params)
 }
+
+// 预校验准考证信息
+export function handlePreviewAdmissionTicket (params) {
+  return get('/examRegisterCore/examRegisterInfo/preview/admissionTicket', params)
+}
+
+// 打印准考证
+export function handlePrintAdmissionTicket (params) {
+  return get('/examRegisterCore/examRegisterInfo/pdf', params, 'blob')
+}

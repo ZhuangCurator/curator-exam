@@ -12,7 +12,7 @@
         <el-table-column label="考试成绩" prop="score" align="center"></el-table-column>
         <el-table-column label="操作" width="120px;" align="center">
           <template slot-scope="scope">
-            <el-button type="success" icon="el-icon-setting" size="mini" @click="showExamSitePage(scope.row)">准考证打印</el-button>
+            <el-button type="success" icon="el-icon-setting" size="mini" @click="printAdmissionTicket(scope.row.examRegisterInfoId)">准考证打印</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -32,7 +32,9 @@
 
 <script>
 import {
-  handlePageWithRegisterInfo
+  handlePageWithRegisterInfo,
+  handlePreviewAdmissionTicket,
+  handlePrintAdmissionTicket
 } from '@/apis/register'
 export default {
   name: 'ScorePage',
@@ -74,6 +76,29 @@ export default {
     handleCurrentChange (newCurrent) {
       this.queryForm.current = newCurrent
       this.getRegisterInfoPage()
+    },
+    // 打印准考证
+    async printAdmissionTicket (examRegisterInfoId) {
+      // 首先进行预校验
+      const param = {
+        examRegisterInfoId: examRegisterInfoId
+      }
+      const { data: result } = await handlePreviewAdmissionTicket(param)
+      if (result.status !== '2000') {
+        return this.$message.error(result.message)
+      }
+      // 成功即进行打印操作
+      const { data: res } = await handlePrintAdmissionTicket(param)
+      const link = document.createElement('a')
+      const blob = new Blob([res], {
+        type: 'application/pdf'
+      })
+      link.style.display = 'none'
+      link.href = URL.createObjectURL(blob)
+      link.download = '馆长全国综合考试准考证'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     }
   }
 }
